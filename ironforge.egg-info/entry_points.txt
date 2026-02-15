@@ -1,0 +1,3 @@
+[console_scripts]
+forge = ironforge.cli:main
+ironforge = ironforge.cli:main
