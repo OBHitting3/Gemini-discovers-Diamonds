@@ -46,13 +46,9 @@ class ForgeContext:
 
     def setup_logging(self) -> None:
         """Configure logging based on context settings."""
-        level = logging.DEBUG if self.debug else (
-            logging.INFO if self.verbose else logging.WARNING
-        )
+        level = logging.DEBUG if self.debug else (logging.INFO if self.verbose else logging.WARNING)
         log_format = (
-            "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
-            if self.debug
-            else "%(message)s"
+            "%(asctime)s [%(levelname)s] %(name)s: %(message)s" if self.debug else "%(message)s"
         )
         logging.basicConfig(level=level, format=log_format, force=True)
         self.logger.setLevel(level)

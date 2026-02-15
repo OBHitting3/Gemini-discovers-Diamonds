@@ -53,9 +53,8 @@ def collect_files(
         # Skip excluded directories
         if any(part in exclude for part in item.parts):
             continue
-        if item.is_file():
-            if extensions is None or item.suffix in extensions:
-                results.append(item)
+        if item.is_file() and (extensions is None or item.suffix in extensions):
+            results.append(item)
     return results
 
 

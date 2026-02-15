@@ -8,12 +8,10 @@ groups, and handles global options (--verbose, --debug, --version).
 from __future__ import annotations
 
 import sys
-from typing import Optional
 
 import typer
 
 import ironforge
-from ironforge.commands import build, check, config, info, init
 from ironforge.core.context import ForgeContext
 from ironforge.core.errors import ForgeError
 from ironforge.utils.display import console, print_banner, print_error
@@ -25,13 +23,6 @@ app = typer.Typer(
     no_args_is_help=True,
     rich_markup_mode="rich",
 )
-
-# Register sub-command groups
-app.add_typer(init.app, name="init", help="Scaffold a new Iron Forge project.")
-app.add_typer(build.app, name="build", help="Build and package the project.")
-app.add_typer(check.app, name="check", help="Run linting and validation checks.")
-app.add_typer(config.app, name="config", help="View and manage configuration.")
-app.add_typer(info.app, name="info", help="Display system and project information.")
 
 # Shared state
 _ctx = ForgeContext()
@@ -50,7 +41,7 @@ def version_callback(value: bool) -> None:
 def main_callback(
     verbose: bool = typer.Option(False, "--verbose", "-v", help="Enable verbose output."),
     debug: bool = typer.Option(False, "--debug", help="Enable debug logging."),
-    version: Optional[bool] = typer.Option(  # noqa: UP007
+    version: bool | None = typer.Option(
         None,
         "--version",
         "-V",
@@ -63,6 +54,20 @@ def main_callback(
     _ctx.verbose = verbose
     _ctx.debug = debug
     _ctx.setup_logging()
+
+
+# ---------- Register commands from modules ----------
+from ironforge.commands.build import build_project  # noqa: E402
+from ironforge.commands.check import check_project  # noqa: E402
+from ironforge.commands.config import config_app  # noqa: E402
+from ironforge.commands.info import show_info  # noqa: E402
+from ironforge.commands.init import init_project  # noqa: E402
+
+app.command("init", help="Scaffold a new Iron Forge project.")(init_project)
+app.command("build", help="Build and package the project.")(build_project)
+app.command("check", help="Run linting and validation checks.")(check_project)
+app.add_typer(config_app, name="config", help="View and manage configuration.")
+app.command("info", help="Display system and project information.")(show_info)
 
 
 def main() -> None:

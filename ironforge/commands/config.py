@@ -7,9 +7,6 @@ project or global settings.
 
 from __future__ import annotations
 
-from pathlib import Path
-from typing import Optional
-
 import typer
 
 from ironforge.core.config import (
@@ -30,15 +27,13 @@ from ironforge.utils.display import (
     print_warning,
 )
 
-app = typer.Typer()
+config_app = typer.Typer()
 
 
-@app.callback(invoke_without_command=True)
+@config_app.callback(invoke_without_command=True)
 def config_show(
     ctx: typer.Context,
-    global_config: bool = typer.Option(
-        False, "--global", "-g", help="Show global configuration."
-    ),
+    global_config: bool = typer.Option(False, "--global", "-g", help="Show global configuration."),
 ) -> None:
     """Display current configuration."""
     if ctx.invoked_subcommand is not None:
@@ -62,12 +57,10 @@ def config_show(
     console.print(table)
 
 
-@app.command("get")
+@config_app.command("get")
 def config_get(
     key: str = typer.Argument(help="Config key in 'section.key' format."),
-    global_config: bool = typer.Option(
-        False, "--global", "-g", help="Read from global config."
-    ),
+    global_config: bool = typer.Option(False, "--global", "-g", help="Read from global config."),
 ) -> None:
     """Get a specific configuration value."""
     config = load_global_config() if global_config else load_project_config()
@@ -86,13 +79,11 @@ def config_get(
     print_key_value(key, str(value))
 
 
-@app.command("set")
+@config_app.command("set")
 def config_set(
     key: str = typer.Argument(help="Config key in 'section.key' format."),
     value: str = typer.Argument(help="Value to set."),
-    global_config: bool = typer.Option(
-        False, "--global", "-g", help="Write to global config."
-    ),
+    global_config: bool = typer.Option(False, "--global", "-g", help="Write to global config."),
 ) -> None:
     """Set a configuration value."""
     config = load_global_config() if global_config else load_project_config()
@@ -119,11 +110,9 @@ def config_set(
     print_success(f"Set {key} = {value}")
 
 
-@app.command("path")
+@config_app.command("path")
 def config_path(
-    global_config: bool = typer.Option(
-        False, "--global", "-g", help="Show global config path."
-    ),
+    global_config: bool = typer.Option(False, "--global", "-g", help="Show global config path."),
 ) -> None:
     """Show the path to the active configuration file."""
     if global_config:

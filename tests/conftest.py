@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from ironforge.core.config import CONFIG_FILENAME, DEFAULT_CONFIG, save_project_config
+from ironforge.core.config import DEFAULT_CONFIG, save_project_config
 
 
 @pytest.fixture

@@ -20,14 +20,14 @@ class TestForgeContext:
         assert ctx.verbose is True
 
     def test_project_name_from_config(self, tmp_project: Path) -> None:
-        from ironforge.core.config import load_config, CONFIG_FILENAME
+        from ironforge.core.config import CONFIG_FILENAME, load_config
 
         config = load_config(tmp_project / CONFIG_FILENAME)
         ctx = ForgeContext(config=config)
         assert ctx.project_name == "test-project"
 
     def test_project_version_from_config(self, tmp_project: Path) -> None:
-        from ironforge.core.config import load_config, CONFIG_FILENAME
+        from ironforge.core.config import CONFIG_FILENAME, load_config
 
         config = load_config(tmp_project / CONFIG_FILENAME)
         ctx = ForgeContext(config=config)

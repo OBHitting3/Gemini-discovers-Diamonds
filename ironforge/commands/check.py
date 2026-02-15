@@ -7,26 +7,20 @@ config schema checks, and optional external tool integration.
 
 from __future__ import annotations
 
-from pathlib import Path
-
 import typer
 
-from ironforge.core.config import CONFIG_FILENAME, find_project_root, load_project_config
+from ironforge.core.config import find_project_root, load_project_config
 from ironforge.utils.display import (
     console,
     create_table,
     print_error,
-    print_info,
     print_success,
     print_warning,
 )
 from ironforge.utils.fs import collect_files
 from ironforge.utils.process import command_exists, run_command
 
-app = typer.Typer()
 
-
-@app.callback(invoke_without_command=True)
 def check_project(
     strict: bool = typer.Option(False, "--strict", "-s", help="Fail on warnings too."),
     fix: bool = typer.Option(False, "--fix", help="Attempt to auto-fix issues."),
@@ -133,9 +127,7 @@ def _display_results(issues: list[tuple[str, str, str]], strict: bool) -> None:
         print_error(f"{error_count} error(s), {warning_count} warning(s), {pass_count} passed")
         raise typer.Exit(code=1)
     elif warning_count > 0 and strict:
-        print_warning(
-            f"{warning_count} warning(s) in strict mode, {pass_count} passed"
-        )
+        print_warning(f"{warning_count} warning(s) in strict mode, {pass_count} passed")
         raise typer.Exit(code=1)
     elif warning_count > 0:
         print_warning(f"{warning_count} warning(s), {pass_count} passed — use --strict to fail")

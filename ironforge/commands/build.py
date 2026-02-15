@@ -8,7 +8,6 @@ and step-by-step progress reporting.
 from __future__ import annotations
 
 import time
-from pathlib import Path
 
 import typer
 
@@ -16,7 +15,6 @@ from ironforge.core.config import find_project_root, load_project_config
 from ironforge.core.errors import BuildError, ProjectNotFoundError
 from ironforge.utils.display import (
     console,
-    print_error,
     print_info,
     print_key_value,
     print_success,
@@ -24,10 +22,7 @@ from ironforge.utils.display import (
 )
 from ironforge.utils.fs import clean_dir, collect_files, ensure_dir
 
-app = typer.Typer()
 
-
-@app.callback(invoke_without_command=True)
 def build_project(
     target: str = typer.Option("dist", "--target", "-t", help="Build output directory."),
     clean: bool = typer.Option(False, "--clean", "-c", help="Clean target before building."),
@@ -87,9 +82,7 @@ def build_project(
         # Write build manifest
         manifest = target_dir / "BUILD_MANIFEST"
         manifest.write_text(
-            f"project={project_name}\n"
-            f"files={built_count}\n"
-            f"timestamp={time.time()}\n"
+            f"project={project_name}\nfiles={built_count}\ntimestamp={time.time()}\n"
         )
     else:
         for src_file in source_files:
@@ -102,6 +95,4 @@ def build_project(
     if built_count == 0 and not dry_run:
         raise BuildError("No source files found to build.")
 
-    print_success(
-        f"Build complete! {built_count} file(s) in {elapsed:.2f}s -> {target_dir}"
-    )
+    print_success(f"Build complete! {built_count} file(s) in {elapsed:.2f}s -> {target_dir}")

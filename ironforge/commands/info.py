@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import os
 import platform
+import shutil
 import sys
 
 import typer
@@ -22,16 +23,11 @@ from ironforge.utils.display import (
     print_header,
     print_info,
     print_key_value,
-    print_panel,
 )
-from ironforge.utils.process import command_exists
-
-app = typer.Typer()
 
 TOOLS_CHECK = ["git", "python3", "pip", "ruff", "mypy", "pytest", "docker", "node", "npm"]
 
 
-@app.callback(invoke_without_command=True)
 def show_info(
     full: bool = typer.Option(False, "--full", "-f", help="Show extended diagnostics."),
 ) -> None:
@@ -72,8 +68,6 @@ def show_info(
             [("Tool", "cyan"), ("Status", "bold"), ("Path", "dim")],
         )
         for tool in TOOLS_CHECK:
-            import shutil
-
             path = shutil.which(tool)
             if path:
                 table.add_row(tool, "[green]Available[/green]", path)

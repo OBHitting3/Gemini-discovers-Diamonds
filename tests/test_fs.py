@@ -94,7 +94,7 @@ class TestFileSizeHuman:
         f = tmp_path / "empty.txt"
         f.touch()
         result = file_size_human(f)
-        assert "0.0 B" == result
+        assert result == "0.0 B"
 
 
 class TestIsInside:

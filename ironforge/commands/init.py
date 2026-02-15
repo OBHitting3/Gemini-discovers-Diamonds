@@ -15,8 +15,6 @@ from ironforge.core.config import CONFIG_FILENAME, DEFAULT_CONFIG, save_project_
 from ironforge.utils.display import print_error, print_info, print_key_value, print_success
 from ironforge.utils.fs import ensure_dir
 
-app = typer.Typer()
-
 TEMPLATES: dict[str, list[str]] = {
     "default": ["src", "tests", "docs"],
     "minimal": ["src"],
@@ -24,11 +22,8 @@ TEMPLATES: dict[str, list[str]] = {
 }
 
 
-@app.callback(invoke_without_command=True)
 def init_project(
-    name: str = typer.Argument(
-        "my-project", help="Name of the project to create."
-    ),
+    name: str = typer.Argument("my-project", help="Name of the project to create."),
     template: str = typer.Option(
         "default",
         "--template",
@@ -41,9 +36,7 @@ def init_project(
         "-d",
         help="Parent directory for the project.",
     ),
-    force: bool = typer.Option(
-        False, "--force", "-f", help="Overwrite existing configuration."
-    ),
+    force: bool = typer.Option(False, "--force", "-f", help="Overwrite existing configuration."),
 ) -> None:
     """Initialize a new Iron Forge project."""
     if template not in TEMPLATES:
@@ -54,9 +47,7 @@ def init_project(
     config_path = project_dir / CONFIG_FILENAME
 
     if config_path.exists() and not force:
-        print_error(
-            f"Project already initialized at {project_dir}. Use --force to overwrite."
-        )
+        print_error(f"Project already initialized at {project_dir}. Use --force to overwrite.")
         raise typer.Exit(code=1)
 
     # Create directory structure

@@ -2,14 +2,12 @@
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 
 import pytest
 
 from ironforge.core.config import (
     CONFIG_FILENAME,
-    DEFAULT_CONFIG,
     _deep_copy_dict,
     _deep_merge,
     find_project_root,
@@ -86,9 +84,7 @@ class TestLoadConfig:
         config = load_config()
         assert config["forge"]["verbose"] is True
 
-    def test_env_override_log_level(
-        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_env_override_log_level(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setenv("IRONFORGE_LOG_LEVEL", "debug")
         config = load_config()
         assert config["forge"]["log_level"] == "DEBUG"
