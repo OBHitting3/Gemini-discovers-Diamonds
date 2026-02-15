@@ -19,7 +19,6 @@ from ironforge.core.config import (
     save_project_config,
 )
 
-
 # ---------------------------------------------------------------------------
 # Data transfer objects
 # ---------------------------------------------------------------------------
@@ -175,10 +174,7 @@ def get_project_status(project_dir: Path | None = None) -> ProjectStatus:
     base = project_dir or Path.cwd()
     has_config = project_config_exists(base)
 
-    if has_config:
-        config = load_project_config(base)
-    else:
-        config = ProjectConfig()
+    config = load_project_config(base) if has_config else ProjectConfig()
 
     src = base / config.build.src_dir
     out = base / config.build.output_dir
