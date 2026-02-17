@@ -1,0 +1,99 @@
+{
+  "project_name": "Faceless Shorts",
+  "version": "1.0.0",
+  "metadata": {
+    "author": "Iron Forge Studios",
+    "last_updated": "2026-02-17"
+  },
+  "directives": [
+    {
+      "id": "mcp_only",
+      "category": "architecture",
+      "text": "All external service access must go through MCP servers. Never import SDK clients (supabase, stripe, elevenlabs, openai) directly. If an MCP server is not available for a service, document the gap — do not bypass with a direct SDK.",
+      "priority": 1,
+      "requires_structured": false,
+      "requires_retrieval": false,
+      "tags": ["architecture", "mcp", "enforcement"]
+    },
+    {
+      "id": "no_stripe_sdk",
+      "category": "payments",
+      "text": "Stripe is NOT used. Payments are handled by Gumroad externally. Do not install, import, or reference the Stripe SDK anywhere in the codebase.",
+      "priority": 1,
+      "tags": ["payments", "gumroad"]
+    },
+    {
+      "id": "supabase_via_mcp",
+      "category": "architecture",
+      "text": "Supabase access must use the supabase-mcp server, not the supabase-js or supabase-py client library. This applies to auth, database, and storage operations.",
+      "priority": 1,
+      "requires_retrieval": true,
+      "tags": ["supabase", "mcp"]
+    },
+    {
+      "id": "bootstrap_auth",
+      "category": "architecture",
+      "text": "The system has a circular auth dependency (Supabase Auth -> Dashboard -> MCP -> Supabase Auth). Cold-start MUST use bootstrap_resolver.py with a service-role key. Normal auth flow takes over after bootstrap.",
+      "priority": 1,
+      "requires_structured": true,
+      "tags": ["auth", "bootstrap", "circular-dependency"]
+    },
+    {
+      "id": "retry_backoff",
+      "category": "reliability",
+      "text": "All external API calls must use the @retry_with_backoff decorator with exponential backoff (2s, 4s, 8s, 16s). Maximum 3 retries. Log each retry with correlation ID.",
+      "priority": 2,
+      "tags": ["reliability", "retry"]
+    },
+    {
+      "id": "correlation_ids",
+      "category": "observability",
+      "text": "Every pipeline run must have a unique correlation ID. All log entries for that run must include the correlation ID. Use CorrelationLogger from scripts/utils.py.",
+      "priority": 2,
+      "tags": ["logging", "tracing"]
+    },
+    {
+      "id": "airtable_source_of_truth",
+      "category": "data",
+      "text": "Airtable is the source of truth for configuration. Changes in Airtable are detected by backbone_trigger.py and propagated to all services. Do not hardcode configuration that should come from Airtable.",
+      "priority": 2,
+      "requires_retrieval": true,
+      "tags": ["airtable", "configuration"]
+    },
+    {
+      "id": "no_make_com",
+      "category": "architecture",
+      "text": "Make.com has been removed from the architecture. The backbone_trigger.py module replaces it for Airtable-to-service synchronization. Do not reference Make.com webhooks.",
+      "priority": 2,
+      "tags": ["architecture", "make.com", "deprecated"]
+    },
+    {
+      "id": "video_templates",
+      "category": "features",
+      "text": "Video assembly supports 7 built-in templates (gradient_blue, gradient_purple, dark_mode, light_mode, nature, tech, minimal). Users select via --template flag. MoviePy is the video assembly engine.",
+      "priority": 3,
+      "tags": ["video", "templates"]
+    },
+    {
+      "id": "gtts_fallback",
+      "category": "reliability",
+      "text": "If ElevenLabs API fails or quota is exhausted, fall back to Google Text-to-Speech (gTTS). Log the fallback with correlation ID and a WARNING level message.",
+      "priority": 3,
+      "tags": ["voice", "fallback"]
+    },
+    {
+      "id": "docker_untested",
+      "category": "deployment",
+      "text": "Docker and docker-compose files exist but are UNTESTED. Do not claim Docker deployment is production-ready. Mark as 'created, untested' in all documentation.",
+      "priority": 3,
+      "tags": ["docker", "deployment", "honesty"]
+    },
+    {
+      "id": "gumroad_listing",
+      "category": "business",
+      "text": "The product is sold via Gumroad at $37. The deliverable ZIP (57KB) and product copy (GUMROAD-PASTE-TODAY.txt) are ready. Revenue is $0 because the product has not been listed yet.",
+      "priority": 4,
+      "tags": ["business", "revenue", "gumroad"]
+    }
+  ]
+}
