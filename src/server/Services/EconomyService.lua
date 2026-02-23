@@ -7,8 +7,9 @@
     ALL currency mutations happen here — never on the client.
 ]]
 
-local Players          = game:GetService("Players")
+local Players           = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local AnalyticsService  = game:GetService("AnalyticsService")
 
 local GameConfig     = require(ReplicatedStorage:WaitForChild("GameConfig"))
 local RemoteManager  = require(ReplicatedStorage:WaitForChild("RemoteManager"))
@@ -193,6 +194,12 @@ function EconomyService:addPrestige(player: Player, amount: number): boolean
         data.level = newLevel
         RemoteManager:fireClient("NotifyPlayer", player,
             "Level Up! You are now Level " .. newLevel .. "!")
+
+        pcall(function()
+            AnalyticsService:LogProgressionEvent(player, Enum.AnalyticsProgressionType.Complete, "LevelUp", {
+                ["level"] = data.level,
+            })
+        end)
     end
 
     self:_syncLeaderstats(player)
@@ -203,6 +210,12 @@ function EconomyService:addPrestige(player: Player, amount: number): boolean
         prestige = data.prestige,
         level = data.level,
     })
+
+    pcall(function()
+        AnalyticsService:LogProgressionEvent(player, Enum.AnalyticsProgressionType.Complete, "PrestigeUp", {
+            ["prestige_total"] = data.prestige,
+        })
+    end)
 
     return true
 end
