@@ -186,8 +186,8 @@ function HUDTemplate:build(screenGui: ScreenGui, uiController)
     -----------------------------------------------------------------
     local sidebar = Instance.new("Frame")
     sidebar.Name = "ButtonColumn"
-    sidebar.Size = UDim2.new(0, 56, 0, 280)
-    sidebar.Position = UDim2.new(0, 12, 0.5, -120)
+    sidebar.Size = UDim2.new(0, 56, 0, 336)
+    sidebar.Position = UDim2.new(0, 12, 0.5, -148)
     sidebar.AnchorPoint = Vector2.new(0, 0.5)
     sidebar.BackgroundTransparency = 1
     sidebar.BorderSizePixel = 0
@@ -204,6 +204,7 @@ function HUDTemplate:build(screenGui: ScreenGui, uiController)
     local fashionBtn = createButton("FashionBtn", "Fashion", "F", sidebar, 3)
     local shopBtn = createButton("ShopBtn", "Shops", "S", sidebar, 4)
     local eventBtn = createButton("EventBtn", "Events", "E", sidebar, 5)
+    local lbBtn = createButton("LBBtn", "Ranks", "T", sidebar, 6)
 
     -- Connect buttons to panel toggles
     plotBtn.MouseButton1Click:Connect(function()
@@ -220,6 +221,9 @@ function HUDTemplate:build(screenGui: ScreenGui, uiController)
     end)
     eventBtn.MouseButton1Click:Connect(function()
         uiController:togglePanel("event")
+    end)
+    lbBtn.MouseButton1Click:Connect(function()
+        uiController:togglePanel("leaderboard")
     end)
 
     -----------------------------------------------------------------

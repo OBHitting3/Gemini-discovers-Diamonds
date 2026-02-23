@@ -124,6 +124,13 @@ GameConfig.Economy = {
     MaxTransactionsPerMinute = 10,
     MaxCoinGrant             = 10000,
 
+    -- Game Passes (replace 0 with real Roblox game pass IDs after publish)
+    GamePasses = {
+        VIP         = 0,   -- gold name, priority event queue
+        DoubleCoins = 0,   -- 2x SunCoins on all earnings
+        AutoWater   = 0,   -- auto-water your garden plants every 90s
+    },
+
     -- Dev Products (replace 0 with real Roblox product IDs after publish)
     DevProducts = {
         SUNCOINS_500  = 0,   -- replace with real Roblox product ID after publish

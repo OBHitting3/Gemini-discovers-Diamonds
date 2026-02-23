@@ -141,6 +141,29 @@ if not eventOk then
 end
 
 ---------------------------------------------------------------------------
+-- 5b. LEADERBOARD SERVICE
+---------------------------------------------------------------------------
+local LeaderboardService = require(script.Services.LeaderboardService)
+local lbOk, lbErr = pcall(function()
+    LeaderboardService:init(EconomyService, PlotService)
+end)
+if not lbOk then
+    warn("[Bootstrap] LeaderboardService init failed: " .. tostring(lbErr))
+end
+
+---------------------------------------------------------------------------
+-- 5c. GAME PASS SERVICE
+---------------------------------------------------------------------------
+local GamePassService = require(script.Services.GamePassService)
+local gpOk, gpErr = pcall(function()
+    GamePassService:init(EconomyService, GardenService)
+    GamePassService:startAutoWaterLoop()
+end)
+if not gpOk then
+    warn("[Bootstrap] GamePassService init failed: " .. tostring(gpErr))
+end
+
+---------------------------------------------------------------------------
 -- 6. TEST COMMANDS
 ---------------------------------------------------------------------------
 local TestCommands = require(script.Commands.TestCommands)
@@ -209,6 +232,11 @@ local function onPlayerAdded(player: Player)
     -- Create leaderstats
     EconomyService:createLeaderstats(player, data)
 
+    -- Load game pass ownership
+    pcall(function()
+        GamePassService:loadPlayerPasses(player)
+    end)
+
     -- Send welcome notification
     task.delay(2, function()
         if player.Parent then  -- still in game
@@ -242,6 +270,7 @@ local function onPlayerRemoving(player: Player)
     end
 
     EconomyService:removePlayer(player)
+    GamePassService:removePlayer(player)
 end
 
 Players.PlayerAdded:Connect(onPlayerAdded)

@@ -63,6 +63,9 @@ ShopController:init(UIController)
 local NightToggleController = require(script.Controllers.NightToggleController)
 NightToggleController:init(UIController)
 
+local SoundController = require(script.Controllers.SoundController)
+SoundController:init()
+
 ---------------------------------------------------------------------------
 -- BUILD HUD
 ---------------------------------------------------------------------------
@@ -88,6 +91,9 @@ FashionUI:build(screenGui, UIController, FashionController)
 
 local EventUI = require(script.UI.EventUI)
 EventUI:build(screenGui, UIController)
+
+local LeaderboardUI = require(script.UI.LeaderboardUI)
+LeaderboardUI:build(screenGui, UIController)
 
 ---------------------------------------------------------------------------
 -- INPUT HANDLING
