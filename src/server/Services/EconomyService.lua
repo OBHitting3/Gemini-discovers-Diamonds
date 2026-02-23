@@ -7,9 +7,10 @@
     ALL currency mutations happen here — never on the client.
 ]]
 
-local Players           = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local AnalyticsService  = game:GetService("AnalyticsService")
+local Players            = game:GetService("Players")
+local ReplicatedStorage  = game:GetService("ReplicatedStorage")
+local AnalyticsService   = game:GetService("AnalyticsService")
+local MarketplaceService = game:GetService("MarketplaceService")
 
 local GameConfig     = require(ReplicatedStorage:WaitForChild("GameConfig"))
 local RemoteManager  = require(ReplicatedStorage:WaitForChild("RemoteManager"))
@@ -37,6 +38,25 @@ function EconomyService:init(persistenceService)
         purchaseEvent.OnServerEvent:Connect(function(player, itemId)
             self:_handlePurchase(player, itemId)
         end)
+    end
+
+    -- Dev-product monetization pipe (SunCoins purchases)
+    MarketplaceService.ProcessReceipt = function(receiptInfo)
+        local buyer = Players:GetPlayerByUserId(receiptInfo.PlayerId)
+        if not buyer then
+            return Enum.ProductPurchaseDecision.NotProcessedYet
+        end
+        local cfg = require(game.ReplicatedStorage.GameConfig)
+        local rewards = {
+            [cfg.Economy.DevProducts.SUNCOINS_500]  = 500,
+            [cfg.Economy.DevProducts.SUNCOINS_1200] = 1200,
+            [cfg.Economy.DevProducts.SUNCOINS_3000] = 3000,
+        }
+        local amount = rewards[receiptInfo.ProductId]
+        if amount and amount > 0 then
+            EconomyService:addCoins(buyer, amount, "DevProduct")
+        end
+        return Enum.ProductPurchaseDecision.PurchaseGranted
     end
 
     print("[EconomyService] Initialized")

@@ -123,6 +123,16 @@ GameConfig.Economy = {
     -- Anti-exploit
     MaxTransactionsPerMinute = 10,
     MaxCoinGrant             = 10000,
+
+    -- Dev Products (replace 0 with real Roblox product IDs after publish)
+    DevProducts = {
+        SUNCOINS_500  = 0,   -- replace with real Roblox product ID after publish
+        SUNCOINS_1200 = 0,
+        SUNCOINS_3000 = 0,
+    },
+    DevProductRewards = {
+        [0] = 0,  -- placeholder mapping, replaced after publish
+    },
 }
 
 ---------------------------------------------------------------------------
