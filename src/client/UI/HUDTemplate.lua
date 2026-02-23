@@ -59,6 +59,16 @@ end
 
 function HUDTemplate:build(screenGui: ScreenGui, uiController)
     -----------------------------------------------------------------
+    -- SAFE AREA GUARD  (notch / home bar on iOS)
+    -----------------------------------------------------------------
+    local safeInsets = game:GetService("GuiService"):GetGuiInset()
+    -- safeInsets accounts for notch and home bar on iOS
+
+    pcall(function()
+        screenGui.ScreenInsets = Enum.ScreenInsets.DeviceSafeInsets
+    end)
+
+    -----------------------------------------------------------------
     -- TOP BAR  (coins, prestige, level)
     -----------------------------------------------------------------
     local topBar = Instance.new("Frame")
@@ -172,12 +182,13 @@ function HUDTemplate:build(screenGui: ScreenGui, uiController)
     uiController:setHUDReferences(coinLabel, prestigeLabel, levelLabel)
 
     -----------------------------------------------------------------
-    -- LEFT SIDEBAR BUTTONS  (away from joystick zone)
+    -- LEFT BUTTON COLUMN  (vertically centered, 9:16 safe)
     -----------------------------------------------------------------
     local sidebar = Instance.new("Frame")
-    sidebar.Name = "Sidebar"
-    sidebar.Size = UDim2.new(0, 120, 0, 290)
-    sidebar.Position = UDim2.new(0, 10, 0, 60)
+    sidebar.Name = "ButtonColumn"
+    sidebar.Size = UDim2.new(0, 56, 0, 280)
+    sidebar.Position = UDim2.new(0, 12, 0.5, -120)
+    sidebar.AnchorPoint = Vector2.new(0, 0.5)
     sidebar.BackgroundTransparency = 1
     sidebar.BorderSizePixel = 0
     sidebar.Parent = screenGui
