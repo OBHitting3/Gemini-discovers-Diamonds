@@ -17,6 +17,21 @@ local Utilities     = require(ReplicatedStorage:WaitForChild("Utilities"))
 
 local GardenService = {}
 
+-- Rate limiting
+local COOLDOWN = 5 -- seconds
+local _cooldowns = {}
+
+local function checkCooldown(player, action)
+    local key = tostring(player.UserId) .. "_" .. action
+    local now = os.clock()
+    if _cooldowns[key] and (now - _cooldowns[key]) < COOLDOWN then
+        warn("[GardenService] Rate limit hit: " .. player.Name .. " action=" .. action)
+        return false
+    end
+    _cooldowns[key] = now
+    return true
+end
+
 -- Internal state
 GardenService._plots = {}           -- plotIndex → GardenPlot data
 GardenService._economyService = nil
@@ -88,6 +103,8 @@ end
 ---------------------------------------------------------------------------
 
 function GardenService:plantSeed(player: Player, plotIndex: number, plantId: string): boolean
+    if not checkCooldown(player, "plant") then return end
+
     -- Validate
     if type(plotIndex) ~= "number" or plotIndex < 1 or plotIndex > GameConfig.World.GardenPlots then
         return false
@@ -143,6 +160,8 @@ end
 ---------------------------------------------------------------------------
 
 function GardenService:waterPlant(player: Player, plotIndex: number): boolean
+    if not checkCooldown(player, "water") then return end
+
     if type(plotIndex) ~= "number" or plotIndex < 1 or plotIndex > GameConfig.World.GardenPlots then
         return false
     end
