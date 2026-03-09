@@ -59,11 +59,15 @@ def check_project(
 
         # Check 6: External tool checks (optional)
         if command_exists("ruff"):
-            result = run_command(["ruff", "check", str(root)], cwd=root)
+            ruff_cmd = ["ruff", "check", str(root)]
+            if fix:
+                ruff_cmd.append("--fix")
+            result = run_command(ruff_cmd, cwd=root)
             if not result.success:
                 issues.append(("WARNING", "ruff", f"Ruff found issues:\n{result.stdout[:500]}"))
             else:
-                issues.append(("PASS", "ruff", "Ruff check passed."))
+                label = "Ruff check passed (with auto-fix)." if fix else "Ruff check passed."
+                issues.append(("PASS", "ruff", label))
 
     # Display results
     _display_results(issues, strict)

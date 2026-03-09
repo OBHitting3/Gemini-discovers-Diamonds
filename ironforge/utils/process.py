@@ -7,6 +7,7 @@ with consistent output capture, timeout support, and error handling.
 
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 from dataclasses import dataclass
@@ -60,8 +61,6 @@ def run_command(
     # Verify the command exists
     if not shutil.which(cmd[0]):
         raise CommandNotFoundError(cmd[0])
-
-    import os
 
     full_env = dict(os.environ)
     if env:

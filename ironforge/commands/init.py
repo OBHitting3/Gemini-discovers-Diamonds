@@ -11,7 +11,12 @@ from pathlib import Path
 
 import typer
 
-from ironforge.core.config import CONFIG_FILENAME, DEFAULT_CONFIG, save_project_config
+from ironforge.core.config import (
+    CONFIG_FILENAME,
+    DEFAULT_CONFIG,
+    _deep_copy_dict,
+    save_project_config,
+)
 from ironforge.utils.display import print_error, print_info, print_key_value, print_success
 from ironforge.utils.fs import ensure_dir
 
@@ -60,7 +65,7 @@ def init_project(
             gitkeep.touch()
 
     # Write configuration
-    config = dict(DEFAULT_CONFIG)
+    config = _deep_copy_dict(DEFAULT_CONFIG)
     config["project"] = {
         "name": name,
         "version": "0.1.0",

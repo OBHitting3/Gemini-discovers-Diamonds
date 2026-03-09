@@ -24,8 +24,7 @@ app = typer.Typer(
     rich_markup_mode="rich",
 )
 
-# Shared state
-_ctx = ForgeContext()
+ctx = ForgeContext()
 
 
 def version_callback(value: bool) -> None:
@@ -51,9 +50,9 @@ def main_callback(
     ),
 ) -> None:
     """Iron Forge CLI — Industrial-strength developer toolkit."""
-    _ctx.verbose = verbose
-    _ctx.debug = debug
-    _ctx.setup_logging()
+    ctx.verbose = verbose
+    ctx.debug = debug
+    ctx.setup_logging()
 
 
 # ---------- Register commands from modules ----------
@@ -76,13 +75,13 @@ def main() -> None:
         app()
     except ForgeError as exc:
         print_error(str(exc))
-        raise typer.Exit(code=exc.exit_code) from exc
+        sys.exit(exc.exit_code)
     except KeyboardInterrupt:
         print_error("Interrupted by user.")
-        raise typer.Exit(code=130) from None
+        sys.exit(130)
     except Exception as exc:
         print_error(f"Unexpected error: {exc}")
-        raise typer.Exit(code=1) from exc
+        sys.exit(1)
 
 
 if __name__ == "__main__":

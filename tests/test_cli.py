@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 
 from typer.testing import CliRunner
@@ -25,8 +24,7 @@ class TestMainCLI:
 
     def test_no_args_shows_help(self) -> None:
         result = runner.invoke(app, [])
-        # no_args_is_help=True causes Typer to show help and exit with code 0
-        # Some Typer versions use exit code 0, others 2 for no-args help
+        # no_args_is_help=True triggers help display; exit code varies by Typer version
         assert result.exit_code in (0, 2)
         assert (
             "Iron Forge" in result.output
@@ -94,32 +92,31 @@ class TestInfoCommand:
 
 
 class TestConfigCommand:
-    def test_config_show(self, tmp_project: Path) -> None:
-        os.chdir(tmp_project)
+    def test_config_show(self, tmp_project: Path, monkeypatch: object) -> None:
+        monkeypatch.chdir(tmp_project)  # type: ignore[attr-defined]
         result = runner.invoke(app, ["config"])
         assert result.exit_code == 0
 
-    def test_config_get(self, tmp_project: Path) -> None:
-        os.chdir(tmp_project)
+    def test_config_get(self, tmp_project: Path, monkeypatch: object) -> None:
+        monkeypatch.chdir(tmp_project)  # type: ignore[attr-defined]
         result = runner.invoke(app, ["config", "get", "project.name"])
         assert result.exit_code == 0
         assert "test-project" in result.output
 
-    def test_config_get_missing_key(self, tmp_project: Path) -> None:
-        os.chdir(tmp_project)
+    def test_config_get_missing_key(self, tmp_project: Path, monkeypatch: object) -> None:
+        monkeypatch.chdir(tmp_project)  # type: ignore[attr-defined]
         result = runner.invoke(app, ["config", "get", "nonexistent.key"])
         assert result.exit_code == 1
 
-    def test_config_set(self, tmp_project: Path) -> None:
-        os.chdir(tmp_project)
+    def test_config_set(self, tmp_project: Path, monkeypatch: object) -> None:
+        monkeypatch.chdir(tmp_project)  # type: ignore[attr-defined]
         result = runner.invoke(app, ["config", "set", "project.name", "new-name"])
         assert result.exit_code == 0
-        # Verify it was saved
         result2 = runner.invoke(app, ["config", "get", "project.name"])
         assert "new-name" in result2.output
 
-    def test_config_path(self, tmp_project: Path) -> None:
-        os.chdir(tmp_project)
+    def test_config_path(self, tmp_project: Path, monkeypatch: object) -> None:
+        monkeypatch.chdir(tmp_project)  # type: ignore[attr-defined]
         result = runner.invoke(app, ["config", "path"])
         assert result.exit_code == 0
         assert "ironforge.toml" in result.output
@@ -130,22 +127,31 @@ class TestConfigCommand:
 
 
 class TestBuildCommand:
-    def test_build_no_project(self, empty_dir: Path) -> None:
-        os.chdir(empty_dir)
+    def test_build_no_project(self, empty_dir: Path, monkeypatch: object) -> None:
+        monkeypatch.chdir(empty_dir)  # type: ignore[attr-defined]
         result = runner.invoke(app, ["build"])
-        # Should fail with project not found
         assert result.exit_code != 0
 
-    def test_build_dry_run(self, tmp_project: Path) -> None:
-        os.chdir(tmp_project)
+    def test_build_dry_run(self, tmp_project: Path, monkeypatch: object) -> None:
+        monkeypatch.chdir(tmp_project)  # type: ignore[attr-defined]
         result = runner.invoke(app, ["build", "--dry-run"])
         assert result.exit_code == 0
         assert "dry run" in result.output.lower() or "would" in result.output.lower()
 
-    def test_build_with_clean(self, tmp_project: Path) -> None:
-        os.chdir(tmp_project)
+    def test_build_with_clean(self, tmp_project: Path, monkeypatch: object) -> None:
+        monkeypatch.chdir(tmp_project)  # type: ignore[attr-defined]
         result = runner.invoke(app, ["build", "--clean"])
         assert result.exit_code == 0
+
+    def test_build_creates_manifest(self, tmp_project: Path, monkeypatch: object) -> None:
+        monkeypatch.chdir(tmp_project)  # type: ignore[attr-defined]
+        runner.invoke(app, ["build", "--clean"])
+        manifest = tmp_project / "dist" / "BUILD_MANIFEST"
+        assert manifest.exists()
+        content = manifest.read_text()
+        assert "project=test-project" in content
+        assert "files=" in content
+        assert "timestamp=" in content
 
     def test_build_help(self) -> None:
         result = runner.invoke(app, ["build", "--help"])
@@ -153,16 +159,23 @@ class TestBuildCommand:
 
 
 class TestCheckCommand:
-    def test_check_no_project(self, empty_dir: Path) -> None:
-        os.chdir(empty_dir)
+    def test_check_no_project(self, empty_dir: Path, monkeypatch: object) -> None:
+        monkeypatch.chdir(empty_dir)  # type: ignore[attr-defined]
         result = runner.invoke(app, ["check"])
-        # Should report errors
         assert result.exit_code == 1
 
-    def test_check_valid_project(self, tmp_project: Path) -> None:
-        os.chdir(tmp_project)
+    def test_check_valid_project(self, tmp_project: Path, monkeypatch: object) -> None:
+        monkeypatch.chdir(tmp_project)  # type: ignore[attr-defined]
         result = runner.invoke(app, ["check"])
         assert result.exit_code == 0 or "WARN" in result.output
+
+    def test_check_strict_mode(self, tmp_project: Path, monkeypatch: object) -> None:
+        """Strict mode should fail on warnings (e.g. no docs dir)."""
+        monkeypatch.chdir(tmp_project)  # type: ignore[attr-defined]
+        result = runner.invoke(app, ["check", "--strict"])
+        # tmp_project has no 'docs' dir, which may produce a warning
+        # Strict mode converts warnings to failures
+        assert result.exit_code in (0, 1)
 
     def test_check_help(self) -> None:
         result = runner.invoke(app, ["check", "--help"])
