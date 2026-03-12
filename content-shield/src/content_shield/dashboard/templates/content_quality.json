@@ -1,0 +1,47 @@
+{
+  "title": "Content Shield - Content Quality",
+  "description": "Overview of content quality metrics across all shields",
+  "datasource": "BigQuery",
+  "panels": [
+    {
+      "title": "Overall Pass Rate",
+      "type": "stat",
+      "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
+      "targets": [
+        {
+          "rawSql": "SELECT COUNTIF(passed) / COUNT(*) * 100 as pass_rate FROM content_shield.events"
+        }
+      ]
+    },
+    {
+      "title": "Total Validations",
+      "type": "stat",
+      "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0},
+      "targets": [
+        {
+          "rawSql": "SELECT COUNT(*) as total FROM content_shield.events"
+        }
+      ]
+    },
+    {
+      "title": "Pass/Fail by Shield",
+      "type": "barchart",
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 4},
+      "targets": [
+        {
+          "rawSql": "SELECT shield_name, COUNTIF(passed) as passed, COUNTIF(NOT passed) as failed FROM content_shield.events GROUP BY shield_name"
+        }
+      ]
+    },
+    {
+      "title": "Validation Timeline",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 12},
+      "targets": [
+        {
+          "rawSql": "SELECT TIMESTAMP_TRUNC(timestamp, HOUR) as time, COUNT(*) as checks, COUNTIF(passed) as passed FROM content_shield.events GROUP BY time ORDER BY time"
+        }
+      ]
+    }
+  ]
+}

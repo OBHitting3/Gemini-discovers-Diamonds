@@ -1,0 +1,31 @@
+{
+  "name": "Technical Developer",
+  "voice_attributes": ["technical", "professional", "authoritative"],
+  "tone": "precise",
+  "banned_words": [
+    "simply",
+    "just",
+    "easy",
+    "obviously",
+    "clearly",
+    "trivial",
+    "straightforward",
+    "of course",
+    "everyone knows",
+    "as you know"
+  ],
+  "required_terminology": {
+    "frontend": "front end",
+    "backend": "back end",
+    "repo": "repository",
+    "config": "configuration",
+    "admin": "administrator",
+    "auth": "authentication",
+    "env": "environment",
+    "lib": "library",
+    "infra": "infrastructure",
+    "docs": "documentation"
+  },
+  "target_audience": "software developers and engineers",
+  "industry": "technology"
+}

@@ -1,0 +1,45 @@
+services:
+  content-shield:
+    build:
+      context: ../../
+      dockerfile: infra/docker/Dockerfile
+    container_name: content-shield-app
+    ports:
+      - "8080:8080"
+    environment:
+      - GOOGLE_CLOUD_PROJECT=${GCP_PROJECT_ID:-content-shield-dev}
+      - ENVIRONMENT=${ENVIRONMENT:-dev}
+      - BIGQUERY_DATASET=${BIGQUERY_DATASET:-content_shield_dev}
+      - PUBSUB_TOPIC=${PUBSUB_TOPIC:-content-shield-events-dev}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    volumes:
+      - ../../src:/app/src:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  grafana:
+    image: grafana/grafana:11.3.0
+    container_name: content-shield-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ../grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ../grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ../grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    restart: unless-stopped
+    depends_on:
+      content-shield:
+        condition: service_healthy
+
+volumes:
+  grafana-data:
