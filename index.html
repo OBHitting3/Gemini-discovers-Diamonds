@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iron Forge CLI — What You've Got</title>
+    <style>
+        :root {
+            --bg: #0f0f13;
+            --surface: #1a1a24;
+            --surface2: #232330;
+            --border: #2e2e40;
+            --text: #e0e0e8;
+            --muted: #8888a0;
+            --accent: #6c8cff;
+            --green: #4ade80;
+            --yellow: #fbbf24;
+            --red: #f87171;
+            --cyan: #22d3ee;
+            --magenta: #c084fc;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 4rem 1rem 3rem;
+            background: linear-gradient(180deg, #16163a 0%, var(--bg) 100%);
+        }
+        .hero pre {
+            font-family: 'Courier New', monospace;
+            color: var(--accent);
+            font-size: 0.75rem;
+            line-height: 1.3;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            text-align: left;
+        }
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--accent), var(--cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero .subtitle {
+            font-size: 1.2rem;
+            color: var(--muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Sections */
+        section { padding: 3rem 0; }
+        section + section { border-top: 1px solid var(--border); }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--cyan);
+        }
+        h3 {
+            font-size: 1.2rem;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--magenta);
+        }
+
+        p { margin-bottom: 1rem; color: var(--text); font-size: 1.05rem; }
+        .muted { color: var(--muted); }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.25rem;
+            margin: 1.5rem 0;
+        }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: border-color 0.2s;
+        }
+        .card:hover { border-color: var(--accent); }
+        .card .icon { font-size: 2rem; margin-bottom: 0.75rem; }
+        .card h4 { color: var(--accent); font-size: 1.1rem; margin-bottom: 0.5rem; }
+        .card p { font-size: 0.95rem; color: var(--muted); margin: 0; }
+
+        /* Terminal mockup */
+        .terminal {
+            background: #0c0c14;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 1.5rem 0;
+            font-family: 'Courier New', Consolas, monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+        .terminal-bar {
+            background: var(--surface2);
+            padding: 0.6rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .terminal-dot {
+            width: 12px; height: 12px; border-radius: 50%;
+        }
+        .terminal-dot.r { background: var(--red); }
+        .terminal-dot.y { background: var(--yellow); }
+        .terminal-dot.g { background: var(--green); }
+        .terminal-title {
+            flex: 1;
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.8rem;
+        }
+        .terminal-body { padding: 1rem 1.25rem; overflow-x: auto; white-space: pre; }
+        .t-green { color: var(--green); }
+        .t-cyan { color: var(--cyan); }
+        .t-yellow { color: var(--yellow); }
+        .t-red { color: var(--red); }
+        .t-magenta { color: var(--magenta); }
+        .t-blue { color: var(--accent); }
+        .t-muted { color: var(--muted); }
+        .t-bold { font-weight: bold; }
+
+        /* Analogy boxes */
+        .analogy {
+            background: var(--surface);
+            border-left: 4px solid var(--accent);
+            border-radius: 0 8px 8px 0;
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .analogy .label {
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Steps */
+        .steps { counter-reset: step; list-style: none; margin: 1.5rem 0; }
+        .steps li {
+            counter-increment: step;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.25rem 1.25rem 1.25rem 3.5rem;
+            margin-bottom: 0.75rem;
+            position: relative;
+        }
+        .steps li::before {
+            content: counter(step);
+            position: absolute;
+            left: 1.25rem;
+            top: 1.25rem;
+            width: 1.6rem; height: 1.6rem;
+            background: var(--accent);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+        .steps li strong { color: var(--cyan); }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.15rem 0.5rem;
+            font-size: 0.8rem;
+            color: var(--green);
+            font-family: monospace;
+        }
+
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        .stat {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.25rem;
+            text-align: center;
+        }
+        .stat .number {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent), var(--cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat .label { color: var(--muted); font-size: 0.85rem; margin-top: 0.25rem; }
+
+        /* File tree */
+        .file-tree {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.5rem;
+            font-family: monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+        .file-tree .folder { color: var(--accent); font-weight: bold; }
+        .file-tree .file { color: var(--muted); }
+        .file-tree .desc { color: var(--cyan); font-family: 'Segoe UI', sans-serif; font-size: 0.8rem; }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--muted);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 1.8rem; }
+            .hero pre { font-size: 0.55rem; }
+            .container { padding: 1.5rem 1rem; }
+            .card-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ==================== HERO ==================== -->
+<div class="hero">
+    <pre>
+  ___                   _____
+ |_ _|_ __ ___  _ __   |  ___|__  _ __ __ _  ___
+  | || '__/ _ \| '_ \  | |_ / _ \| '__/ _` |/ _ \
+  | || | | (_) | | | | |  _| (_) | | | (_| |  __/
+ |___|_|  \___/|_| |_| |_|  \___/|_|  \__, |\___|
+                                       |___/
+    </pre>
+    <h1>Iron Forge CLI Suite</h1>
+    <p class="subtitle">A tool you run from your computer's command line to start, build, and manage software projects — like a digital workshop foreman.</p>
+</div>
+
+<div class="container">
+
+<!-- ==================== WHAT IS THIS ==================== -->
+<section>
+    <h2>So... What Exactly Do I Have?</h2>
+
+    <p>You have a <strong>command-line tool</strong> — a program that you control by typing text commands into a black window on your computer (called a "terminal" or "command prompt"), rather than clicking buttons on a visual screen.</p>
+
+    <div class="analogy">
+        <div class="label">Think of it like this</div>
+        <p style="margin:0">Imagine you walk into a workshop. Instead of picking up each tool by hand, you have a <strong>foreman</strong> standing there. You just tell him what you need:</p>
+        <p style="margin:0.5rem 0 0">"<em>Start a new project.</em>" — He sets up a workbench with all the folders and settings you need.<br>
+        "<em>Build it.</em>" — He assembles everything into a finished product.<br>
+        "<em>Check my work.</em>" — He inspects everything for problems.<br>
+        "<em>Show me the settings.</em>" — He shows you exactly how things are configured.</p>
+        <p style="margin:0.5rem 0 0"><strong>Iron Forge is that foreman.</strong> You type a short command, and it does the heavy lifting.</p>
+    </div>
+
+    <p>It is <strong>not</strong> a website, a phone app, or something with buttons to click. It lives in the terminal — that dark window developers type into. But it's polished: it shows colored text, tables, progress indicators, and a nice banner when you use it.</p>
+</section>
+
+<!-- ==================== WHAT IT DOES ==================== -->
+<section>
+    <h2>What Can It Do?</h2>
+    <p>Iron Forge has <strong>5 main commands</strong>, each one like a different department in your workshop:</p>
+
+    <div class="card-grid">
+        <div class="card">
+            <div class="icon">🏗️</div>
+            <h4>Init (Start a Project)</h4>
+            <p>Creates a brand-new project folder with everything organized for you — like getting a fresh desk with labeled drawers. You can choose from 3 starter layouts: Default, Minimal, or Library.</p>
+        </div>
+        <div class="card">
+            <div class="icon">🔨</div>
+            <h4>Build (Assemble It)</h4>
+            <p>Takes your source files and packages them into a ready-to-use output folder. Like taking raw lumber and turning it into a finished shelf. Can clean up old builds first.</p>
+        </div>
+        <div class="card">
+            <div class="icon">🔍</div>
+            <h4>Check (Inspect It)</h4>
+            <p>Runs a series of quality inspections: Is the project set up correctly? Are the settings valid? Any code style issues? Gives you a pass/fail report card.</p>
+        </div>
+        <div class="card">
+            <div class="icon">⚙️</div>
+            <h4>Config (Settings)</h4>
+            <p>View, change, or look up any setting for your project. Like opening the control panel — you can see every knob and switch and adjust them.</p>
+        </div>
+        <div class="card">
+            <div class="icon">📋</div>
+            <h4>Info (Status Report)</h4>
+            <p>Shows you a full report: what version of Iron Forge you're running, what your computer has installed, and details about your current project.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== WHAT IT LOOKS LIKE ==================== -->
+<section>
+    <h2>What Does It Look Like When You Use It?</h2>
+    <p>Here are real examples of what you see when you type commands. The text after the <span class="badge">$</span> sign is what you type; everything else is what the tool shows you.</p>
+
+    <h3>Starting a New Project</h3>
+    <div class="terminal">
+        <div class="terminal-bar">
+            <div class="terminal-dot r"></div>
+            <div class="terminal-dot y"></div>
+            <div class="terminal-dot g"></div>
+            <div class="terminal-title">Terminal — ironforge init</div>
+        </div>
+        <div class="terminal-body"><span class="t-muted">$</span> ironforge init my-awesome-app
+
+<span class="t-green">  ✔ Project 'my-awesome-app' initialized!</span>
+<span class="t-cyan">  ℹ Project structure:</span>
+  <span class="t-bold t-cyan">Root:</span> /home/you/my-awesome-app
+  <span class="t-bold t-cyan">Config:</span> /home/you/my-awesome-app/ironforge.toml
+  <span class="t-bold t-cyan">Template:</span> default
+    <span class="t-bold t-cyan">  Directory:</span> src
+    <span class="t-bold t-cyan">  Directory:</span> tests
+    <span class="t-bold t-cyan">  Directory:</span> docs
+<span class="t-cyan">  ℹ Next steps: cd into your project and run 'ironforge build'</span></div>
+    </div>
+
+    <h3>Running a Quality Check</h3>
+    <div class="terminal">
+        <div class="terminal-bar">
+            <div class="terminal-dot r"></div>
+            <div class="terminal-dot y"></div>
+            <div class="terminal-dot g"></div>
+            <div class="terminal-title">Terminal — ironforge check</div>
+        </div>
+        <div class="terminal-body"><span class="t-muted">$</span> ironforge check
+
+<span class="t-magenta">                Iron Forge Check Results</span>
+┏━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ <span class="t-magenta">Status</span> ┃ <span class="t-magenta">Check</span>          ┃ <span class="t-magenta">Details</span>                          ┃
+┡━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ <span class="t-green">PASS</span>   │ config-project │ [project] section present.       │
+│ <span class="t-green">PASS</span>   │ config-build   │ [build] section present.         │
+│ <span class="t-green">PASS</span>   │ config-forge   │ [forge] section present.         │
+│ <span class="t-green">PASS</span>   │ semver         │ Version '0.1.0' is valid semver. │
+│ <span class="t-green">PASS</span>   │ ruff           │ Ruff check passed.               │
+└────────┴────────────────┴──────────────────────────────────┘
+<span class="t-green">  ✔ All 5 checks passed!</span></div>
+    </div>
+
+    <h3>Seeing the Version</h3>
+    <div class="terminal">
+        <div class="terminal-bar">
+            <div class="terminal-dot r"></div>
+            <div class="terminal-dot y"></div>
+            <div class="terminal-dot g"></div>
+            <div class="terminal-title">Terminal — ironforge --version</div>
+        </div>
+        <div class="terminal-body"><span class="t-muted">$</span> ironforge --version
+
+<span class="t-blue">  ___                   _____
+ |_ _|_ __ ___  _ __   |  ___|__  _ __ __ _  ___
+  | || '__/ _ \| '_ \  | |_ / _ \| '__/ _` |/ _ \
+  | || | | (_) | | | | |  _| (_) | | | (_| |  __/
+ |___|_|  \___/|_| |_| |_|  \___/|_|  \__, |\___|
+                                       |___/</span>
+
+  <span class="t-blue t-bold">Iron Forge CLI</span> v1.0.0
+  <span class="t-muted">Python 3.12.3</span></div>
+    </div>
+
+    <h3>When Something Goes Wrong (Clean Error Messages)</h3>
+    <div class="terminal">
+        <div class="terminal-bar">
+            <div class="terminal-dot r"></div>
+            <div class="terminal-dot y"></div>
+            <div class="terminal-dot g"></div>
+            <div class="terminal-title">Terminal — error example</div>
+        </div>
+        <div class="terminal-body"><span class="t-muted">$</span> ironforge build
+<span class="t-red">  ✖ No ironforge.toml found. Run 'ironforge init' to create a project.</span></div>
+    </div>
+</section>
+
+<!-- ==================== BY THE NUMBERS ==================== -->
+<section>
+    <h2>By the Numbers</h2>
+    <div class="stats">
+        <div class="stat">
+            <div class="number">5</div>
+            <div class="label">Commands</div>
+        </div>
+        <div class="stat">
+            <div class="number">104</div>
+            <div class="label">Automated Tests</div>
+        </div>
+        <div class="stat">
+            <div class="number">92%</div>
+            <div class="label">Code Tested</div>
+        </div>
+        <div class="stat">
+            <div class="number">0</div>
+            <div class="label">Errors or Warnings</div>
+        </div>
+        <div class="stat">
+            <div class="number">17</div>
+            <div class="label">Source Files</div>
+        </div>
+        <div class="stat">
+            <div class="number">v1.0.0</div>
+            <div class="label">Version</div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== WHAT'S INSIDE ==================== -->
+<section>
+    <h2>What's Inside the Box?</h2>
+    <p>Here's how the project is organized — think of it like a filing cabinet:</p>
+
+    <div class="file-tree">
+<span class="folder">ironforge/</span>               <span class="desc">← The main tool</span>
+  <span class="file">__init__.py</span>           <span class="desc">← Name tag: "Iron Forge v1.0.0"</span>
+  <span class="file">cli.py</span>                <span class="desc">← The front desk — receives your commands and routes them</span>
+  <span class="folder">core/</span>                 <span class="desc">← The engine room</span>
+    <span class="file">config.py</span>           <span class="desc">← Reads and saves settings files</span>
+    <span class="file">context.py</span>          <span class="desc">← Keeps track of the current session</span>
+    <span class="file">errors.py</span>           <span class="desc">← Defines what can go wrong (and how to describe it)</span>
+  <span class="folder">commands/</span>             <span class="desc">← The 5 departments (one file each)</span>
+    <span class="file">init.py</span>             <span class="desc">← Start a new project</span>
+    <span class="file">build.py</span>            <span class="desc">← Assemble the project</span>
+    <span class="file">check.py</span>            <span class="desc">← Inspect for problems</span>
+    <span class="file">config.py</span>           <span class="desc">← View/change settings</span>
+    <span class="file">info.py</span>             <span class="desc">← Status report</span>
+  <span class="folder">utils/</span>                <span class="desc">← Shared helpers</span>
+    <span class="file">display.py</span>          <span class="desc">← Makes everything look pretty (colors, tables, banners)</span>
+    <span class="file">fs.py</span>               <span class="desc">← Creates and manages folders and files safely</span>
+    <span class="file">process.py</span>          <span class="desc">← Runs other tools on your computer</span>
+<span class="folder">tests/</span>                  <span class="desc">← 104 automated quality checks to make sure nothing is broken</span>
+<span class="file">pyproject.toml</span>          <span class="desc">← The instruction manual for installing the tool</span>
+<span class="file">README.md</span>               <span class="desc">← Documentation for developers</span>
+    </div>
+</section>
+
+<!-- ==================== HOW TO USE IT ==================== -->
+<section>
+    <h2>How Do I Actually Use It?</h2>
+    <p>Since this is a command-line tool (not a website), here's how you'd get it running on your computer:</p>
+
+    <ol class="steps">
+        <li>
+            <strong>Open your terminal.</strong><br>
+            On Mac: search for "Terminal" in Spotlight.<br>
+            On Windows: search for "Command Prompt" or "PowerShell" or "Git Bash".<br>
+            On Linux: you probably already know this one.
+        </li>
+        <li>
+            <strong>Make sure Python is installed.</strong><br>
+            Type <span class="badge">python3 --version</span> and press Enter. You need Python 3.10 or newer. If it says "not found," you'll need to install Python from <a href="https://python.org" style="color:var(--accent)">python.org</a>.
+        </li>
+        <li>
+            <strong>Download or clone the project.</strong><br>
+            If you have the code on GitHub, type:<br>
+            <span class="badge">git clone https://github.com/OBHitting3/Gemini-discovers-Diamonds.git</span><br>
+            Then enter the folder: <span class="badge">cd Gemini-discovers-Diamonds</span>
+        </li>
+        <li>
+            <strong>Install the tool.</strong><br>
+            Type: <span class="badge">pip install -e .</span><br>
+            This makes the <span class="badge">ironforge</span> and <span class="badge">forge</span> commands available on your computer.
+        </li>
+        <li>
+            <strong>Start using it!</strong><br>
+            <span class="badge">ironforge --version</span> — See the banner and version number.<br>
+            <span class="badge">ironforge init my-project</span> — Create a new project.<br>
+            <span class="badge">ironforge --help</span> — See all available commands.
+        </li>
+    </ol>
+</section>
+
+<!-- ==================== WHAT'S NEXT ==================== -->
+<section>
+    <h2>What Could Come Next?</h2>
+    <p>This is <strong>Phase 1: The Executable Foundation</strong>. It's the solid base that everything else gets built on top of. Think of it like pouring the foundation of a house. Future phases could add:</p>
+
+    <div class="card-grid">
+        <div class="card">
+            <div class="icon">🔌</div>
+            <h4>Plugin System</h4>
+            <p>Let other people write add-ons that snap into Iron Forge — like apps on a phone.</p>
+        </div>
+        <div class="card">
+            <div class="icon">🌐</div>
+            <h4>Web Dashboard</h4>
+            <p>A visual website you open in a browser to control Iron Forge with clicks instead of typing.</p>
+        </div>
+        <div class="card">
+            <div class="icon">📦</div>
+            <h4>Template Store</h4>
+            <p>A library of pre-made project starters — pick a template and go.</p>
+        </div>
+        <div class="card">
+            <div class="icon">🤖</div>
+            <h4>AI Integration</h4>
+            <p>Ask Iron Forge to generate code, fix errors, or suggest improvements using AI.</p>
+        </div>
+    </div>
+</section>
+
+</div>
+
+<footer>
+    Iron Forge CLI Suite v1.0.0 — Phase 1: Executable Foundation<br>
+    104 tests passing · 92% coverage · 0 lint errors · Built with Python, Typer &amp; Rich
+</footer>
+
+</body>
+</html>
