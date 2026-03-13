@@ -1,0 +1,31 @@
+{
+  "name": "Casual Friendly",
+  "voice_attributes": ["friendly", "conversational", "warm"],
+  "tone": "conversational",
+  "banned_words": [
+    "hereby",
+    "pursuant",
+    "henceforth",
+    "notwithstanding",
+    "whereas",
+    "aforementioned",
+    "hereinafter",
+    "therein",
+    "shall",
+    "mandate"
+  ],
+  "required_terminology": {
+    "purchase": "buy",
+    "utilize": "use",
+    "terminate": "end",
+    "commence": "start",
+    "facilitate": "help",
+    "endeavor": "try",
+    "subsequent": "next",
+    "prior to": "before",
+    "in order to": "to",
+    "at this time": "now"
+  },
+  "target_audience": "general consumers",
+  "industry": "consumer"
+}

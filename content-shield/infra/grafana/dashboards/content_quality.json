@@ -1,0 +1,208 @@
+{
+  "uid": "content-shield-quality",
+  "title": "Content Shield - Content Quality",
+  "description": "Overview of content quality metrics, agent activity, and event throughput.",
+  "tags": ["content-shield", "quality", "agents"],
+  "timezone": "browser",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "refresh": "5m",
+  "schemaVersion": 39,
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "dataset",
+        "type": "constant",
+        "query": "content_shield_dev",
+        "current": {
+          "value": "content_shield_dev",
+          "text": "content_shield_dev"
+        }
+      },
+      {
+        "name": "agent",
+        "type": "query",
+        "datasource": {
+          "uid": "bigquery-content-shield"
+        },
+        "query": "SELECT DISTINCT agent_name FROM `${dataset}.agent_calls` ORDER BY agent_name",
+        "multi": true,
+        "includeAll": true,
+        "current": {
+          "value": "$__all",
+          "text": "All"
+        }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Event Throughput",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "datasource": { "uid": "bigquery-content-shield" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisLabel": "Events / hour",
+            "drawStyle": "bars",
+            "fillOpacity": 60,
+            "lineWidth": 1
+          }
+        }
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT\n  TIMESTAMP_TRUNC(timestamp, HOUR) AS time,\n  event_type,\n  COUNT(*) AS event_count\nFROM `${dataset}.events`\nWHERE timestamp BETWEEN @__timeFrom AND @__timeTo\nGROUP BY time, event_type\nORDER BY time ASC",
+          "format": "time_series"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Agent Call Volume",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "datasource": { "uid": "bigquery-content-shield" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisLabel": "Calls / hour",
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2
+          }
+        }
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT\n  TIMESTAMP_TRUNC(called_at, HOUR) AS time,\n  agent_name,\n  COUNT(*) AS call_count\nFROM `${dataset}.agent_calls`\nWHERE called_at BETWEEN @__timeFrom AND @__timeTo\n  AND ($__all OR agent_name IN ($agent))\nGROUP BY time, agent_name\nORDER BY time ASC",
+          "format": "time_series"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Total Events (24h)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 8 },
+      "datasource": { "uid": "bigquery-content-shield" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "fixedColor": "blue", "mode": "fixed" }
+        }
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT COUNT(*) AS total_events\nFROM `${dataset}.events`\nWHERE timestamp BETWEEN @__timeFrom AND @__timeTo",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Agent Success Rate",
+      "type": "gauge",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 8 },
+      "datasource": { "uid": "bigquery-content-shield" },
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 100,
+          "unit": "percent",
+          "thresholds": {
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 80 },
+              { "color": "green", "value": 95 }
+            ]
+          }
+        }
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT\n  ROUND(SAFE_DIVIDE(COUNTIF(status = 'success'), COUNT(*)) * 100, 2) AS success_rate\nFROM `${dataset}.agent_calls`\nWHERE called_at BETWEEN @__timeFrom AND @__timeTo",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Avg Agent Latency (ms)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 8 },
+      "datasource": { "uid": "bigquery-content-shield" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 2000 },
+              { "color": "red", "value": 5000 }
+            ]
+          }
+        }
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT\n  ROUND(AVG(duration_ms), 0) AS avg_latency\nFROM `${dataset}.agent_calls`\nWHERE called_at BETWEEN @__timeFrom AND @__timeTo",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Token Usage",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 8 },
+      "datasource": { "uid": "bigquery-content-shield" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "fixedColor": "purple", "mode": "fixed" }
+        }
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT\n  SUM(input_tokens) AS total_input_tokens,\n  SUM(output_tokens) AS total_output_tokens\nFROM `${dataset}.agent_calls`\nWHERE called_at BETWEEN @__timeFrom AND @__timeTo",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Agent Performance by Name",
+      "type": "table",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
+      "datasource": { "uid": "bigquery-content-shield" },
+      "targets": [
+        {
+          "rawSql": "SELECT\n  agent_name,\n  COUNT(*) AS total_calls,\n  COUNTIF(status = 'success') AS successes,\n  COUNTIF(status = 'failure') AS failures,\n  COUNTIF(status = 'timeout') AS timeouts,\n  ROUND(AVG(duration_ms), 0) AS avg_duration_ms,\n  SUM(input_tokens) AS total_input_tokens,\n  SUM(output_tokens) AS total_output_tokens\nFROM `${dataset}.agent_calls`\nWHERE called_at BETWEEN @__timeFrom AND @__timeTo\nGROUP BY agent_name\nORDER BY total_calls DESC",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Events by Severity",
+      "type": "piechart",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
+      "datasource": { "uid": "bigquery-content-shield" },
+      "targets": [
+        {
+          "rawSql": "SELECT\n  COALESCE(severity, 'unknown') AS severity,\n  COUNT(*) AS count\nFROM `${dataset}.events`\nWHERE timestamp BETWEEN @__timeFrom AND @__timeTo\nGROUP BY severity\nORDER BY count DESC",
+          "format": "table"
+        }
+      ]
+    }
+  ]
+}

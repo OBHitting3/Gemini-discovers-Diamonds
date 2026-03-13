@@ -1,0 +1,151 @@
+{
+  "uid": "content-shield-pain-line",
+  "title": "Content Shield - Pain Line",
+  "description": "Tracks content pain points over time, showing trends in detection and resolution.",
+  "tags": ["content-shield", "pain-points"],
+  "timezone": "browser",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "refresh": "5m",
+  "schemaVersion": 39,
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "dataset",
+        "type": "constant",
+        "query": "content_shield_dev",
+        "current": {
+          "value": "content_shield_dev",
+          "text": "content_shield_dev"
+        }
+      },
+      {
+        "name": "category",
+        "type": "query",
+        "datasource": {
+          "uid": "bigquery-content-shield"
+        },
+        "query": "SELECT DISTINCT category FROM `${dataset}.pain_points` ORDER BY category",
+        "multi": true,
+        "includeAll": true,
+        "current": {
+          "value": "$__all",
+          "text": "All"
+        }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Pain Points Over Time",
+      "type": "timeseries",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 0 },
+      "datasource": { "uid": "bigquery-content-shield" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisLabel": "Pain Points",
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "showPoints": "auto",
+            "spanNulls": false
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "datasource": { "uid": "bigquery-content-shield" },
+          "rawSql": "SELECT\n  TIMESTAMP_TRUNC(detected_at, HOUR) AS time,\n  category,\n  COUNT(*) AS pain_point_count\nFROM `${dataset}.pain_points`\nWHERE detected_at BETWEEN @__timeFrom AND @__timeTo\n  AND ($__all OR category IN ($category))\nGROUP BY time, category\nORDER BY time ASC",
+          "format": "time_series"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Active vs Resolved Pain Points",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 10 },
+      "datasource": { "uid": "bigquery-content-shield" },
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 10 },
+              { "color": "red", "value": 50 }
+            ]
+          }
+        }
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT\n  COUNTIF(NOT resolved) AS active,\n  COUNTIF(resolved) AS resolved\nFROM `${dataset}.pain_points`\nWHERE detected_at BETWEEN @__timeFrom AND @__timeTo",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Pain Points by Severity",
+      "type": "piechart",
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 10 },
+      "datasource": { "uid": "bigquery-content-shield" },
+      "targets": [
+        {
+          "rawSql": "SELECT\n  severity,\n  COUNT(*) AS count\nFROM `${dataset}.pain_points`\nWHERE detected_at BETWEEN @__timeFrom AND @__timeTo\n  AND NOT resolved\nGROUP BY severity\nORDER BY CASE severity\n  WHEN 'critical' THEN 1\n  WHEN 'high' THEN 2\n  WHEN 'medium' THEN 3\n  WHEN 'low' THEN 4\nEND",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Average Pain Score by Category",
+      "type": "bargauge",
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 10 },
+      "datasource": { "uid": "bigquery-content-shield" },
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 1,
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 0.4 },
+              { "color": "red", "value": 0.7 }
+            ]
+          }
+        }
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT\n  category,\n  AVG(score) AS avg_score\nFROM `${dataset}.pain_points`\nWHERE detected_at BETWEEN @__timeFrom AND @__timeTo\n  AND NOT resolved\nGROUP BY category\nORDER BY avg_score DESC",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Recent Pain Points",
+      "type": "table",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 },
+      "datasource": { "uid": "bigquery-content-shield" },
+      "targets": [
+        {
+          "rawSql": "SELECT\n  pain_point_id,\n  detected_at,\n  category,\n  severity,\n  score,\n  description,\n  content_url,\n  resolved\nFROM `${dataset}.pain_points`\nWHERE detected_at BETWEEN @__timeFrom AND @__timeTo\nORDER BY detected_at DESC\nLIMIT 100",
+          "format": "table"
+        }
+      ]
+    }
+  ]
+}

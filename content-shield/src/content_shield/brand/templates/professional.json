@@ -1,0 +1,32 @@
+{
+  "name": "Professional Corporate",
+  "voice_attributes": ["professional", "authoritative", "formal"],
+  "tone": "formal",
+  "banned_words": [
+    "stuff",
+    "things",
+    "gonna",
+    "wanna",
+    "kinda",
+    "awesome",
+    "cool",
+    "hey",
+    "guys",
+    "basically",
+    "literally"
+  ],
+  "required_terminology": {
+    "buy": "purchase",
+    "cheap": "cost-effective",
+    "deal": "agreement",
+    "boss": "manager",
+    "fire": "terminate",
+    "workers": "employees",
+    "help": "assist",
+    "get back to": "follow up with",
+    "set up": "establish",
+    "look into": "investigate"
+  },
+  "target_audience": "business executives and stakeholders",
+  "industry": "corporate"
+}

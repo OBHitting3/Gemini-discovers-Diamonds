@@ -1,0 +1,12 @@
+{
+  "name": "DevToolz",
+  "voice_attributes": ["technical", "professional", "innovative"],
+  "tone": "neutral",
+  "banned_words": ["easy", "simple", "just"],
+  "required_terminology": {
+    "app": "application",
+    "repo": "repository"
+  },
+  "target_audience": "software engineers",
+  "industry": "developer tools"
+}

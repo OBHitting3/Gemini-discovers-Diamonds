@@ -1,0 +1,12 @@
+{
+  "name": "Luxe Interiors",
+  "voice_attributes": ["luxurious", "warm", "authoritative"],
+  "tone": "formal",
+  "banned_words": ["cheap", "discount", "budget"],
+  "required_terminology": {
+    "stuff": "products",
+    "buy": "acquire"
+  },
+  "target_audience": "affluent homeowners",
+  "industry": "luxury retail"
+}
