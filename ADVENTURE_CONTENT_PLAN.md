@@ -1,5 +1,7 @@
 # Adventure content plan — Keith (northern Minnesota)
 
+**Master synthesized spec:** `MASTER_PRODUCT_BRIEF.md` — creative + production + monetization in one page; this file is the deep dive (especially sponsorship research).
+
 Single reference for shoot format, family details, hooks, and sponsorship thinking. (Meeting context: transcribed notes — correct spellings below.)
 
 ## Who
