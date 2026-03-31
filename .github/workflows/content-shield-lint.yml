@@ -1,8 +1,12 @@
-name: Lint
+name: Content Shield Lint
 
 on:
   push:
   pull_request:
+
+defaults:
+  run:
+    working-directory: content-shield
 
 jobs:
   ruff:

@@ -1,9 +1,13 @@
-name: Publish to PyPI
+name: Publish Content Shield to PyPI
 
 on:
   push:
     tags:
       - "v*"
+
+defaults:
+  run:
+    working-directory: content-shield
 
 jobs:
   build:
@@ -27,7 +31,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dist
-          path: dist/
+          path: content-shield/dist/
 
   publish:
     needs: build
