@@ -2,6 +2,8 @@
 
 Locked decisions from the creative check-in. Use this as the single source for shoot planning and briefs.
 
+**Thursday Palm Springs demo:** While the family is visiting, the priority is showing **how** content gets created and published—not impressing them with a normal finished video. See [`thursday-demo-scope.md`](thursday-demo-scope.md) for the one-sentence promise and minimum demo bar.
+
 ## Talent & context
 
 - **Keith:** Early 40s; two sons and a younger daughter; family-forward energy.
