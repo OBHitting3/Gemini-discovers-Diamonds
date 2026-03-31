@@ -9,7 +9,7 @@ Single reference for shoot format, family details, hooks, and sponsorship thinki
 | Dad | **Keith** | Early 40s; strong on-camera with the kids; family is on board. |
 | Sons | **Jager** (J-A-G-E-R), **Beau** (B-E-A-U) | Each has a **snowmobile** and a **four-wheeler**. |
 | Daughter | **Jojo** | |
-| Mom | **Jade** (J-A-D-E) | |
+| Mom | **Jaye** (J-A-Y-E) | |
 
 ## Places & assets
 
@@ -86,5 +86,5 @@ Fill these when you can — they matter more than another gear idea:
 
 - **Camo hunting + fishing** gear mix.  
 - **Dock + fish house** (year-round, movable); lean on **cabin**, **boat**, **ice house** amenities for variety.  
-- **Jager & Beau** drive the **UPS** delivery bit; **Jojo** and **Jade** as fits the episode.  
+- **Jager & Beau** drive the **UPS** delivery bit; **Jojo** and **Jaye** as fits the episode.  
 - **Sponsorship** is a **stretch goal**; build **proof library** first, then pitch with data.
