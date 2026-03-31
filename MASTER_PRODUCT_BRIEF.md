@@ -1,6 +1,7 @@
 # Master product brief — “Up North Delivery” (working title)
 
 **Status:** Single synthesized spec — creative + production + monetization.  
+**Sharing with Keith & family (not permanent — just alignment):** `FAMILY_PROOF_OF_CONCEPT.md`  
 **Detail drill-down:** See `ADVENTURE_CONTENT_PLAN.md` for sponsorship research, retailer table, and citations.
 
 ---
