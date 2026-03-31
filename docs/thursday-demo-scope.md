@@ -6,6 +6,11 @@
 
 **Deadline:** Have the **real product** far enough along by **Thursday** so you can walk them through it in person while they’re in Palm Springs. Manual editing remains an acceptable **fallback** if automation is blocked; the goal is still to **ship the full system** (weekend push continues the same spine).
 
+## Ingest — locked folder (Google Drive)
+
+- **Drive folder name:** `K3_Boxes` (create it in My Drive or Shared drive; use that exact name so paths and docs stay aligned).
+- **How the pipeline will use it:** Prefer **Google Drive for desktop** so `K3_Boxes` syncs to a **local folder**. The watcher or ingest step points at that **full path** (OS-specific—e.g. under Google’s CloudStorage folder on Mac/Windows). Browser-only Drive is possible later via Drive API, but synced local path is the fast path for Thursday.
+
 ## One-sentence demo promise
 
 **Upload a clip → see job status move through the pipeline → get a processed output → one explicit step publishes to YouTube (unlisted is fine for the first run).**
