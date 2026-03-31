@@ -7,7 +7,7 @@ or unknown, enabling intelligent retry and circuit-breaker decisions.
 from __future__ import annotations
 
 import enum
-from typing import Callable, Dict, List, Optional, Type
+from collections.abc import Callable
 
 
 class ErrorCategory(enum.Enum):
@@ -19,11 +19,11 @@ class ErrorCategory(enum.Enum):
 
 
 # Type alias for a rule function: takes an exception, returns a category or None.
-ClassificationRule = Callable[[BaseException], Optional[ErrorCategory]]
+ClassificationRule = Callable[[BaseException], ErrorCategory | None]
 
 
 # Built-in mapping of exception types to categories.
-_DEFAULT_RULES: Dict[Type[BaseException], ErrorCategory] = {
+_DEFAULT_RULES: dict[type[BaseException], ErrorCategory] = {
     # Transient - network / IO issues that may resolve on retry
     ConnectionError: ErrorCategory.TRANSIENT,
     ConnectionAbortedError: ErrorCategory.TRANSIENT,
@@ -69,8 +69,8 @@ class ErrorClassifier:
     """
 
     def __init__(self, *, include_defaults: bool = True) -> None:
-        self._type_rules: Dict[Type[BaseException], ErrorCategory] = {}
-        self._callable_rules: List[ClassificationRule] = []
+        self._type_rules: dict[type[BaseException], ErrorCategory] = {}
+        self._callable_rules: list[ClassificationRule] = []
         self._include_defaults = include_defaults
 
     # ------------------------------------------------------------------
@@ -79,9 +79,9 @@ class ErrorClassifier:
 
     def register(
         self,
-        exc_type: Type[BaseException],
+        exc_type: type[BaseException],
         category: ErrorCategory,
-    ) -> "ErrorClassifier":
+    ) -> ErrorClassifier:
         """Register a type-based classification rule.
 
         Parameters
@@ -99,7 +99,7 @@ class ErrorClassifier:
         self._type_rules[exc_type] = category
         return self
 
-    def register_rule(self, rule: ClassificationRule) -> "ErrorClassifier":
+    def register_rule(self, rule: ClassificationRule) -> ErrorClassifier:
         """Register a custom callable classification rule.
 
         The callable receives an exception instance and must return an
@@ -170,11 +170,10 @@ class ErrorClassifier:
     @staticmethod
     def _match_type_rules(
         exc: BaseException,
-        rules: Dict[Type[BaseException], ErrorCategory],
-    ) -> Optional[ErrorCategory]:
+        rules: dict[type[BaseException], ErrorCategory],
+    ) -> ErrorCategory | None:
         """Find the most-specific matching type rule via MRO."""
-        exc_type = type(exc)
-        best_match: Optional[Type[BaseException]] = None
+        best_match: type[BaseException] | None = None
         for candidate in rules:
             if isinstance(exc, candidate):
                 if best_match is None or issubclass(candidate, best_match):

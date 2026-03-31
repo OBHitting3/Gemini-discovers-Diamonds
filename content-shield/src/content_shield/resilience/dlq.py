@@ -10,9 +10,10 @@ import json
 import threading
 import time
 import uuid
+from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Sequence
+from typing import Any
 
 
 @dataclass
@@ -24,14 +25,14 @@ class DLQEntry:
     error: str
     error_type: str
     timestamp: float
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
     retry_count: int = 0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "DLQEntry":
+    def from_dict(cls, data: dict[str, Any]) -> DLQEntry:
         return cls(**data)
 
 
@@ -52,12 +53,12 @@ class DeadLetterQueue:
     def __init__(
         self,
         *,
-        persist_path: Optional[str | Path] = None,
-        max_size: Optional[int] = None,
+        persist_path: str | Path | None = None,
+        max_size: int | None = None,
     ) -> None:
         self._lock = threading.Lock()
-        self._entries: List[DLQEntry] = []
-        self._persist_path: Optional[Path] = (
+        self._entries: list[DLQEntry] = []
+        self._persist_path: Path | None = (
             Path(persist_path) if persist_path else None
         )
         self.max_size = max_size
@@ -74,7 +75,7 @@ class DeadLetterQueue:
         payload: Any,
         error: BaseException,
         *,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> DLQEntry:
         """Add a failed event to the queue.
 
@@ -107,7 +108,7 @@ class DeadLetterQueue:
             self._flush()
         return entry
 
-    def dequeue(self) -> Optional[DLQEntry]:
+    def dequeue(self) -> DLQEntry | None:
         """Remove and return the oldest entry, or *None* if empty."""
         with self._lock:
             if not self._entries:
@@ -116,7 +117,7 @@ class DeadLetterQueue:
             self._flush()
             return entry
 
-    def peek(self, count: int = 1) -> List[DLQEntry]:
+    def peek(self, count: int = 1) -> list[DLQEntry]:
         """Return the oldest *count* entries without removing them."""
         with self._lock:
             return list(self._entries[:count])
@@ -125,9 +126,9 @@ class DeadLetterQueue:
         self,
         handler: Callable[[Any], Any],
         *,
-        max_items: Optional[int] = None,
+        max_items: int | None = None,
         remove_on_success: bool = True,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Attempt to replay queued entries through *handler*.
 
         Parameters
@@ -153,8 +154,8 @@ class DeadLetterQueue:
 
         succeeded = 0
         failed = 0
-        errors: List[str] = []
-        replayed_ids: List[str] = []
+        errors: list[str] = []
+        replayed_ids: list[str] = []
 
         for entry in to_replay:
             try:
@@ -194,7 +195,7 @@ class DeadLetterQueue:
             self._flush()
             return count
 
-    def get_by_id(self, entry_id: str) -> Optional[DLQEntry]:
+    def get_by_id(self, entry_id: str) -> DLQEntry | None:
         """Look up an entry by its unique id."""
         with self._lock:
             for entry in self._entries:
@@ -202,7 +203,7 @@ class DeadLetterQueue:
                     return entry
         return None
 
-    def list_all(self) -> List[DLQEntry]:
+    def list_all(self) -> list[DLQEntry]:
         """Return a copy of all entries."""
         with self._lock:
             return list(self._entries)

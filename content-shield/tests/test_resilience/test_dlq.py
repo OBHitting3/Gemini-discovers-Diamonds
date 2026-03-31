@@ -1,6 +1,5 @@
 """Tests for DeadLetterQueue."""
 
-import pytest
 
 from content_shield.resilience.dlq import DeadLetterQueue, DLQEntry
 

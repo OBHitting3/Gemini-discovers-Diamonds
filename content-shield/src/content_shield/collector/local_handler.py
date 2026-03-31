@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import logging
 
-from content_shield.schema.event import ShieldEvent
 from content_shield.collector.storage import EventStorage
+from content_shield.schema.event import ShieldEvent
 
 logger = logging.getLogger(__name__)
 

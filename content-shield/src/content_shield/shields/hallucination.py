@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from content_shield.schema import Content, Issue, Severity, ValidationResult
+from content_shield.schema import Content, Issue, ValidationResult
 from content_shield.shields.base import BaseShield
 
 

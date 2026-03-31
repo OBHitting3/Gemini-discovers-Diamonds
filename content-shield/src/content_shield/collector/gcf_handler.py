@@ -6,8 +6,8 @@ import json
 import logging
 from typing import Any
 
-from content_shield.schema.event import ShieldEvent
 from content_shield.collector.storage import EventStorage
+from content_shield.schema.event import ShieldEvent
 
 logger = logging.getLogger(__name__)
 

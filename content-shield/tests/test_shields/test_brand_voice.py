@@ -2,7 +2,6 @@
 
 import pytest
 
-from content_shield.brand.profile import BrandProfile
 from content_shield.schema import Content, ContentType
 from content_shield.shields.brand_voice import BrandVoiceShield
 

@@ -11,8 +11,9 @@ import asyncio
 import concurrent.futures
 import functools
 import threading
+from collections.abc import Callable
 from contextlib import asynccontextmanager, contextmanager
-from typing import Any, Callable, Optional, TypeVar
+from typing import Any, TypeVar
 
 T = TypeVar("T")
 

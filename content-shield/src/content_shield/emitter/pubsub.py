@@ -9,7 +9,7 @@ it via the ``gcp`` extra::
 from __future__ import annotations
 
 import json
-from typing import Any, Optional
+from typing import Any
 
 import structlog
 
@@ -46,7 +46,7 @@ class PubSubEmitter(BaseEmitter):
         project_id: str,
         topic_id: str,
         *,
-        ordering_key: Optional[str] = None,
+        ordering_key: str | None = None,
     ) -> None:
         if not _HAS_PUBSUB:
             raise ImportError(
@@ -56,8 +56,8 @@ class PubSubEmitter(BaseEmitter):
         self._project_id = project_id
         self._topic_id = topic_id
         self._ordering_key = ordering_key or ""
-        self._publisher: Optional[pubsub_v1.PublisherClient] = None
-        self._topic_path: Optional[str] = None
+        self._publisher: pubsub_v1.PublisherClient | None = None
+        self._topic_path: str | None = None
 
     # ------------------------------------------------------------------
     # Lifecycle

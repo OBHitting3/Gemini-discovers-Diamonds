@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import re
 
-
 # Simple vowel-group heuristic for syllable counting.
 _VOWEL_GROUP_RE = re.compile(r"[aeiouy]+", re.IGNORECASE)
 

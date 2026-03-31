@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Sequence
+from collections.abc import Sequence
 
 from content_shield.schema import Content, ValidationResult, ValidationSummary
 from content_shield.shields.base import BaseShield

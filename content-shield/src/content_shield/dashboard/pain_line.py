@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -40,7 +40,12 @@ class PainLineTracker:
         )
         self._points.append(point)
         if score > self.threshold:
-            logger.warning("Pain threshold exceeded: %s scored %.1f (threshold=%.1f)", shield_name, score, self.threshold)
+            logger.warning(
+                "Pain threshold exceeded: %s scored %.1f (threshold=%.1f)",
+                shield_name,
+                score,
+                self.threshold,
+            )
         return point
 
     @property

@@ -1,6 +1,5 @@
 """Tests for ErrorClassifier."""
 
-import pytest
 
 from content_shield.resilience.error_classifier import ErrorCategory, ErrorClassifier
 

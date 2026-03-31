@@ -11,7 +11,8 @@ import enum
 import functools
 import threading
 import time
-from typing import Any, Callable, Optional, Sequence, Tuple, Type, Union
+from collections.abc import Callable, Sequence
+from typing import Any
 
 
 class CircuitState(enum.Enum):
@@ -22,10 +23,10 @@ class CircuitState(enum.Enum):
     HALF_OPEN = "half_open"
 
 
-class CircuitBreakerOpen(Exception):
+class CircuitBreakerOpen(Exception):  # noqa: N818
     """Raised when a call is rejected because the circuit is open."""
 
-    def __init__(self, breaker: "CircuitBreaker") -> None:
+    def __init__(self, breaker: CircuitBreaker) -> None:
         self.breaker = breaker
         remaining = breaker._time_until_recovery()
         super().__init__(
@@ -60,14 +61,9 @@ class CircuitBreaker:
         failure_threshold: int = 5,
         recovery_timeout: float = 30.0,
         half_open_max_calls: int = 1,
-        monitored_exceptions: Union[
-            Tuple[Type[BaseException], ...],
-            Sequence[Type[BaseException]],
-        ] = (Exception,),
+        monitored_exceptions: tuple[type[BaseException], ...] | Sequence[type[BaseException]] = (Exception,),
         name: str = "default",
-        on_state_change: Optional[
-            Callable[[CircuitState, CircuitState], Any]
-        ] = None,
+        on_state_change: Callable[[CircuitState, CircuitState], Any] | None = None,
     ) -> None:
         self.failure_threshold = failure_threshold
         self.recovery_timeout = recovery_timeout

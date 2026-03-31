@@ -5,15 +5,14 @@ from uuid import uuid4
 
 import pytest
 
+from content_shield.brand.profile import BrandProfile
 from content_shield.schema import (
     Content,
     ContentType,
-    Issue,
     Severity,
     ShieldEvent,
     ValidationResult,
 )
-from content_shield.brand.profile import BrandProfile
 
 
 @pytest.fixture

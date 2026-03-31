@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-from typing import Sequence
 
 from content_shield.agents.base_agent import BaseAgent
 

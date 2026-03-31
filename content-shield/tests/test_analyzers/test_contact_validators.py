@@ -1,6 +1,5 @@
 """Tests for EmailValidator and PhoneValidator."""
 
-import pytest
 
 from content_shield.analyzers.email_validator import EmailValidator
 from content_shield.analyzers.phone_validator import PhoneValidator

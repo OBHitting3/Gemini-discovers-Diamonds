@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import enum
 from datetime import datetime, timezone
-from typing import Any, Optional
+from typing import Any
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field
@@ -28,7 +28,7 @@ class Content(BaseModel):
     text: str
     content_type: ContentType
     language: str = "en"
-    metadata: Optional[dict[str, Any]] = None
+    metadata: dict[str, Any] | None = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 

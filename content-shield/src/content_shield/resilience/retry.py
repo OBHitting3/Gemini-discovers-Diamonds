@@ -8,15 +8,10 @@ from __future__ import annotations
 
 import asyncio
 import functools
+from collections.abc import Callable, Sequence
 from contextlib import asynccontextmanager, contextmanager
 from typing import (
     Any,
-    Callable,
-    Optional,
-    Sequence,
-    Tuple,
-    Type,
-    Union,
 )
 
 import tenacity
@@ -59,11 +54,8 @@ class RetryPolicy:
         backoff: str = "exponential",
         backoff_base: float = 1,
         backoff_max: float = 60,
-        retryable_exceptions: Union[
-            Tuple[Type[BaseException], ...],
-            Sequence[Type[BaseException]],
-        ] = (Exception,),
-        on_retry: Optional[Callable[[RetryCallState], Any]] = None,
+        retryable_exceptions: tuple[type[BaseException], ...] | Sequence[type[BaseException]] = (Exception,),
+        on_retry: Callable[[RetryCallState], Any] | None = None,
     ) -> None:
         self.max_attempts = max_attempts
         self.backoff = backoff
@@ -170,7 +162,7 @@ class RetryPolicy:
     # Helpers
     # ------------------------------------------------------------------
 
-    def copy(self, **overrides: Any) -> "RetryPolicy":
+    def copy(self, **overrides: Any) -> RetryPolicy:
         """Return a shallow copy with optional parameter overrides."""
         params = {
             "max_attempts": self.max_attempts,

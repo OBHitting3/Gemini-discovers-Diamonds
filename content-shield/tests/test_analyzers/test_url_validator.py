@@ -1,6 +1,5 @@
 """Tests for URLValidator."""
 
-import pytest
 
 from content_shield.analyzers.url_validator import URLValidator
 

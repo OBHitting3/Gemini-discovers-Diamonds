@@ -65,7 +65,6 @@ class ToxicityShield(BaseShield):
 
     async def check(self, content: Content) -> ValidationResult:
         issues: list[Issue] = []
-        text_lower = content.text.lower()
 
         # Keyword matching.
         for keyword in self._keywords:

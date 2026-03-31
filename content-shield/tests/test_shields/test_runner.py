@@ -5,7 +5,6 @@ import pytest
 from content_shield.schema import Content, ContentType
 from content_shield.shields.hallucination import HallucinationShield
 from content_shield.shields.runner import ShieldRunner
-from content_shield.shields.sentiment import SentimentShield
 from content_shield.shields.toxicity import ToxicityShield
 
 

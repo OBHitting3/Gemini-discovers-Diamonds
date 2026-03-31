@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Optional
-
 from pydantic import BaseModel, Field, computed_field
 
 from content_shield.schema.event import Severity
@@ -15,8 +13,8 @@ class Issue(BaseModel):
     code: str
     message: str
     severity: Severity
-    span_start: Optional[int] = None
-    span_end: Optional[int] = None
+    span_start: int | None = None
+    span_end: int | None = None
 
 
 class ValidationResult(BaseModel):

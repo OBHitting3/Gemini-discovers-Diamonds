@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import enum
-from datetime import datetime, timezone
-from typing import Any, Optional
+from datetime import datetime
+from typing import Any
 from uuid import UUID
 
 from pydantic import BaseModel, Field
@@ -30,4 +30,4 @@ class ShieldEvent(BaseModel):
     passed: bool
     message: str
     details: dict[str, Any] = Field(default_factory=dict)
-    metadata: Optional[dict[str, Any]] = None
+    metadata: dict[str, Any] | None = None

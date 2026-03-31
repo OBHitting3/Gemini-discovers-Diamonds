@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 import httpx
 import structlog
@@ -105,15 +105,15 @@ class SlackEmitter(BaseEmitter):
         self,
         webhook_url: str,
         *,
-        channel: Optional[str] = None,
-        username: Optional[str] = None,
+        channel: str | None = None,
+        username: str | None = None,
         timeout: float = 10.0,
     ) -> None:
         self._webhook_url = webhook_url
         self._channel = channel
         self._username = username or "Content Shield"
         self._timeout = timeout
-        self._client: Optional[httpx.AsyncClient] = None
+        self._client: httpx.AsyncClient | None = None
 
     # ------------------------------------------------------------------
     # Lifecycle

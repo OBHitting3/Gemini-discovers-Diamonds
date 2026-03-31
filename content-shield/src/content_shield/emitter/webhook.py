@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 import httpx
 import structlog
@@ -32,13 +32,13 @@ class WebhookEmitter(BaseEmitter):
         self,
         url: str,
         *,
-        headers: Optional[dict[str, str]] = None,
+        headers: dict[str, str] | None = None,
         timeout: float = 10.0,
     ) -> None:
         self._url = url
         self._headers = headers or {}
         self._timeout = timeout
-        self._client: Optional[httpx.AsyncClient] = None
+        self._client: httpx.AsyncClient | None = None
 
     # ------------------------------------------------------------------
     # Lifecycle
