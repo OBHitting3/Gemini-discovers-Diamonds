@@ -316,4 +316,28 @@ Proprietary — Palm Springs Paradise by Iron Forge Studios.
 
 ---
 
+## Ecosystem: Content Pipeline and Infrastructure
+
+PSP is not just a Roblox game. It is an ecosystem with five interlocking engines, including an external audience-acquisition layer powered by AI influencer personas that generate YouTube Shorts and TikTok content to drive players into the game.
+
+### Content Pipeline (`content-pipeline/`)
+
+The Faceless Shorts automation engine: topic → AI script (Gemini) → voice synthesis (ElevenLabs/gTTS) → video assembly (MoviePy) → YouTube upload. Creates AI influencer content that markets PSP externally.
+
+### Shared Architecture (`architecture/`)
+
+Infrastructure modules shared across the game and content pipeline:
+
+| Module | Purpose |
+|--------|---------|
+| `bootstrap_resolver.py` | Breaks circular Supabase Auth dependency for cold-start |
+| `bridge_router.py` | Translates canonical config across 4 agent formats with fidelity tracking |
+| `backbone_trigger.py` | Polls Airtable for changes, replaces Make.com as automation glue |
+| `cursorrules_enforcer.py` | Runtime `.cursorrules` enforcement with pre-commit hook |
+| `canonical-config.json` | Single source of truth for all agent/system directives |
+
+See [`architecture/README.md`](architecture/README.md) for detailed usage.
+
+---
+
 *Built with Cursor.com + Claude Sonnet 4.6 Max Mode — Single-shot prototype generation*
