@@ -1,5 +1,5 @@
 {
-  "project_name": "Faceless Shorts",
+  "project_name": "Palm Springs Paradise",
   "version": "1.0.0",
   "metadata": {
     "author": "Iron Forge Studios",
@@ -18,9 +18,9 @@
     {
       "id": "no_stripe_sdk",
       "category": "payments",
-      "text": "Stripe is NOT used. Payments are handled by Gumroad externally. Do not install, import, or reference the Stripe SDK anywhere in the codebase.",
+      "text": "Stripe SDK is not currently integrated. Do not install, import, or reference the Stripe SDK unless a payment/distribution strategy has been explicitly decided. Payment platform and pricing are TBD.",
       "priority": 1,
-      "tags": ["payments", "gumroad"]
+      "tags": ["payments", "pending"]
     },
     {
       "id": "supabase_via_mcp",
@@ -89,11 +89,11 @@
       "tags": ["docker", "deployment", "honesty"]
     },
     {
-      "id": "gumroad_listing",
+      "id": "pricing_undecided",
       "category": "business",
-      "text": "The product is sold via Gumroad at $37. The deliverable ZIP (57KB) and product copy (GUMROAD-PASTE-TODAY.txt) are ready. Revenue is $0 because the product has not been listed yet.",
+      "text": "No pricing, distribution platform, or sales strategy has been finalized. Do not hardcode prices, platform names, or revenue claims anywhere in code or documentation. All business model decisions require explicit owner approval.",
       "priority": 4,
-      "tags": ["business", "revenue", "gumroad"]
+      "tags": ["business", "pending"]
     }
   ]
 }
