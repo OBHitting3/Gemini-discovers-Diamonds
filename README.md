@@ -1,145 +1,343 @@
-# Gemini-discovers-Diamonds
+# Palm Springs Paradise 🌴
 
-## Architecture Fixes — Faceless Shorts MCP System
+**A social life-simulation and creative expression game set in a stylized, mid-century modern Palm Springs.**
 
-This branch contains **working implementation code** that fixes the 4 critical architecture problems identified by a multi-LLM audit (Grok, Claude Arena, Gemini, Claude Browser).
+> Art Direction Prototype — Rojo v7 Project for Roblox Studio
 
-### The Problem
+---
 
-The Faceless Shorts MCP architecture was a beautifully drawn blueprint with no plumbing:
+## Overview
 
-| Dimension | Audit Score |
-|---|---|
-| Conceptual Vision | 9/10 |
-| Config Hygiene | 7/10 |
-| Security | 2/10 |
-| Production Readiness | 1/10 |
-| Actually Functions End-to-End | 0/10 |
+Palm Springs Paradise is a Roblox experience where players arrive as new residents in a sun-drenched desert town and build their dream life: decorating iconic modernist homes, curating fashion for poolside events, tending desert gardens, running boutique businesses, and competing in weekly community festivals.
 
-Four specific bugs made the system unable to cold-start or run:
+### Core Pillars
 
-1. **Runtime Bootstrap Paradox** — Supabase Auth is an MCP server, but you need Supabase Auth to access the dashboard that starts MCP servers. Circular dependency. Cannot cold-start.
+| Pillar | Description |
+|--------|-------------|
+| **Desert Dream Homes** | Claim plots, build single-story MCM homes, decorate with mid-century furniture, earn Vibes Score |
+| **Poolside Fashion & Runway** | Themed fashion events, outfit submission, runway walks, voting competitions |
+| **Community Desert Gardens** | Shared 16-plot garden with real-time planting, watering, wilting, and harvesting |
+| **Boutique Economy** | Player-owned luxury storefronts on El Paseo boulevard with buy/sell/trade |
 
-2. **Cursorrules Enforcement Illusion** — `.cursorrules` is a flat text file with no enforcement. The agent that built the architecture violated it during the build (scaffolded SDK boilerplate before being stopped).
+### Game Loop
 
-3. **Translation Fidelity Problem** — `bridge-router-mcp.json` claims to translate one config into 4 agent formats, but those formats have incompatible constraints. No actual translation code existed.
+- **Morning:** Tend your garden, stock your shop
+- **Afternoon:** Decorate your home, try on outfits
+- **Evening:** Fashion events, trading, community festivals
 
-4. **Airtable-to-App Ghost** — Make.com was removed from the architecture but never replaced. `backbone-broadcast.json` describes a workflow with no trigger mechanism.
+---
 
-### The Fix
+## Tech Stack
 
-Four Python modules, zero external dependencies beyond stdlib, each solving one problem:
+| Component | Technology |
+|-----------|-----------|
+| Project Format | **Rojo v7** (`.lua` file conventions) |
+| Language | **Luau** (Roblox's Lua variant) |
+| Hot-Path Persistence | **Roblox DataStore** via ProfileService-style wrapper |
+| Cold-Path Persistence | **Supabase** REST API via HttpService (mock mode for testing) |
+| Webhooks | **n8n-ready** placeholder endpoints (CF7 signups, Modernism Week scheduling) |
+| Streaming | **StreamingEnabled** on Workspace |
+| UI | Programmatic **ScreenGui** creation (mobile-first) |
+
+---
+
+## Project Structure
 
 ```
-architecture/
-├── __init__.py
-├── bootstrap_resolver.py    ← Fixes #1: Circular auth dependency
-├── bridge_router.py         ← Fixes #3: Config translation with fidelity tracking
-├── backbone_trigger.py      ← Fixes #4: Airtable polling replaces Make.com
-├── cursorrules_enforcer.py  ← Fixes #2: Runtime rule enforcement with pre-commit hook
-└── canonical-config.json    ← The single source of truth for all agent configs
+/
+├── .cursor/rules/roblox-mcm.md       # Locked visual identity rules
+├── default.project.json               # Rojo v7 project config
+├── README.md                          # This file
+└── src/
+    ├── server/                        → ServerScriptService
+    │   ├── init.server.lua            # Server bootstrap
+    │   ├── Services/
+    │   │   ├── EconomyService.lua     # Server-authoritative economy
+    │   │   ├── PlotService.lua        # Plot claiming, homes, furniture
+    │   │   ├── GardenService.lua      # Shared garden management
+    │   │   ├── FashionService.lua     # Runway events & voting
+    │   │   ├── ShopService.lua        # El Paseo boutiques
+    │   │   ├── EventService.lua       # Weekly themes, Modernism Week
+    │   │   └── PersistenceService.lua # DataStore + Supabase bridge
+    │   ├── Builders/
+    │   │   ├── EnvironmentBuilder.lua # Terrain, sky, mountains, roads
+    │   │   ├── HomeBuilder.lua        # 4 MCM home styles
+    │   │   ├── StorefrontBuilder.lua  # El Paseo boulevard
+    │   │   ├── GardenBuilder.lua      # Desert garden area
+    │   │   └── RunwayBuilder.lua      # Fashion runway stage
+    │   └── Commands/
+    │       └── TestCommands.lua       # Chat-based test commands
+    ├── client/                        → StarterPlayerScripts
+    │   ├── init.client.lua            # Client bootstrap
+    │   ├── Controllers/
+    │   │   ├── UIController.lua       # GUI management
+    │   │   ├── PlotController.lua     # Plot interaction
+    │   │   ├── GardenController.lua   # Garden visuals & prompts
+    │   │   ├── FashionController.lua  # Runway walk & voting
+    │   │   ├── ShopController.lua     # Shop browsing
+    │   │   └── NightToggleController.lua # Night mode for events
+    │   └── UI/
+    │       ├── HUDTemplate.lua        # Main HUD (coins, prestige, nav)
+    │       ├── PlotUI.lua             # Home style & furniture panel
+    │       ├── ShopUI.lua             # Shop management panel
+    │       ├── GardenUI.lua           # Garden grid & seed selection
+    │       ├── FashionUI.lua          # Fashion event panel
+    │       └── EventUI.lua            # Events & festivals panel
+    ├── shared/                        → ReplicatedStorage
+    │   ├── GameConfig.lua             # All constants & config
+    │   ├── Types.lua                  # Luau type definitions
+    │   ├── ItemCatalog.lua            # Furniture, plants, outfits, goods
+    │   ├── RemoteManager.lua          # RemoteEvent/Function manager
+    │   ├── Utilities.lua              # Shared helpers
+    │   ├── ProfileServiceWrapper.lua  # DataStore wrapper
+    │   ├── SupabaseClient.lua         # Supabase REST client
+    │   └── WebhookClient.lua          # n8n webhook placeholders
+    └── gui/                           → StarterGui
+        └── MainHUD.lua                # ScreenGui entry point
+```
+
+**Total: 39 Luau source files, ~10,000+ lines of production-ready code**
+
+---
+
+## Setup Instructions
+
+### Prerequisites
+
+- [Roblox Studio](https://create.roblox.com/) (latest version)
+- [Rojo v7](https://rojo.space/) CLI installed
+- [Rojo VS Code/Cursor Extension](https://marketplace.visualstudio.com/items?itemName=evaera.vscode-rojo) (optional)
+
+### Quick Start
+
+1. **Clone the repo:**
+   ```bash
+   git clone https://github.com/OBHitting3/Gemini-discovers-Diamonds.git
+   cd Gemini-discovers-Diamonds
+   git checkout cursor/art-direction-prototype-6c9e
+   ```
+
+2. **Build the Rojo project:**
+   ```bash
+   rojo build -o PalmSpringsParadise.rbxlx
+   ```
+
+3. **Open in Roblox Studio:**
+   - Open `PalmSpringsParadise.rbxlx` in Roblox Studio
+   - Or use `rojo serve` + the Rojo Studio plugin for live sync
+
+4. **Enable HttpService** (for Supabase/webhooks, optional):
+   - Game Settings → Security → Enable "Allow HTTP Requests"
+
+5. **Play Solo** to test!
+
+### Live Sync (Development)
+
+```bash
+rojo serve
+```
+
+Then in Roblox Studio, connect via the Rojo plugin toolbar.
+
+---
+
+## Test Commands
+
+Type these in chat during Play Solo (prefix with `/`):
+
+| Command | Description |
+|---------|-------------|
+| `/help` | Show all commands |
+| `/claimplot [1-4]` | Claim a residential plot |
+| `/buildhouse [kaufmann\|frey\|wexler\|neutra]` | Build MCM home on your plot |
+| `/placefurniture [itemId]` | Place furniture at look position |
+| `/claimshop [1-6]` | Claim El Paseo storefront |
+| `/stock [itemId] [qty] [price]` | Stock your shop with items |
+| `/buy [shopId] [itemId]` | Buy from a player shop |
+| `/plant [plantId] [plotIndex]` | Plant seed in garden |
+| `/water [plotIndex]` | Water a garden plot |
+| `/harvest [plotIndex]` | Harvest mature plant |
+| `/fashion` | Start a fashion event immediately |
+| `/joinrunway` | Join the active fashion event |
+| `/vote [playerName]` | Vote for a player in fashion event |
+| `/night` | Toggle night mode |
+| `/coins [amount]` | Give yourself SunCoins (test) |
+| `/prestige [amount]` | Give yourself Prestige (test) |
+| `/event [theme]` | Trigger an event theme |
+| `/partcount` | Show total part count |
+| `/inventory` | Show your inventory |
+| `/save` | Force save your data |
+| `/status` | Show all system statuses |
+
+### Example Play Solo Flow
+
+```
+/coins 5000           → Get starting funds
+/claimplot 1          → Claim residential plot #1
+/buildhouse kaufmann  → Build The Kaufmann MCM home
+/placefurniture eames_lounge → Place an Eames chair
+/plant saguaro_cactus 1      → Plant cactus in garden plot #1
+/water 1              → Water the plant
+/claimshop 1          → Claim El Paseo storefront
+/stock designer_sunglasses 5 50 → Stock 5 sunglasses at 50 SC each
+/fashion              → Start a fashion event
+/joinrunway           → Join the event
+/status               → Check everything
+/partcount            → Verify < 5,000 parts
 ```
 
 ---
 
-### 1. Bootstrap Resolver (`bootstrap_resolver.py`)
+## Locked Visual Identity
 
-Breaks the circular auth dependency with a 3-phase cold-start:
+**ALL environments must match these rules:**
 
-```bash
-# Phase 1: Bootstrap (uses service-role key, bypasses normal auth)
-# Phase 2: Handoff (seals credentials, starts services)
-# Phase 3: Steady State (normal auth takes over, bootstrap token revoked)
-
-export SUPABASE_URL="https://your-project.supabase.co"
-export SUPABASE_SERVICE_ROLE_KEY="eyJ..."
-python3 -m architecture.bootstrap_resolver
-
-# After services are running normally:
-python3 -m architecture.bootstrap_resolver --revoke <bootstrap-token>
-```
-
-### 2. Bridge Router (`bridge_router.py`)
-
-Translates canonical config into 4 formats with fidelity tracking:
-
-```bash
-# Generate all 4 format configs + fidelity report
-python3 -m architecture.bridge_router --config architecture/canonical-config.json --report
-
-# Output shows exactly what's preserved, adapted, degraded, or dropped:
-#   cursorrules:    83.3% fidelity (retrieval directives degraded)
-#   claude_kb:     100.0% fidelity (supports everything)
-#   chatgpt_system: 83.3% fidelity (retrieval directives degraded)
-#   gemini_system:  83.3% fidelity (retrieval directives degraded)
-```
-
-### 3. Backbone Trigger (`backbone_trigger.py`)
-
-Replaces Make.com with Python-native Airtable change detection:
-
-```bash
-# Poll Airtable every 30s, forward changes to webhooks
-export AIRTABLE_TOKEN="pat..."
-export AIRTABLE_BASE_ID="appXXXXXX"
-python3 -m architecture.backbone_trigger \
-    --tables Configurations Prompts \
-    --webhook https://your-api.com/sync \
-    --snapshots \
-    --interval 30
-
-# Single poll cycle (for testing)
-python3 -m architecture.backbone_trigger --tables Configurations --once
-```
-
-### 4. Cursorrules Enforcer (`cursorrules_enforcer.py`)
-
-Converts `.cursorrules` from suggestions into a commit gate:
-
-```bash
-# Scan the codebase for violations
-python3 -m architecture.cursorrules_enforcer --scan ./src
-
-# Scan only staged files (pre-commit mode)
-python3 -m architecture.cursorrules_enforcer --pre-commit
-
-# Install as git pre-commit hook (blocks violating commits)
-python3 -m architecture.cursorrules_enforcer --install-hook
-
-# JSON output for CI integration
-python3 -m architecture.cursorrules_enforcer --scan . --json
-```
+- **Sky:** Bright blue gradient #87CEEB → #E0F0FF with soft white clouds
+- **Lighting:** Perpetual midday (ClockTime=12, Brightness=2)
+- **Homes:** Single-story ONLY — flat-roof or butterfly-roof
+- **Pools:** Turquoise kidney pools on every home
+- **Materials:** Concrete patios, floor-to-ceiling glass, breeze-block screens
+- **Accents:** Terracotta (204,119,34), Turquoise (64,224,208), Dusty Pink (213,166,189), Cactus Green (90,143,82)
+- **NO** orange skies, NO sunset, NO golden-hour (except building surface warmth)
+- **Night mode** is event-only and auto-reverts
 
 ---
 
-### Linking This Repo in Cursor
+## Home Styles
 
-If you're having trouble connecting this repository to Cursor:
+| Style | Architect | Roof | Key Features |
+|-------|-----------|------|-------------|
+| **The Kaufmann** | Richard Neutra | Flat | L-shaped, turquoise kidney pool, breeze-block screen |
+| **The Frey** | Albert Frey | Butterfly | Covered carport, glass on 3 sides, desert garden integration |
+| **The Wexler** | Donald Wexler | Flat | Central courtyard, dusty-pink accent wall, 2x breeze screens |
+| **The Neutra** | Richard Neutra | Butterfly | Full glass front, reflecting pool, built-in concrete seating |
 
-1. **Open Cursor** on your machine
-2. Go to **File > Open Folder** and select the cloned repo
-3. For **Background Agents**: Go to `cursor.com/settings` > Cloud Agents and ensure your GitHub account is connected
-4. For **MCP servers**: Add server configs in Cursor Settings > MCP (or in `.cursor/mcp.json` in the project root)
-5. For **Secrets**: Add API keys at `cursor.com/settings` > Cloud Agents > Secrets (they inject as env vars)
+---
 
-### What Still Needs Human Action
+## Economy
 
-| Item | Time Estimate | Why Only You Can Do It |
-|---|---|---|
-| List product on Gumroad | 30 min | Requires your Gumroad account |
-| Get Supabase service-role key | 5 min | Requires your Supabase dashboard access |
-| Get Airtable token | 5 min | Requires your Airtable account |
-| Run bootstrap_resolver | 2 min | Needs the keys above |
-| Execute marketing plan | Ongoing | 29 platforms documented, needs your voice |
+| Currency | Purpose |
+|----------|---------|
+| **SunCoins (SC)** | Primary currency — earned from gardening, fashion, selling |
+| **Prestige** | Reputation points — fashion wins, rare harvests, community contribution |
+| **Level** | 1 level per 100 Prestige earned |
 
-### Repository Structure
+**Anti-exploit:** Server-authoritative. All currency changes validated server-side. Rate limited to 10 transactions/minute. No client-trusted values.
 
-This repo (`Gemini-discovers-Diamonds`) contains architecture tools and documentation. The actual Faceless Shorts product code lives in `OBHitting3/Faceless_Shorts`.
+---
 
-| Branch | What It Contains |
-|---|---|
-| `cursor/all-occurrences-replacement-46f6` (this) | Architecture fixes for the 4 critical issues |
-| `cursor/project-outstanding-items-8f2a` | Full project audit, START-HERE.md |
-| `cursor/faceless-yt-shorts-project-9e22` | Complete project info document |
-| `cursor/iron-forge-cli-executable-*` | Iron Forge CLI tool |
-| `cursor/strict-execution-mechanism-*` | Strict execution framework |
+## Persistence
+
+### Hot Path (DataStore)
+- SunCoins, Prestige, Level
+- Plot ownership, home style
+- Basic inventory counts
+- Session locking (ProfileService pattern)
+- Auto-save every 5 minutes
+
+### Cold Path (Supabase)
+- Detailed furniture placement JSONB
+- Garden state history
+- Fashion event results
+- Transaction logs
+- Analytics events
+- Batch sync every 60 seconds
+
+**Fallback:** If Supabase is unavailable, all data stays in DataStore (degraded but fully functional).
+
+---
+
+## Events
+
+### Weekly Themes
+Rotate automatically, each modifying gameplay:
+- **Poolside Paradise** — Default relaxed vibes
+- **Desert Bloom** — Garden growth 50% faster
+- **Retro Revival** — Vintage items 20% cheaper
+- **Modernism Week** — Limited MCM drops + 2x Prestige
+- **Sunset Soirée** — Special evening fashion events
+- **Cactus Festival** — Double garden growth + shop discounts
+
+### Modernism Week 2026 (Feb 12-22)
+- Limited-edition furniture (Platinum Starburst Clock, MW Eames Rocker, MW Nelson Bench)
+- 2x Prestige multiplier
+- Special runway themes
+- n8n webhook fires for scheduling integration
+
+---
+
+## Part Budget
+
+| Component | Parts |
+|-----------|-------|
+| Environment (terrain, mountains, roads, trees, decor) | ~250 |
+| MCM Homes (4 styles, built on demand) | ~40-45 each |
+| El Paseo Storefronts (6) + dining | ~200 |
+| Desert Garden (16 plots + structures) | ~80 |
+| Fashion Runway | ~65 |
+| Player-placed furniture | ~400 budget |
+| **Total budget** | **< 5,000** |
+
+---
+
+## Publishing Checklist
+
+- [ ] Build with `rojo build -o PalmSpringsParadise.rbxlx`
+- [ ] Open in Roblox Studio
+- [ ] Verify StreamingEnabled is ON (Workspace properties)
+- [ ] Enable HttpService (Game Settings → Security)
+- [ ] Configure Supabase secrets (if using):
+  - `SUPABASE_URL` → your project URL
+  - `SUPABASE_ANON_KEY` → your anon/public key
+- [ ] Set game thumbnail to the locked cover image
+- [ ] Set game icon to a cropped version of the cover
+- [ ] Configure game settings:
+  - Max players: 40
+  - Genre: Town and City
+  - Playable Devices: Computer, Phone, Tablet
+- [ ] Test all `/commands` in Play Solo
+- [ ] Verify part count with `/partcount` (should be < 5,000)
+- [ ] Publish to Roblox
+
+---
+
+## Thumbnail Setup
+
+Use the locked cover image as the game thumbnail:
+1. In Roblox Studio: Game Settings → Basic Info → Thumbnail
+2. Upload the cover image showing bright blue sky, MCM villa, turquoise pool
+3. Ensure the thumbnail matches the in-game visual identity
+
+---
+
+## License
+
+Proprietary — Palm Springs Paradise by Iron Forge Studios.
+
+---
+
+## Ecosystem: Content Pipeline and Infrastructure
+
+PSP is not just a Roblox game. It is an ecosystem with five interlocking engines, including an external audience-acquisition layer powered by AI influencer personas that generate YouTube Shorts and TikTok content to drive players into the game.
+
+### Content Pipeline (`content-pipeline/`)
+
+The Faceless Shorts automation engine: topic → AI script (Gemini) → voice synthesis (ElevenLabs/gTTS) → video assembly (MoviePy) → YouTube upload. Creates AI influencer content that markets PSP externally.
+
+### Shared Architecture (`architecture/`)
+
+Infrastructure modules shared across the game and content pipeline:
+
+| Module | Purpose |
+|--------|---------|
+| `bootstrap_resolver.py` | Breaks circular Supabase Auth dependency for cold-start |
+| `bridge_router.py` | Translates canonical config across 4 agent formats with fidelity tracking |
+| `backbone_trigger.py` | Polls Airtable for changes, replaces Make.com as automation glue |
+| `cursorrules_enforcer.py` | Runtime `.cursorrules` enforcement with pre-commit hook |
+| `canonical-config.json` | Single source of truth for all agent/system directives |
+
+See [`architecture/README.md`](architecture/README.md) for detailed usage.
+
+---
+
+*Built with Cursor.com + Claude Sonnet 4.6 Max Mode — Single-shot prototype generation*

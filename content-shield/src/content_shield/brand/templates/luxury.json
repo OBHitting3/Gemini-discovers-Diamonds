@@ -1,0 +1,33 @@
+{
+  "name": "Luxury Premium",
+  "voice_attributes": ["luxurious", "authoritative", "warm"],
+  "tone": "refined",
+  "banned_words": [
+    "cheap",
+    "bargain",
+    "discount",
+    "deal",
+    "affordable",
+    "budget",
+    "free",
+    "basic",
+    "ordinary",
+    "average",
+    "mass-produced",
+    "generic"
+  ],
+  "required_terminology": {
+    "buy": "acquire",
+    "product": "piece",
+    "store": "boutique",
+    "customer": "client",
+    "expensive": "investment",
+    "old": "heritage",
+    "handmade": "artisan-crafted",
+    "high-end": "premium",
+    "limited": "exclusive",
+    "material": "fabric"
+  },
+  "target_audience": "affluent consumers and collectors",
+  "industry": "luxury goods"
+}
