@@ -1,23 +1,17 @@
 --[[
     MulletService.server.lua
-    Authoritative server for mullet progression.
-
-    Responsibilities:
-      - Track each player's mullet level and kill count
-      - Apply mullet-level stat bonuses (speed, damage multiplier)
-      - Broadcast level-up events to the owning client
-      - Persist mullet data via DataStoreService
-      - Expose remote function GetPlayerData for clients
+    Tracks each player's hair collected and mullet level.
+    As players collect hair, their mullet grows bigger and changes color.
+    Saves progress via DataStore.
 ]]
 
 local Players           = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DataStoreService  = game:GetService("DataStoreService")
-local RunService        = game:GetService("RunService")
 
 local MulletConfig = require(ReplicatedStorage:WaitForChild("MulletConfig"))
 
--- Remote setup (created once; clients wait on these)
+-- Remotes folder
 local Remotes = ReplicatedStorage:FindFirstChild("Remotes")
 if not Remotes then
     Remotes = Instance.new("Folder")
@@ -25,234 +19,237 @@ if not Remotes then
     Remotes.Parent = ReplicatedStorage
 end
 
-local function getOrCreateEvent(name: string): RemoteEvent
-    local existing = Remotes:FindFirstChild(name)
-    if existing and existing:IsA("RemoteEvent") then return existing end
+local function getOrCreateEvent(name)
+    local e = Remotes:FindFirstChild(name)
+    if e and e:IsA("RemoteEvent") then return e end
     local ev = Instance.new("RemoteEvent")
     ev.Name = name
     ev.Parent = Remotes
     return ev
 end
 
-local function getOrCreateFunction(name: string): RemoteFunction
-    local existing = Remotes:FindFirstChild(name)
-    if existing and existing:IsA("RemoteFunction") then return existing end
+local function getOrCreateFunction(name)
+    local e = Remotes:FindFirstChild(name)
+    if e and e:IsA("RemoteFunction") then return e end
     local fn = Instance.new("RemoteFunction")
     fn.Name = name
     fn.Parent = Remotes
     return fn
 end
 
--- Events used by this service
 local evUpdateMullet = getOrCreateEvent("UpdateMulletLevel")
 local evNotify       = getOrCreateEvent("NotifyPlayer")
+local evCoins        = getOrCreateEvent("UpdateCoins")
 local fnGetData      = getOrCreateFunction("GetPlayerData")
 
 ---------------------------------------------------------------------------
 -- DataStore
 ---------------------------------------------------------------------------
-local MulletStore = DataStoreService:GetDataStore("MulletGame_v1")
+local Store = DataStoreService:GetDataStore("MulletGame_v2")
 
 ---------------------------------------------------------------------------
--- In-memory player state
+-- Player state
 ---------------------------------------------------------------------------
--- playerData[userId] = { kills, mulletLevel, coinMultiplier, owned... }
-local playerData: { [number]: table } = {}
+local playerData = {}
 
-local DEFAULT_DATA = {
-    kills            = 0,
-    mulletLevel      = 0,
-    coinsTotal       = 0,
-    ownedWeapons     = { "weapon_scissors" },
-    ownedAbilities   = {},
-    ownedCosmetics   = {},
-    activeWeapon     = "weapon_scissors",
-    activeAbility    = nil,
-    activePets       = {},
-    unlockedZones    = { "zone_barbershop" },
-    currentZone      = "zone_barbershop",
-    equippedTrail    = nil,
-    equippedTag      = nil,
+local DEFAULT = {
+    hairCollected  = 0,       -- this session
+    hairAllTime    = 0,       -- lifetime total
+    mulletLevel    = 0,
+    coins          = 0,
+    roundsPlayed   = 0,
 }
 
----------------------------------------------------------------------------
--- INTERNAL HELPERS
----------------------------------------------------------------------------
-
-local function deepCopy(t: table): table
-    local copy = {}
+local function deepCopy(t)
+    local c = {}
     for k, v in pairs(t) do
-        copy[k] = type(v) == "table" and deepCopy(v) or v
+        c[k] = type(v) == "table" and deepCopy(v) or v
     end
-    return copy
+    return c
 end
 
-local function getMulletLevel(kills: number): number
-    local milestones = MulletConfig.Mullet.GrowthMilestones
-    local level = 0
-    for i, threshold in ipairs(milestones) do
-        if kills >= threshold then
-            level = i
-        else
-            break
+local function getMulletLevel(hair)
+    local levels = MulletConfig.Mullet.SizeLevels
+    local level  = 0
+    for i, threshold in ipairs(levels) do
+        if hair >= threshold then
+            level = i - 1
         end
     end
     return math.min(level, MulletConfig.Mullet.MaxLevel)
 end
 
-local function applyStatBonuses(player: Player, data: table)
+---------------------------------------------------------------------------
+-- Apply speed bonus to character
+---------------------------------------------------------------------------
+local function applySpeed(player, data)
     local char = player.Character
     if not char then return end
-
-    local humanoid = char:FindFirstChildOfClass("Humanoid")
-    if not humanoid then return end
-
-    local speedBonus = MulletConfig.Mullet.SpeedBonus[data.mulletLevel] or 0
-    humanoid.WalkSpeed = MulletConfig.Mullet.BaseWalkSpeed + speedBonus
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if not hum then return end
+    local bonus = MulletConfig.Mullet.SpeedBonus[data.mulletLevel] or 0
+    hum.WalkSpeed = MulletConfig.Mullet.BaseWalkSpeed + bonus
 end
 
 ---------------------------------------------------------------------------
--- LOAD / SAVE
+-- Load / Save
 ---------------------------------------------------------------------------
-
-local function loadData(player: Player): table
-    local userId = player.UserId
-    local key    = "player_" .. userId
-    local ok, result = pcall(function()
-        return MulletStore:GetAsync(key)
-    end)
-
+local function load(player)
+    local key = "player_" .. player.UserId
+    local ok, result = pcall(function() return Store:GetAsync(key) end)
     local data
     if ok and type(result) == "table" then
         data = result
-        -- Back-fill any missing keys from DEFAULT_DATA
-        for k, v in pairs(DEFAULT_DATA) do
+        for k, v in pairs(DEFAULT) do
             if data[k] == nil then
                 data[k] = type(v) == "table" and deepCopy(v) or v
             end
         end
     else
-        data = deepCopy(DEFAULT_DATA)
-        if not ok then
-            warn("[MulletService] DataStore load failed for " .. player.Name .. ": " .. tostring(result))
-        end
+        data = deepCopy(DEFAULT)
     end
-
-    playerData[userId] = data
+    -- Reset per-session hair each login
+    data.hairCollected = 0
+    playerData[player.UserId] = data
     return data
 end
 
-local function saveData(player: Player)
-    local userId = player.UserId
-    local data   = playerData[userId]
+local function save(player)
+    local data = playerData[player.UserId]
     if not data then return end
-
-    local key = "player_" .. userId
-    local ok, err = pcall(function()
-        MulletStore:SetAsync(key, data)
-    end)
-    if not ok then
-        warn("[MulletService] DataStore save failed for " .. player.Name .. ": " .. tostring(err))
-    end
+    local key = "player_" .. player.UserId
+    pcall(function() Store:SetAsync(key, data) end)
 end
 
 ---------------------------------------------------------------------------
 -- PUBLIC API
 ---------------------------------------------------------------------------
-
 local MulletService = {}
 
---- Return the data table for the given player (server-only).
-function MulletService:getData(player: Player): table?
+function MulletService:getData(player)
     return playerData[player.UserId]
 end
 
---- Register a kill for the player and update mullet level if crossed a milestone.
-function MulletService:registerKill(player: Player, coinService)
+--- Called when a player collects hair (from HairService)
+function MulletService:addHair(player, amount)
     local data = playerData[player.UserId]
     if not data then return end
 
-    data.kills += 1
+    data.hairCollected = data.hairCollected + amount
+    data.hairAllTime   = data.hairAllTime + amount
 
-    local newLevel = getMulletLevel(data.kills)
-    if newLevel > data.mulletLevel then
+    local newLevel = getMulletLevel(data.hairCollected)
+    local leveledUp = newLevel > data.mulletLevel
+
+    if leveledUp then
         data.mulletLevel = newLevel
-        local styleName = MulletConfig.Mullet.StyleUnlocks[newLevel] or "???"
-        applyStatBonuses(player, data)
-
+        applySpeed(player, data)
+        local color = MulletConfig.Mullet.Colors[newLevel]
+        local size  = MulletConfig.Mullet.Sizes[newLevel]
         evUpdateMullet:FireClient(player, {
-            level    = newLevel,
-            styleName = styleName,
-            kills    = data.kills,
+            level  = newLevel,
+            color  = color,
+            size   = size,
+            hair   = data.hairCollected,
         })
-        evNotify:FireClient(player, "Mullet evolved! Now: " .. styleName)
-        print("[MulletService] " .. player.Name .. " reached mullet level " .. newLevel)
-    end
-
-    -- Coin reward per kill (routed through CoinService if available)
-    if coinService then
-        local baseCoin = MulletConfig.Economy.CoinPerKill
-        local mult = MulletConfig.Economy.CoinMultipliers[data.mulletLevel] or 1.0
-        coinService:awardCoins(player, math.floor(baseCoin * mult), "kill")
+        evNotify:FireClient(player, "Mullet Level " .. newLevel .. "! Looking fresh!")
+        print("[MulletService] " .. player.Name .. " mullet level " .. newLevel)
+    else
+        -- Still send hair count update even without level up
+        evUpdateMullet:FireClient(player, {
+            level = data.mulletLevel,
+            hair  = data.hairCollected,
+        })
     end
 end
 
---- Get the damage multiplier for a player based on mullet level.
-function MulletService:getDamageMultiplier(player: Player): number
+--- Award coins to a player
+function MulletService:addCoins(player, amount, reason)
     local data = playerData[player.UserId]
-    if not data then return 1.0 end
-    return MulletConfig.Mullet.DamageMultiplier[data.mulletLevel] or 1.0
+    if not data then return end
+    data.coins = math.min(data.coins + amount, MulletConfig.Economy.MaxCoins)
+    evCoins:FireClient(player, data.coins)
+    if reason then
+        print("[MulletService] +" .. amount .. " coins (" .. reason .. ") → " .. player.Name)
+    end
+end
+
+--- Reset session hair (called at start of each round)
+function MulletService:resetRound(player)
+    local data = playerData[player.UserId]
+    if not data then return end
+    data.hairCollected = 0
+    data.mulletLevel   = 0
+    data.roundsPlayed  = data.roundsPlayed + 1
+    applySpeed(player, data)
+    evUpdateMullet:FireClient(player, {
+        level = 0,
+        color = MulletConfig.Mullet.Colors[0],
+        size  = MulletConfig.Mullet.Sizes[0],
+        hair  = 0,
+    })
 end
 
 ---------------------------------------------------------------------------
--- REMOTE HANDLERS
+-- Remote
 ---------------------------------------------------------------------------
-
-fnGetData.OnServerInvoke = function(player: Player): table?
+fnGetData.OnServerInvoke = function(player)
     local data = playerData[player.UserId]
     if not data then return nil end
-    -- Return a safe copy (no mutation by client)
     return deepCopy(data)
 end
 
 ---------------------------------------------------------------------------
--- PLAYER LIFECYCLE
+-- Lifecycle
 ---------------------------------------------------------------------------
+Players.PlayerAdded:Connect(function(player)
+    local data = load(player)
 
-Players.PlayerAdded:Connect(function(player: Player)
-    local data = loadData(player)
+    -- Setup leaderstat for hair
+    local ls = Instance.new("Folder")
+    ls.Name = "leaderstats"
+    ls.Parent = player
 
-    -- Apply bonuses once character loads
+    local hairStat = Instance.new("IntValue")
+    hairStat.Name  = "Hair"
+    hairStat.Value = data.hairAllTime
+    hairStat.Parent = ls
+
+    local coinStat = Instance.new("IntValue")
+    coinStat.Name  = "Coins"
+    coinStat.Value = data.coins
+    coinStat.Parent = ls
+
     player.CharacterAdded:Connect(function()
-        task.wait(0.5)  -- wait for humanoid to initialise
-        applyStatBonuses(player, data)
+        task.wait(0.5)
+        applySpeed(player, data)
         evUpdateMullet:FireClient(player, {
-            level     = data.mulletLevel,
-            styleName = MulletConfig.Mullet.StyleUnlocks[data.mulletLevel] or "Baby Mullet",
-            kills     = data.kills,
+            level = data.mulletLevel,
+            color = MulletConfig.Mullet.Colors[data.mulletLevel],
+            size  = MulletConfig.Mullet.Sizes[data.mulletLevel],
+            hair  = data.hairCollected,
         })
+        evCoins:FireClient(player, data.coins)
     end)
 
-    print("[MulletService] Loaded data for " .. player.Name ..
-          " (level " .. data.mulletLevel .. ", kills " .. data.kills .. ")")
+    print("[MulletService] " .. player.Name .. " joined. Hair all-time: " .. data.hairAllTime)
 end)
 
-Players.PlayerRemoving:Connect(function(player: Player)
-    saveData(player)
+Players.PlayerRemoving:Connect(function(player)
+    save(player)
     playerData[player.UserId] = nil
-    print("[MulletService] Saved and cleaned up data for " .. player.Name)
 end)
 
--- Periodic auto-save
+-- Auto-save every 2 minutes
 task.spawn(function()
     while true do
-        task.wait(MulletConfig.Timing.SessionSaveInterval)
-        for _, player in ipairs(Players:GetPlayers()) do
-            saveData(player)
+        task.wait(120)
+        for _, p in ipairs(Players:GetPlayers()) do
+            save(p)
         end
     end
 end)
 
-print("[MulletService] Initialized")
+print("[MulletService] Ready — The Mullet Game by TheMullet_King")
 
 return MulletService
