@@ -45,7 +45,7 @@ MulletConfig.Jar = {
 
 MulletConfig.Hair = {
     PickupValue       = 1,     -- hair units per pickup
-    SpawnHeight       = 40,    -- studs above ground hair spawns
+    SpawnHeight       = 80,    -- studs above ground hair spawns
     FallSpeed         = 20,    -- studs per second
     PickupRadius      = 4,     -- studs to auto-collect
     MaxHairOnMap      = 50,    -- max loose hair clumps at once
@@ -172,13 +172,12 @@ MulletConfig.Economy = {
 -- MAZE
 ---------------------------------------------------------------------------
 MulletConfig.Maze = {
-    GridSize   = 20,      -- 20×20 grid of cells
-    CellSize   = 10,      -- studs per cell
-    WallHeight = 8,
-    WallThickness = 1,
-    Origin     = Vector3.new(-100, 0, -100),
-    -- Seed changes each round for a new maze
-    RandomSeed = true,
+    GridSize      = 10,   -- 10×10 grid of cells (larger cells = more open feel)
+    CellSize      = 28,   -- studs per cell — wide open corridors
+    WallHeight    = 6,    -- not too tall, kids can see over
+    WallThickness = 2,
+    Origin        = Vector3.new(-140, 0, -140),
+    RandomSeed    = true,
 }
 
 ---------------------------------------------------------------------------

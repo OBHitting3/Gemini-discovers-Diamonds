@@ -86,9 +86,9 @@ end
 local mazeFolder = nil
 
 local wallColors = {
-    Easy   = Color3.fromRGB(100, 180, 100),   -- green
-    Medium = Color3.fromRGB(200, 140, 50),    -- orange
-    Hard   = Color3.fromRGB(180, 50, 50),     -- red
+    Easy   = Color3.fromRGB(120, 200, 255),   -- bright sky blue
+    Medium = Color3.fromRGB(255, 160, 50),    -- bright orange
+    Hard   = Color3.fromRGB(220, 60, 180),    -- hot pink
 }
 
 local function buildMaze(grid, difficulty)

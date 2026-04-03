@@ -64,7 +64,7 @@ World.Parent = workspace
 local ground = Instance.new("Part")
 ground.Name     = "Ground"
 ground.Anchored = true
-ground.Size     = Vector3.new(300, 2, 300)
+ground.Size     = Vector3.new(600, 2, 600)
 ground.CFrame   = CFrame.new(0, -1, 0)
 ground.Color    = Color3.fromRGB(120, 200, 100)  -- bright green grass
 ground.Material = Enum.Material.Grass
@@ -72,13 +72,13 @@ ground.TopSurface = Enum.SurfaceType.Smooth
 ground.Parent   = World
 
 -- Checkerboard accent tiles around center
-for i = -3, 3 do
-    for j = -3, 3 do
+for i = -5, 5 do
+    for j = -5, 5 do
         if (i + j) % 2 == 0 then
             local tile = Instance.new("Part")
             tile.Anchored  = true
-            tile.Size      = Vector3.new(10, 0.5, 10)
-            tile.CFrame    = CFrame.new(i * 10, 0.25, j * 10)
+            tile.Size      = Vector3.new(20, 0.5, 20)
+            tile.CFrame    = CFrame.new(i * 20, 0.25, j * 20)
             tile.Color     = Color3.fromRGB(255, 240, 100)
             tile.Material  = Enum.Material.SmoothPlastic
             tile.TopSurface = Enum.SurfaceType.Smooth
@@ -212,8 +212,8 @@ altar.Parent = World
 local stage = Instance.new("Part")
 stage.Name     = "Stage"
 stage.Anchored = true
-stage.Size     = Vector3.new(20, 2, 20)
-stage.CFrame   = CFrame.new(0, 1, -60)
+stage.Size     = Vector3.new(40, 4, 40)
+stage.CFrame   = CFrame.new(0, 2, -120)
 stage.Color    = Color3.fromRGB(80, 50, 120)
 stage.Material = Enum.Material.SmoothPlastic
 stage.TopSurface = Enum.SurfaceType.Smooth
@@ -241,8 +241,8 @@ end
 
 -- Four glowing pillars
 for _, pos in ipairs({
-    Vector3.new(8, 0, -52), Vector3.new(-8, 0, -52),
-    Vector3.new(8, 0, -68), Vector3.new(-8, 0, -68),
+    Vector3.new(18, 0, -105), Vector3.new(-18, 0, -105),
+    Vector3.new(18, 0, -135), Vector3.new(-18, 0, -135),
 }) do
     local pillar = Instance.new("Part")
     pillar.Anchored  = true
@@ -287,8 +287,8 @@ local spawnColors = {
 
 for i, color in ipairs(spawnColors) do
     local angle = (i - 1) * (math.pi * 2 / #spawnColors)
-    local x = math.cos(angle) * 15
-    local z = math.sin(angle) * 15 + 60  -- behind the jar
+    local x = math.cos(angle) * 30
+    local z = math.sin(angle) * 30 + 120  -- behind the jar
 
     local pad = Instance.new("Part")
     pad.Anchored  = true
@@ -340,9 +340,9 @@ local function makePalmTree(x, z)
 end
 
 -- Ring of palm trees around the play area
-for i = 1, 12 do
-    local angle = (i / 12) * math.pi * 2
-    local r = 110
+for i = 1, 16 do
+    local angle = (i / 16) * math.pi * 2
+    local r = 200
     makePalmTree(math.cos(angle) * r, math.sin(angle) * r)
 end
 
@@ -353,8 +353,8 @@ end
 local pedestal = Instance.new("Part")
 pedestal.Name     = "VacuumPedestal"
 pedestal.Anchored = true
-pedestal.Size     = Vector3.new(4, 1, 4)
-pedestal.CFrame   = CFrame.new(20, 0.5, 60)
+pedestal.Size     = Vector3.new(6, 2, 6)
+pedestal.CFrame   = CFrame.new(40, 1, 120)
 pedestal.Color    = Color3.fromRGB(255, 215, 0)
 pedestal.Material = Enum.Material.Neon
 pedestal.Parent   = World
