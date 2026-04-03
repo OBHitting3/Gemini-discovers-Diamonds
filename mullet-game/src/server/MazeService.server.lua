@@ -86,9 +86,15 @@ end
 local mazeFolder = nil
 
 local wallColors = {
-    Easy   = Color3.fromRGB(120, 200, 255),   -- bright sky blue
-    Medium = Color3.fromRGB(255, 160, 50),    -- bright orange
-    Hard   = Color3.fromRGB(220, 60, 180),    -- hot pink
+    Easy   = Color3.fromRGB(140, 60, 220),    -- bright purple
+    Medium = Color3.fromRGB(180, 40, 255),    -- deeper purple
+    Hard   = Color3.fromRGB(220, 0, 180),     -- purple-pink
+}
+
+local wallMaterials = {
+    Easy   = Enum.Material.Neon,
+    Medium = Enum.Material.SmoothPlastic,
+    Hard   = Enum.Material.Neon,
 }
 
 local function buildMaze(grid, difficulty)
@@ -99,7 +105,7 @@ local function buildMaze(grid, difficulty)
     mazeFolder.Parent = workspace
 
     local wallColor = wallColors[difficulty] or wallColors.Easy
-    local wallMat   = Enum.Material.SmoothPlastic
+    local wallMat   = wallMaterials[difficulty] or Enum.Material.Neon
 
     -- For Easy, randomly remove extra walls to open up the maze
     local extraOpenings = 0
@@ -133,7 +139,7 @@ local function buildMaze(grid, difficulty)
     floor.Anchored = true
     floor.Size     = floorSize
     floor.CFrame   = CFrame.new(floorPos)
-    floor.Color    = Color3.fromRGB(180, 160, 120)
+    floor.Color    = Color3.fromRGB(60, 180, 80)   -- bright green floor inside maze
     floor.Material = Enum.Material.SmoothPlastic
     floor.TopSurface = Enum.SurfaceType.Smooth
     floor.Parent   = mazeFolder

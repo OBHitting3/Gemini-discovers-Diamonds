@@ -108,27 +108,56 @@ local function spawnHairClump()
 
     local part = Instance.new("Part")
     part.Name            = "HairClump_" .. tostring(math.random(100000, 999999))
-    part.Size            = Vector3.new(1.5, 0.5, 1.5)
-    part.Shape           = Enum.PartType.Ball
+    part.Size            = Vector3.new(3, 0.8, 3)   -- flat clump shape, not a ball
+    part.Shape           = Enum.PartType.Block
     part.Color           = randomHairColor()
-    part.Material        = Enum.Material.SmoothPlastic
+    part.Material        = Enum.Material.Fabric      -- looks fuzzy like hair
     part.CFrame          = CFrame.new(x, y, z)
-    part.CanCollide      = false
+    part.CanCollide      = true
     part.Anchored        = false
-    part.CustomPhysicalProperties = PhysicalProperties.new(0.1, 0, 0, 0, 0)
+    part.CustomPhysicalProperties = PhysicalProperties.new(0.05, 0.8, 0, 0, 0)
     part.Parent          = hairFolder
 
-    -- Give it a slight random horizontal drift
+    -- Gentle fall with slight drift
     local bv = Instance.new("BodyVelocity")
-    bv.Velocity        = Vector3.new(math.random(-3, 3), -MulletConfig.Hair.FallSpeed, math.random(-3, 3))
-    bv.MaxForce        = Vector3.new(1e4, 1e4, 1e4)
-    bv.P               = 1e4
-    bv.Parent          = part
+    bv.Velocity  = Vector3.new(math.random(-5, 5), -18, math.random(-5, 5))
+    bv.MaxForce  = Vector3.new(1e4, 1e4, 1e4)
+    bv.P         = 1e3
+    bv.Parent    = part
+
+    -- Once it lands (velocity near zero) remove the BodyVelocity so it sits still
+    task.spawn(function()
+        task.wait(1)
+        if part and part.Parent then
+            -- Check if it has landed by watching Y velocity
+            local landWait = 0
+            while part and part.Parent and landWait < 8 do
+                task.wait(0.2)
+                landWait += 0.2
+                local vel = part.AssemblyLinearVelocity
+                if vel and math.abs(vel.Y) < 1 then
+                    -- Landed — remove BodyVelocity and anchor it
+                    if part:FindFirstChildOfClass("BodyVelocity") then
+                        part:FindFirstChildOfClass("BodyVelocity"):Destroy()
+                    end
+                    part.Anchored = true
+                    break
+                end
+            end
+        end
+    end)
+
+    -- Add a subtle glow so hair is easy to see on the ground
+    local light = Instance.new("PointLight")
+    light.Brightness = 1.5
+    light.Range      = 6
+    light.Color      = part.Color
+    light.Parent     = part
 
     table.insert(hairClumps, part)
 
-    -- Auto-destroy after 15 seconds if not collected
-    task.delay(15, function()
+    -- Auto-destroy after 20 seconds if not collected
+    task.delay(20, function()
         if part and part.Parent then
             part:Destroy()
             for i, h in ipairs(hairClumps) do

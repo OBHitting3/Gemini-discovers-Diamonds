@@ -61,29 +61,33 @@ World.Parent = workspace
 ---------------------------------------------------------------------------
 -- GROUND PLANE
 ---------------------------------------------------------------------------
+-- Ground — deep purple base
 local ground = Instance.new("Part")
 ground.Name     = "Ground"
 ground.Anchored = true
 ground.Size     = Vector3.new(600, 2, 600)
 ground.CFrame   = CFrame.new(0, -1, 0)
-ground.Color    = Color3.fromRGB(120, 200, 100)  -- bright green grass
-ground.Material = Enum.Material.Grass
+ground.Color    = Color3.fromRGB(80, 40, 120)   -- deep purple
+ground.Material = Enum.Material.SmoothPlastic
 ground.TopSurface = Enum.SurfaceType.Smooth
 ground.Parent   = World
 
--- Checkerboard accent tiles around center
-for i = -5, 5 do
-    for j = -5, 5 do
+-- Checkerboard pattern: purple + bright green tiles
+for i = -14, 14 do
+    for j = -14, 14 do
+        local tile = Instance.new("Part")
+        tile.Anchored  = true
+        tile.Size      = Vector3.new(20, 0.6, 20)
+        tile.CFrame    = CFrame.new(i * 20, 0.1, j * 20)
         if (i + j) % 2 == 0 then
-            local tile = Instance.new("Part")
-            tile.Anchored  = true
-            tile.Size      = Vector3.new(20, 0.5, 20)
-            tile.CFrame    = CFrame.new(i * 20, 0.25, j * 20)
-            tile.Color     = Color3.fromRGB(255, 240, 100)
-            tile.Material  = Enum.Material.SmoothPlastic
-            tile.TopSurface = Enum.SurfaceType.Smooth
-            tile.Parent    = World
+            tile.Color    = Color3.fromRGB(60, 180, 80)   -- bright green
+        else
+            tile.Color    = Color3.fromRGB(100, 50, 160)  -- purple
         end
+        tile.Material  = Enum.Material.SmoothPlastic
+        tile.TopSurface = Enum.SurfaceType.Smooth
+        tile.CanCollide = true
+        tile.Parent    = World
     end
 end
 
