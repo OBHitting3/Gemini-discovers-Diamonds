@@ -226,8 +226,8 @@ ShopConfig.Boosts = {
 -- STOCK EGGS (purchasable via coin shop; see EggConfig for full defs)
 ---------------------------------------------------------------------------
 ShopConfig.Eggs = {
-    { eggId = "basic",  name = "Basic Egg",  price = 100 },
-    { eggId = "golden", name = "Golden Egg", price = 500 },
+    { id = "egg_basic",  eggId = "basic",  name = "Basic Egg",  price = 100 },
+    { id = "egg_golden", eggId = "golden", name = "Golden Egg", price = 500 },
 }
 
 ---------------------------------------------------------------------------
