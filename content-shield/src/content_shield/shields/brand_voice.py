@@ -3,20 +3,25 @@
 from __future__ import annotations
 
 from content_shield.brand.profile import BrandProfile
+from content_shield.brand.voice_matcher import VoiceMatcher
 from content_shield.schema import Content, Issue, Severity, ValidationResult
 from content_shield.shields.base import BaseShield
+
+# Heuristic voice analysis is noisy on very short snippets (taglines, CTAs).
+_MIN_CHARS_FOR_VOICE_CONSISTENCY = 80
 
 
 class BrandVoiceShield(BaseShield):
     """Validates that content matches a brand's tone, voice, and terminology.
 
     The shield inspects the text for banned words, incorrect terminology,
-    and (in a future version) AI-based tone analysis against the brand's
-    declared voice attributes.
+    and heuristic voice-consistency hints (via :class:`VoiceMatcher`)
+    against the brand's declared voice attributes.
     """
 
     def __init__(self, brand_profile: BrandProfile) -> None:
         self._brand_profile = brand_profile
+        self._voice_matcher = VoiceMatcher(profile=brand_profile)
 
     @property
     def name(self) -> str:
@@ -48,18 +53,38 @@ class BrandVoiceShield(BaseShield):
                     )
                 )
 
-        # TODO: AI-based tone/voice consistency analysis.
+        # Heuristic tone/voice consistency: VoiceMatcher maps declared attributes
+        # to indicator vocabulary and flags long-form copy that shows none of it.
+        voice_hints: list[str] = []
+        stripped = content.text.strip()
+        if (
+            len(stripped) >= _MIN_CHARS_FOR_VOICE_CONSISTENCY
+            and self._brand_profile.voice_attributes
+        ):
+            for hint in self._voice_matcher.suggest(content.text):
+                if hint.startswith("Consider adding"):
+                    voice_hints.append(hint)
+                    issues.append(
+                        Issue(
+                            code="BRAND_VOICE_CONSISTENCY",
+                            message=hint,
+                            severity=Severity.WARNING,
+                        )
+                    )
 
         passed = len(issues) == 0
         score = max(0.0, 1.0 - len(issues) * 0.15)
+        suggestions: list[str] = []
+        if issues:
+            suggestions.append(
+                "Align content with brand voice attributes: "
+                f"{', '.join(self._brand_profile.voice_attributes)}"
+            )
+            suggestions.extend(voice_hints)
         return ValidationResult(
             passed=passed,
             shield_name=self.name,
             score=score,
             issues=issues,
-            suggestions=[
-                f"Align content with brand voice attributes: {', '.join(self._brand_profile.voice_attributes)}"
-            ]
-            if issues
-            else [],
+            suggestions=suggestions,
         )
