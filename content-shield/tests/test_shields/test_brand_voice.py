@@ -45,3 +45,17 @@ class TestBrandVoiceShield:
         result = await brand_voice_shield.check(content)
         assert result.passed is False
         assert any(i.code == "BRAND_TERMINOLOGY" for i in result.issues)
+
+    @pytest.mark.asyncio
+    async def test_long_form_neutral_text_flags_voice_consistency(self, brand_voice_shield):
+        """Long copy with no voice-indicator vocabulary should raise consistency issues."""
+        content = Content(
+            text=(
+                "The item was placed in the box. The box was sealed with tape. "
+                "The label was applied to the side. Nothing more was done that day."
+            ),
+            content_type=ContentType.MARKETING,
+        )
+        result = await brand_voice_shield.check(content)
+        assert result.passed is False
+        assert any(i.code == "BRAND_VOICE_CONSISTENCY" for i in result.issues)
