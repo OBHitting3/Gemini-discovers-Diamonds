@@ -26,11 +26,16 @@ If anything in this file conflicts with default Claude behavior, this file wins.
 
 ## Karl's setup
 
-- **Old (contaminated, leaving behind):** Mac laptop, iPhone (destroyed in a fire), multiple GitHub accounts.
-- **Incoming:**
-  - **Samsung phone** (replacing iPhone — clean setup, no iCloud restore, no old logins).
-  - **KRLX** = the new CyberPower PC. Intel Core Ultra 9 285K, RTX 5090 32GB, 32GB DDR5-6000, 4TB NVMe, Win 11. Capable of running large local LLMs.
-- **Identity reset:** new email, new GitHub account, new Google account, new YouTube channel.
+- **Currently using:** Mac laptop, iPhone (a previous phone was destroyed in a garage fire; he is on a current iPhone now), multiple old GitHub accounts (contaminated — NOT migrating any of them).
+- **Owned but not yet set up:**
+  - **KRLX** = the new CyberPower PC. Intel Core Ultra 9 285K, RTX 5090 32GB GDDR7, 32GB DDR5-6000, 4TB NVMe, Win 11 Home. Capable of running large local LLMs (Llama 3.3 70B fits in 32GB VRAM). **Not powered on / not configured yet.**
+- **Planned, NOT purchased yet:**
+  - **Samsung phone** to replace iPhone — clean setup, no iCloud restore, no old logins. Do not assume Karl has one.
+- **New identity (in progress):**
+  - New Google account already created (krlx-prefixed Gmail). This is the clean identity that ties the future Samsung, new GitHub, and new YouTube channel together.
+  - New GitHub account — pending.
+  - New YouTube channel — pending.
+- **Right now (when Karl is messaging Claude):** assume he is on his iPhone using Wispr Flow voice-to-text unless he says otherwise. Read for intent.
 
 ## Karl's goals
 
