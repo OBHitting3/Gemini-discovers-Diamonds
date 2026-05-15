@@ -1,10 +1,16 @@
 # Windows setup — the whole plan, one page
 
-**Tonight (~30–60 min, mostly waiting):** [TONIGHT.md](TONIGHT.md). Four checkpoints, one at a time. Text me what you see after each.
+**Tonight (~45–75 min, mostly waiting):** [TONIGHT.md](TONIGHT.md). Five checkpoints, one at a time. Text me what you see after each.
 
-**Tomorrow 6 AM:** [MORNING.md](MORNING.md). One click.
+- C1: power on
+- C2: internet
+- C3: **Sunshine on PC + Moonlight on phone** — pairs them so the rest can be done from your phone
+- C4: install LM Studio + download model
+- C5: paste system prompt + test
 
-**The system prompt to paste at Checkpoint 4:** [system-prompt.txt](system-prompt.txt).
+**Tomorrow 6 AM:** [MORNING.md](MORNING.md). One click — at the PC or via Moonlight on your phone.
+
+**The system prompt to paste at Checkpoint 5:** [system-prompt.txt](system-prompt.txt).
 
 ## Why LM Studio (not Ollama, not Open WebUI, not Docker)
 

@@ -1,10 +1,18 @@
 # 6 AM — let's go
 
+## Option A: at the PC
+
 1. One click: **LM Studio** icon (taskbar or desktop).
 2. The app opens. The model from last night is already loaded.
 3. Click the chat box at the bottom. Type. Press Enter.
 
-That's it.
+## Option B: from your phone (via Moonlight)
+
+1. Open **Moonlight** on your phone.
+2. Tap your PC tile → tap **Desktop**.
+3. Tap the LM Studio icon. Type. Send.
+
+Either way: one click, you're in.
 
 ## If something is off
 
