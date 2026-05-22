@@ -8,5 +8,5 @@ wally   = { source = "UpliftGames/wally", version = "0.3.2" }
 stylua  = { source = "JohnnyMorganz/StyLua", version = "2.0.2" }
 darklua = { source = "seaofvoices/darklua", version = "0.13.0" }
 remodel = { source = "rojo-rbx/remodel", version = "0.11.0" }
-tarmac  = { source = "Roblox/Tarmac", version = "1.0.0" }
+# tarmac — install manually; see 07-step-by-step-install.md
 selene  = { source = "Kampfkarren/selene", version = "0.28.0" }

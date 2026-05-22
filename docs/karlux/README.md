@@ -14,6 +14,7 @@
 | [04-roblox-toolchain.md](./04-roblox-toolchain.md) | Rokit, Wally, StyLua, Darklua, Rojo, Remodel, Tarmac, Git |
 | [05-unified-dev-stack.md](./05-unified-dev-stack.md) | **Cursor, VS Code, Studio, Blender, Supabase** — how they connect |
 | [06-friction-reduction-additions.md](./06-friction-reduction-additions.md) | Selene, LSP, LFS, CI, pre-commit, extras |
+| [07-step-by-step-install.md](./07-step-by-step-install.md) | **Start here** — KRLX install walkthrough |
 
 ## Staged code
 

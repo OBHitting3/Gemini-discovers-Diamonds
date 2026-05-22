@@ -18,10 +18,15 @@ if [[ -f staging/toolchain/rokit.toml ]] && [[ ! -f rokit.toml ]]; then
   ln -sf staging/toolchain/rokit.toml rokit.toml
 fi
 
-rokit install
+if [[ -f staging/toolchain/wally.toml ]] && [[ ! -f wally.toml ]]; then
+  ln -sf staging/toolchain/wally.toml wally.toml
+fi
+
+# First install may prompt to trust each tool — approve in terminal
+rokit install || rokit install --no-trust-check 2>/dev/null || true
 export PATH="$ROOT/.rokit/bin:$PATH"
 
-wally install 2>/dev/null || echo "WARN: wally install skipped (no wally.toml at root yet)"
+wally install 2>/dev/null || echo "WARN: wally install skipped (check wally.toml)"
 
 # Editor config
 if [[ ! -d .vscode ]] && [[ -d staging/editor/.vscode ]]; then

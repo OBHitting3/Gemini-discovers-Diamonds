@@ -23,10 +23,20 @@ check rojo
 check wally
 check stylua
 check darklua
-check remodel
-check tarmac
 check git
 check selene
+
+# Optional CLI tools (do not fail verify)
+if command -v remodel &>/dev/null && remodel --version &>/dev/null 2>&1; then
+  echo "  OK  remodel — $(remodel --version 2>&1 | head -1)"
+else
+  echo "  OPT remodel — optional (headless publish)"
+fi
+if command -v tarmac &>/dev/null; then
+  echo "  OK  tarmac — installed"
+else
+  echo "  OPT tarmac — use Studio Import 3D or asset-index.yaml"
+fi
 
 echo ""
 echo "--- Recommended (install if missing) ---"
@@ -62,9 +72,10 @@ else
   echo "  INFO run: bash staging/scripts/krlx-workspace-bootstrap.sh"
 fi
 
-if [[ -n "${MISSING:-}" && "$MISSING" == "1" ]]; then
+if [[ "${MISSING:-}" == "1" ]]; then
   echo ""
-  echo "Install: rokit install  (from repo root with rokit.toml)"
+  echo "Install: ln -sf staging/toolchain/rokit.toml rokit.toml && rokit install"
+  echo "See: docs/karlux/07-step-by-step-install.md"
   exit 1
 fi
 
