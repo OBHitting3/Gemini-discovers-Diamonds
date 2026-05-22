@@ -17,14 +17,22 @@ Do these **in order**. Each step says **which program** to use.
    `C:\Users\YOUR_NAME\Documents\PalmSprings`  
    or open **`PalmSpringsParadise.code-workspace`** (double-click in Explorer).
 
-**If you don’t have the repo yet** — use **Cursor** → **Terminal → New Terminal** (PowerShell):
+**If you don’t have the repo yet** — **Step 2** (PowerShell from Start menu OR Cursor terminal):
+
+```powershell
+irm https://raw.githubusercontent.com/OBHitting3/Gemini-discovers-Diamonds/cursor/pc-transfer-audit-0002/staging/scripts/step2-clone-windows.ps1 | iex
+```
+
+That clones to `%USERPROFILE%\Documents\Roblox\PalmSprings` and checks out `cursor/pc-transfer-audit-0002`.
+
+Manual alternative:
 
 ```powershell
 mkdir -Force "$env:USERPROFILE\Documents\Roblox"
 cd "$env:USERPROFILE\Documents\Roblox"
 git clone https://github.com/OBHitting3/Gemini-discovers-Diamonds.git PalmSprings
 cd PalmSprings
-git checkout cursor/karlux-foundation-292d
+git checkout cursor/pc-transfer-audit-0002
 ```
 
 Then **File → Open Folder** → that `PalmSprings` folder.
