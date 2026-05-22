@@ -1,0 +1,106 @@
+# Agent Lane Discipline — Cursor vs Manus
+
+**Goal:** Zero tool overlap. One agent per concern so Karl and Eddie stay in flow state.
+
+---
+
+## Lane summary
+
+| Lane | Agent | Environment | Owns |
+|------|-------|-------------|------|
+| **A — Logic** | **Cursor** (this agent) | Repo `src/`, `staging/`, Rojo, Luau | Gameplay, services, UI code, builders, config, tests, PRs |
+| **B — Boundary** | **Manus** | Sandboxed APIs, KRLX filesystem, Roblox Open Cloud | Asset ingest, transcoding, bulk upload, webhooks, Supabase/n8n, secrets |
+| **C — Intent** | **Karl / Eddie** | Studio, GitHub merge | Creative direction, approvals, publish |
+
+---
+
+## Cursor — exclusive responsibilities
+
+- Write and refactor **Luau** (server, client, shared, builders, UI).
+- Maintain **Rojo** project (`default.project.json`, branch workflow).
+- **ItemCatalog**, **GameConfig**, **Types**, **RemoteManager** contracts.
+- Staged modules under `staging/` per 10-80-10.
+- Code review responses, unit-style Studio test commands (`TestCommands`).
+- Document merge paths in `docs/karlux/`.
+- Map **approved** `rbxassetid` values into `AssetRegistry` (from Manus manifest).
+
+**Cursor must NOT:**
+
+- Call external paid APIs with production secrets (unless explicitly wired in repo and approved).
+- Bulk-upload meshes to Roblox without a recorded manifest from Manus.
+- Reorganize `vendor-imports/` on disk without an approved taxonomy doc.
+- Publish the experience or overwrite Studio place files directly.
+
+---
+
+## Manus — exclusive responsibilities
+
+- Receive packs in `vendor-imports/_incoming/` on **KRLX**.
+- Run **asset QA**: triangle count, texture size, license file, MCM palette check vs `.cursor/rules/roblox-mcm.md`.
+- **Upload** to Roblox (meshes, audio, decals) via Open Cloud / Studio automation.
+- Maintain `vendor-imports/_manifests/asset-index.yaml` and `import-log.jsonl`.
+- **Supabase** migrations, row backfills, cold-path batch jobs.
+- **n8n / webhook** endpoint provisioning and credential rotation (not Luau business logic).
+- **FFmpeg / image** processing (thumbnails, trailer pipeline — see `content-shield/`, `AUTOMATED_TYCOON_CAPABILITIES.md`).
+- Quarantine rejects into `vendor-imports/_manifests/rejection/`.
+
+**Manus must NOT:**
+
+- Edit production `src/**/*.lua` (read-only for reference).
+- Change `GameConfig` economy numbers or visual identity constants.
+- Merge git branches or open PRs.
+- Implement gameplay rules (authority stays server-side in Cursor-written services).
+
+---
+
+## Handoff contracts (the only overlap points)
+
+These files are the **API between lanes**:
+
+| Artifact | Producer | Consumer |
+|----------|----------|----------|
+| `vendor-imports/_manifests/asset-index.yaml` | Manus | Cursor → `AssetRegistry` |
+| `docs/karlux/01-asset-taxonomy-tree.md` | Cursor (draft) | Manus (physical sort) |
+| `staging/src/shared/AssetRegistry.lua` | Cursor | Karl/Eddie merge → `src/` |
+| `GameConfig.Remotes` names | Cursor | Both (frozen contract) |
+| Webhook URLs / Supabase keys | Manus (env) | Cursor (read via Secrets mock) |
+
+---
+
+## Session workflow (typical sprint)
+
+```mermaid
+sequenceDiagram
+    participant K as Karl/Eddie
+    participant M as Manus
+    participant C as Cursor
+    participant R as Roblox Studio
+
+    K->>K: Define intent (10%) — slice, theme, assets
+    M->>M: Ingest + QA + upload assets
+    M->>C: asset-index.yaml PR or handoff file
+    C->>C: Stage Luau + AssetRegistry in staging/
+    K->>K: Review diff (10%)
+    K->>R: Merge + rojo serve + Play Solo
+    C->>C: Fix bugs from Studio output only in src/ after approval
+```
+
+---
+
+## Escalation rules
+
+| Situation | Route to |
+|-----------|----------|
+| Wrong rbxassetid / missing mesh | Manus (re-upload) |
+| Exploit / economy bug | Cursor |
+| Sky color / two-story home | Karl (design) + Cursor fix builders |
+| Supabase down | Manus infra; Cursor ensures DataStore fallback (already in PersistenceService) |
+| Scope creep on Thursday demo | Karl — check `docs/thursday-demo-scope.md` |
+
+---
+
+## Flow-state protection
+
+- **One active lane per task ticket** (Linear/Notion): label `cursor` or `manus`, never both.
+- **No parallel edits** to the same slug in ItemCatalog and asset-index.
+- **Staging first:** all Cursor deliverables land in `staging/` until explicit "merge approved" from Karl or Eddie.
