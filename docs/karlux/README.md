@@ -16,6 +16,7 @@
 | [06-friction-reduction-additions.md](./06-friction-reduction-additions.md) | Selene, LSP, LFS, CI, pre-commit, extras |
 | [07-step-by-step-install.md](./07-step-by-step-install.md) | **Start here** — macOS install walkthrough |
 | [07-step-by-step-install-windows.md](./07-step-by-step-install-windows.md) | **Start here** — Windows + Cursor (PowerShell) |
+| [08-pc-transfer-kit-audit.md](./08-pc-transfer-kit-audit.md) | **D: Transfer Kit** audit + ingest into `vendor-imports/` |
 
 ## Staged code
 
@@ -26,3 +27,5 @@ All Luau under [`/staging/src`](/staging/src) — **not** wired into `default.pr
 On KRLX, mirror the taxonomy under:
 
 `~/KarLux/PalmSprings/vendor-imports/` → symlink or copy approved packs into repo `vendor-imports/` only after manifest sign-off.
+
+**Windows (screenshot path):** `D:\PC_Transfer_Kit\PalmSpringsParadise\Users\karl\palm-springs-paradise` → run `staging/scripts/audit-pc-transfer-kit.ps1`.

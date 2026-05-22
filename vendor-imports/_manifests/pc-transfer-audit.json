@@ -1,0 +1,43 @@
+{
+  "auditedAt": "2026-05-22T01:30:11+00:00",
+  "sourcePath": "/tmp/pc-transfer-test",
+  "repoRoot": "/workspace",
+  "packSlug": "2026-05-22_pc-transfer-karl",
+  "summary": {
+    "fileCount": 2,
+    "totalBytes": 17,
+    "totalMegabytes": 0.0,
+    "byExtension": {
+      ".lua": 1,
+      ".fbx": 1
+    },
+    "byCategory": {
+      "legacy-scripts/do-not-ship": 1,
+      "architecture/residential/kaufmann": 1
+    },
+    "warningCount": 1
+  },
+  "warnings": [
+    "Legacy Lua: old_script.lua"
+  ],
+  "files": [
+    {
+      "relativePath": "old_script.lua",
+      "sizeBytes": 12,
+      "extension": ".lua",
+      "suggestedCategory": "legacy-scripts/do-not-ship",
+      "suggestedSlug": "old_script",
+      "flags": [
+        "LEGACY_LUA_REFERENCE_ONLY"
+      ]
+    },
+    {
+      "relativePath": "kaufmann/eames_lounge.fbx",
+      "sizeBytes": 5,
+      "extension": ".fbx",
+      "suggestedCategory": "architecture/residential/kaufmann",
+      "suggestedSlug": "eames_lounge",
+      "flags": []
+    }
+  ]
+}

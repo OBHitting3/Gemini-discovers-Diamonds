@@ -102,6 +102,7 @@ docs/karlux/            # Architecture + install docs
 | `05-unified-dev-stack.md` | Studio/Blender/Supabase map |
 | `06-friction-reduction-additions.md` | Selene, LFS, CI, pre-commit |
 | `07-step-by-step-install-windows.md` | **Windows start here** |
+| `08-pc-transfer-kit-audit.md` | **D: PC_Transfer_Kit** → `vendor-imports/` audit |
 | `HANDOFF-condensed.md` | This file |
 
 ---
@@ -131,5 +132,6 @@ docs/karlux/            # Architecture + install docs
 
 1. Confirm **Step 0–3** on Windows (`verify.ps1` all OK)
 2. Approve merge PR #24 or promote `staging/` pieces
-3. Manus: populate `vendor-imports/` + `asset-index.yaml`
-4. Wire `CoreLoopService` into `init.server.lua` per merge guide
+3. Run **PC Transfer audit** on `D:\PC_Transfer_Kit\...\palm-springs-paradise` → `vendor-imports/` (see `08-pc-transfer-kit-audit.md`)
+4. Manus: populate `asset-index.yaml` after Roblox upload
+5. Wire `CoreLoopService` into `init.server.lua` per merge guide
