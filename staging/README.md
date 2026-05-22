@@ -7,8 +7,14 @@
 ```
 staging/
 ├── README.md
-├── toolchain/            # Rokit, Wally, StyLua, Darklua, Tarmac, Remodel (promote to root)
+├── toolchain/            # Rokit, Wally, StyLua, Selene, Darklua, Tarmac, Remodel
+├── editor/               # .vscode + .cursor rules → promote to repo root
+├── supabase/             # migrations + config (Manus)
+├── blender/              # Blender → Roblox export playbook
+├── env/                  # .env.example
+├── ci/                   # GitHub Actions PR checks
 ├── scripts/toolchain/    # verify.sh, build-release.sh
+├── scripts/krlx-workspace-bootstrap.sh
 ├── patches/              # Copy-paste snippets for init.*.lua
 └── src/
     ├── shared/

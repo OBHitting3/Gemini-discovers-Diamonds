@@ -22,6 +22,13 @@ else
   echo "[build-release] WARN stylua not installed — skipping format check"
 fi
 
+if command -v selene &>/dev/null; then
+  echo "[build-release] Selene lint..."
+  selene --config staging/toolchain/selene.toml src/
+else
+  echo "[build-release] WARN selene not installed — skipping lint"
+fi
+
 BUILD_SRC="src"
 if command -v darklua &>/dev/null; then
   echo "[build-release] Darklua process (release rules)..."

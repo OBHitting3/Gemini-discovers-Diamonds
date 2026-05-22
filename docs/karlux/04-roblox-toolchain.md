@@ -1,6 +1,8 @@
 # Roblox Toolchain — KarLux / KRLX Standard
 
-**Stack:** Rokit (tool pins) · Wally (Luau packages) · StyLua · Darklua · Rojo · Remodel · Tarmac · Git
+**Stack:** Rokit (tool pins) · Wally (Luau packages) · StyLua · Selene · Darklua · Rojo · Remodel · Tarmac · Git
+
+**Also using:** Cursor · VS Code · Roblox Studio · Blender · Supabase — see [05-unified-dev-stack.md](./05-unified-dev-stack.md).
 
 All config files live in **`staging/toolchain/`** until Karl/Eddie promote to repo root (10-80-10).
 

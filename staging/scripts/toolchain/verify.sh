@@ -26,6 +26,23 @@ check darklua
 check remodel
 check tarmac
 check git
+check selene
+
+echo ""
+echo "--- Recommended (install if missing) ---"
+OPTIONAL=0
+if command -v supabase &>/dev/null; then
+  echo "  OK  supabase — $(supabase --version 2>&1 | head -1)"
+else
+  echo "  OPT supabase — brew install supabase/tap/supabase"
+  OPTIONAL=1
+fi
+if command -v blender &>/dev/null; then
+  echo "  OK  blender — $(blender --version 2>&1 | head -1)"
+else
+  echo "  OPT blender — art pipeline (local GUI)"
+  OPTIONAL=1
+fi
 
 if [[ -f "$ROOT/rokit.toml" ]] || [[ -f "$ROOT/staging/toolchain/rokit.toml" ]]; then
   echo "  OK  rokit.toml present"
@@ -37,6 +54,12 @@ if [[ -d "$ROOT/Packages" ]]; then
   echo "  OK  Packages/ (wally install done)"
 else
   echo "  INFO Packages/ missing — run: wally install"
+fi
+
+if [[ -d "$ROOT/.vscode" ]] || [[ -d "$ROOT/staging/editor/.vscode" ]]; then
+  echo "  OK  VS Code / Cursor workspace config present"
+else
+  echo "  INFO run: bash staging/scripts/krlx-workspace-bootstrap.sh"
 fi
 
 if [[ -n "${MISSING:-}" && "$MISSING" == "1" ]]; then

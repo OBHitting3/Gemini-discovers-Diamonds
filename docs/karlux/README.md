@@ -12,6 +12,8 @@
 | [02-agent-lane-discipline.md](./02-agent-lane-discipline.md) | Cursor vs Manus ownership — zero overlap |
 | [03-vertical-slice-merge-guide.md](./03-vertical-slice-merge-guide.md) | How to promote `staging/` into `src/` after approval |
 | [04-roblox-toolchain.md](./04-roblox-toolchain.md) | Rokit, Wally, StyLua, Darklua, Rojo, Remodel, Tarmac, Git |
+| [05-unified-dev-stack.md](./05-unified-dev-stack.md) | **Cursor, VS Code, Studio, Blender, Supabase** — how they connect |
+| [06-friction-reduction-additions.md](./06-friction-reduction-additions.md) | Selene, LSP, LFS, CI, pre-commit, extras |
 
 ## Staged code
 

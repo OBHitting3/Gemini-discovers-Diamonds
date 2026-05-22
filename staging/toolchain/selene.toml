@@ -1,0 +1,16 @@
+std = "roblox"
+exclude = [
+    "Packages/**",
+    "ServerPackages/**",
+    "DevPackages/**",
+    "content-shield/**",
+    "node_modules/**",
+    "staging/**",
+    ".darklua/**",
+]
+
+[rules]
+global_usage = "allow"
+incorrect_standard_library_use = "allow"
+unused_variable = "warn"
+unscoped_variables = "deny"

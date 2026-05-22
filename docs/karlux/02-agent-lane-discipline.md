@@ -10,7 +10,7 @@
 |------|-------|-------------|------|
 | **A — Logic** | **Cursor** (this agent) | Repo `src/`, `staging/`, Rojo, Luau | Gameplay, services, UI code, builders, config, tests, PRs |
 | **B — Boundary** | **Manus** | Sandboxed APIs, KRLX filesystem, Roblox Open Cloud | Asset ingest, transcoding, bulk upload, webhooks, Supabase/n8n, secrets |
-| **C — Intent** | **Karl / Eddie** | Studio, GitHub merge | Creative direction, approvals, publish |
+| **C — Intent** | **Karl / Eddie** | Studio, Blender, GitHub merge | Creative direction, approvals, publish |
 
 ---
 
@@ -65,7 +65,12 @@
 | Remodel | Maintain `remodel/*.lua` drivers | Optional CI runner | **Only** run `publish-staging.lua` |
 | Git | Branches, PRs | — | Merge to `main` |
 
-Full setup: [04-roblox-toolchain.md](./04-roblox-toolchain.md)
+| **Cursor / VS Code** | Shared `.vscode`, Luau edits, PRs | — | Install extensions, Play Solo |
+| **Roblox Studio** | World polish, mesh import UI, publish | — | Rojo connect, HTTP enabled |
+| **Blender** | Mesh authoring | Export to `vendor-imports/` | Art direction sign-off |
+| **Supabase** | Schema migrations, dashboard, advisors | `supabase db push`, secrets | Project ownership, RLS review |
+
+Full setup: [04-roblox-toolchain.md](./04-roblox-toolchain.md) · [05-unified-dev-stack.md](./05-unified-dev-stack.md)
 
 ---
 

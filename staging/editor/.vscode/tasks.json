@@ -1,0 +1,59 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Rojo: Serve",
+      "type": "shell",
+      "command": "rojo serve",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Rojo: Build Desktop Place",
+      "type": "shell",
+      "command": "rojo build default.project.json -o ${env:HOME}/Desktop/PalmSpringsParadise.rbxlx",
+      "problemMatcher": []
+    },
+    {
+      "label": "StyLua: Format src",
+      "type": "shell",
+      "command": "stylua --config-path staging/toolchain/stylua.toml src/",
+      "problemMatcher": []
+    },
+    {
+      "label": "Selene: Lint src",
+      "type": "shell",
+      "command": "selene src/",
+      "problemMatcher": []
+    },
+    {
+      "label": "Wally: Install packages",
+      "type": "shell",
+      "command": "wally install",
+      "problemMatcher": []
+    },
+    {
+      "label": "Toolchain: Verify",
+      "type": "shell",
+      "command": "bash staging/scripts/toolchain/verify.sh",
+      "problemMatcher": []
+    },
+    {
+      "label": "Release: Build (stylua + rojo)",
+      "type": "shell",
+      "command": "bash staging/scripts/toolchain/build-release.sh",
+      "problemMatcher": []
+    }
+  ]
+}
