@@ -47,6 +47,10 @@
       "label": "Toolchain: Verify",
       "type": "shell",
       "command": "bash staging/scripts/toolchain/verify.sh",
+      "windows": {
+        "command": "powershell -ExecutionPolicy Bypass -File staging/scripts/toolchain/verify.ps1"
+      },
+      "options": { "cwd": "${workspaceFolder}" },
       "problemMatcher": []
     },
     {

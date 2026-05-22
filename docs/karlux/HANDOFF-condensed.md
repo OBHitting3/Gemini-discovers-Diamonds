@@ -108,7 +108,7 @@ docs/karlux/            # Architecture + install docs
 
 ## Known issues / notes
 
-- `rojo build` may error on `ServerScriptService` class conflict — **use `rojo serve` + Studio** as primary loop
+- `default.project.json` must not set `$className` on nodes that use `$path` to script trees (fixed on this branch); primary loop is **`rojo serve` + Studio**
 - Supabase **mock** in Play Solo without Roblox Secrets
 - Cloud agent cannot open local Cursor — user runs commands on Windows machine
 - `.env` never commit; copy from `staging/env/.env.example`
