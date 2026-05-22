@@ -11,6 +11,7 @@
 | [01-asset-taxonomy-tree.md](./01-asset-taxonomy-tree.md) | Canonical folder hierarchy for downloaded assets **before** any file moves |
 | [02-agent-lane-discipline.md](./02-agent-lane-discipline.md) | Cursor vs Manus ownership — zero overlap |
 | [03-vertical-slice-merge-guide.md](./03-vertical-slice-merge-guide.md) | How to promote `staging/` into `src/` after approval |
+| [04-roblox-toolchain.md](./04-roblox-toolchain.md) | Rokit, Wally, StyLua, Darklua, Rojo, Remodel, Tarmac, Git |
 
 ## Staged code
 

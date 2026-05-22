@@ -1,0 +1,7 @@
+{
+  "rules": [],
+  "bundle": {
+    "modules": "src",
+    "output": ".darklua/dev"
+  }
+}

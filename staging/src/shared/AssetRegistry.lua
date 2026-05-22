@@ -3,9 +3,12 @@
     Maps ItemCatalog slugs → Roblox asset IDs and optional ReplicatedStorage paths.
 
     IMPORT HOOKUP:
-      1. Manus uploads mesh/audio → records rbxassetid in vendor-imports/_manifests/asset-index.yaml
-      2. Karl approves → entries copied into AssetRegistry._entries below
-      3. Services call AssetRegistry:getSoundId / getTemplate / hasImportedAsset
+      1. Manus runs Tarmac (staging/toolchain/tarmac.toml) → GeneratedAssets.lua
+      2. Manus uploads meshes → vendor-imports/_manifests/asset-index.yaml
+      3. Karl approves → merge GeneratedAssets + AssetRegistry._entries
+      4. Services call AssetRegistry:getSoundId / getTemplate / hasImportedAsset
+
+    local GeneratedAssets = nil -- after merge: require(script.Parent.GeneratedAssets)
 
     Until IDs exist, builders keep using procedural Parts (HomeBuilder, etc.)
 ]]

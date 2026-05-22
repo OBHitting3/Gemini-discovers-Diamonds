@@ -1,0 +1,21 @@
+[package]
+name = "palm-springs-paradise"
+version = "0.1.0"
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "shared"
+description = "Iron Forge Studios — Palm Springs Paradise"
+license = "Proprietary"
+authors = ["KarLux LLC / Iron Forge Studios"]
+
+# Add dependencies after Karl approves external libs.
+# ProfileService is wrapped locally (ProfileServiceWrapper.lua) — migrate here if desired.
+[dependencies]
+# Example (uncomment after approval):
+# Promise = "evaera/promise@4.0.0"
+
+[server-dependencies]
+# Example:
+# ProfileService = "firebird702/profileservice@1.6.2"
+
+[dev-dependencies]
+# TestEZ = "roblox/testez@0.4.1"

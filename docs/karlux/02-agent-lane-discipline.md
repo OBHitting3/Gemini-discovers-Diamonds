@@ -53,6 +53,22 @@
 
 ---
 
+## Toolchain ownership (Rokit / Wally / StyLua / Darklua / Remodel / Tarmac)
+
+| Tool | Cursor | Manus | Karl/Eddie |
+|------|--------|-------|------------|
+| Rokit / Aftman pins | Maintain `rokit.toml` / `aftman.toml` PRs | Run `rokit install` on KRLX | Approve version bumps |
+| Wally | Edit `wally.toml`, commit `wally.lock` | — | Approve new dependencies |
+| StyLua / Darklua | Config + format in PRs | — | — |
+| Rojo | `default.project.json`, `src/` | — | Play Solo in Studio |
+| Tarmac | Merge `GeneratedAssets.lua` → `AssetRegistry` | Run `tarmac sync`, fill `vendor-imports/` | Provide `TARMAC_AUTH` |
+| Remodel | Maintain `remodel/*.lua` drivers | Optional CI runner | **Only** run `publish-staging.lua` |
+| Git | Branches, PRs | — | Merge to `main` |
+
+Full setup: [04-roblox-toolchain.md](./04-roblox-toolchain.md)
+
+---
+
 ## Handoff contracts (the only overlap points)
 
 These files are the **API between lanes**:

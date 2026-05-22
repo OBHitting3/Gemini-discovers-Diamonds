@@ -1,0 +1,28 @@
+# Tarmac — asset sync from vendor-imports → Roblox cloud → Luau constants
+# Requires: TARMAC_AUTH or .robloxrc cookie (Manus/Karl credentials — never commit)
+# Run: tarmac sync --config staging/toolchain/tarmac.toml
+# Output: staging/toolchain/generated/GeneratedAssets.lua (promote to src/shared after review)
+
+name = "PalmSpringsParadise"
+version = "0.1.0"
+
+# Map logical keys → local paths (extend as packs land in vendor-imports)
+[resources.ambience_wind]
+path = "vendor-imports/audio/ambience/wind.mp3"
+assetId = "rbxassetid://9112854440"
+
+[resources.garden_water]
+path = "vendor-imports/audio/garden/water.mp3"
+assetId = "rbxassetid://6677463651"
+
+[resources.ui_click]
+path = "vendor-imports/audio/ui/click.mp3"
+assetId = "rbxassetid://6895079853"
+
+# Meshes — placeholders until files exist; Tarmac will assign IDs on first sync
+# [resources.eames_lounge]
+# path = "vendor-imports/furniture/seating/furniture__eames_lounge__default.mesh"
+
+[codegen]
+out = "staging/toolchain/generated/GeneratedAssets.lua"
+moduleName = "GeneratedAssets"

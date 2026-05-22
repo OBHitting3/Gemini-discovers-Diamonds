@@ -1,0 +1,19 @@
+{
+  "_comment": "Merge into default.project.json under ReplicatedStorage after Wally install",
+  "ReplicatedStorage": {
+    "$className": "ReplicatedStorage",
+    "$path": "src/shared",
+    "Packages": {
+      "$className": "Folder",
+      "$path": "Packages"
+    }
+  },
+  "ServerScriptService": {
+    "$className": "ServerScriptService",
+    "$path": "src/server",
+    "ServerPackages": {
+      "$className": "Folder",
+      "$path": "ServerPackages"
+    }
+  }
+}

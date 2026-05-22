@@ -7,6 +7,8 @@
 ```
 staging/
 ├── README.md
+├── toolchain/            # Rokit, Wally, StyLua, Darklua, Tarmac, Remodel (promote to root)
+├── scripts/toolchain/    # verify.sh, build-release.sh
 ├── patches/              # Copy-paste snippets for init.*.lua
 └── src/
     ├── shared/
