@@ -1,0 +1,21 @@
+{
+  "folders": [
+    {
+      "path": ".",
+      "name": "Palm Springs Paradise"
+    }
+  ],
+  "settings": {
+    "stylua.configPath": "staging/toolchain/stylua.toml",
+    "selene.configPath": "staging/toolchain/selene.toml",
+    "luau-lsp.platform.type": "roblox"
+  },
+  "extensions": {
+    "recommendations": [
+      "JohnnyMorganz.vscode-luau-lsp",
+      "evaera.vscode-rojo",
+      "JohnnyMorganz.stylua",
+      "Kampfkarren.selene-vscode"
+    ]
+  }
+}
