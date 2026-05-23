@@ -17,14 +17,22 @@ Do these **in order**. Each step says **which program** to use.
    `C:\Users\YOUR_NAME\Documents\PalmSprings`  
    or open **`PalmSpringsParadise.code-workspace`** (double-click in Explorer).
 
-**If you don’t have the repo yet** — use **Cursor** → **Terminal → New Terminal** (PowerShell):
+**If you don’t have the repo yet** — **Step 2** (PowerShell from Start menu OR Cursor terminal):
+
+```powershell
+irm https://raw.githubusercontent.com/OBHitting3/Gemini-discovers-Diamonds/cursor/pc-transfer-audit-0002/staging/scripts/step2-clone-windows.ps1 | iex
+```
+
+That clones to `%USERPROFILE%\Documents\Roblox\PalmSprings` and checks out `cursor/pc-transfer-audit-0002`.
+
+Manual alternative:
 
 ```powershell
 mkdir -Force "$env:USERPROFILE\Documents\Roblox"
 cd "$env:USERPROFILE\Documents\Roblox"
 git clone https://github.com/OBHitting3/Gemini-discovers-Diamonds.git PalmSprings
 cd PalmSprings
-git checkout cursor/karlux-foundation-292d
+git checkout cursor/pc-transfer-audit-0002
 ```
 
 Then **File → Open Folder** → that `PalmSprings` folder.
@@ -216,6 +224,7 @@ In game chat:
 | Problem | Fix |
 |---------|-----|
 | Scripts blocked | `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` in PowerShell |
+| Rokit “not trusted” | Approve prompts, or run: `rokit trust JohnnyMorganz/StyLua rojo-rbx/rojo UpliftGames/wally seaofvoices/darklua rojo-rbx/remodel Kampfkarren/selene` then `rokit install` |
 | `rojo` not found | Add `%USERPROFILE%\.rokit\bin` to User PATH, restart Cursor |
 | Rojo won’t connect | Allow firewall for `rojo`; confirm `rojo serve` running |
 | `mklink` failed | Use `Copy-Item` for rokit.toml / wally.toml (Step 3) |

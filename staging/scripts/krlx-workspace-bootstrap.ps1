@@ -33,8 +33,12 @@ if (-not (Test-Path "wally.toml")) {
 }
 
 if (Get-Command rokit -ErrorAction SilentlyContinue) {
-    Write-Host "Installing Rokit tools..."
+    Write-Host "Installing Rokit tools (approve trust prompts if shown)..."
     rokit install
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "If install failed on trust, run: rokit trust JohnnyMorganz/StyLua rojo-rbx/rojo UpliftGames/wally seaofvoices/darklua rojo-rbx/remodel Kampfkarren/selene" -ForegroundColor Yellow
+        rokit install
+    }
 } else {
     Write-Host "WARN: rokit not found. Run Step 2 in 07-step-by-step-install-windows.md" -ForegroundColor Yellow
 }

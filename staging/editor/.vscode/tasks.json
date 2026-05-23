@@ -50,6 +50,16 @@
       "problemMatcher": []
     },
     {
+      "label": "Audit: PC Transfer Kit",
+      "type": "shell",
+      "command": "bash staging/scripts/audit-pc-transfer-kit.sh",
+      "windows": {
+        "command": "powershell -ExecutionPolicy Bypass -File staging/scripts/audit-pc-transfer-kit.ps1"
+      },
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
       "label": "Toolchain: Verify",
       "type": "shell",
       "command": "bash staging/scripts/toolchain/verify.sh",
