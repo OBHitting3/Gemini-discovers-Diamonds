@@ -103,6 +103,8 @@ rokit install
 
 Approve any **trust** prompts.
 
+If install errors on **Tarmac**, pull latest `cursor/karlux-foundation-292d` (Tarmac is removed from `rokit.toml`; use Studio Import 3D instead).
+
 **Verify:**
 
 ```powershell

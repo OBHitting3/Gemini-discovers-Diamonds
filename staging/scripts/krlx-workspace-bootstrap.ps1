@@ -52,7 +52,7 @@ if (-not (Test-Path ".vscode") -and (Test-Path "staging\editor\.vscode")) {
 # Env template
 if (-not (Test-Path ".env") -and (Test-Path "staging\env\.env.example")) {
     Copy-Item "staging\env\.env.example" ".env"
-    Write-Host "Created .env — fill Supabase keys locally"
+    Write-Host "Created .env - fill Supabase keys locally"
 }
 
 if (Test-Path "staging\scripts\toolchain\verify.ps1") {
