@@ -8,8 +8,6 @@ wally   = "UpliftGames/wally@0.3.2"
 stylua  = "JohnnyMorganz/StyLua@2.0.2"
 darklua = "seaofvoices/darklua@0.13.0"
 remodel = "rojo-rbx/remodel@0.11.0"
-# Tarmac: publish via Roblox/Tarmac when available in Rokit index;
-# fallback: cargo install rosty-tarmac or aftman entry (see aftman.toml)
-tarmac  = "Roblox/Tarmac@1.0.0"
 selene  = "Kampfkarren/selene@0.28.0"
-StyLua = "JohnnyMorganz/StyLua@2.0.2"
+# Tarmac optional — Studio Import 3D is primary; uncomment if Rokit index resolves:
+# tarmac  = "Roblox/Tarmac@1.0.0"

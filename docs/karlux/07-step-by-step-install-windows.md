@@ -216,6 +216,7 @@ In game chat:
 | Problem | Fix |
 |---------|-----|
 | Scripts blocked | `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` in PowerShell |
+| Rokit “not trusted” | Approve prompts, or run: `rokit trust JohnnyMorganz/StyLua rojo-rbx/rojo UpliftGames/wally seaofvoices/darklua rojo-rbx/remodel Kampfkarren/selene` then `rokit install` |
 | `rojo` not found | Add `%USERPROFILE%\.rokit\bin` to User PATH, restart Cursor |
 | Rojo won’t connect | Allow firewall for `rojo`; confirm `rojo serve` running |
 | `mklink` failed | Use `Copy-Item` for rokit.toml / wally.toml (Step 3) |
