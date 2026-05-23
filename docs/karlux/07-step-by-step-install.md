@@ -229,7 +229,7 @@ rojo build default.project.json -o ~/Desktop/PalmSpringsParadise.rbxlx
 open ~/Desktop/PalmSpringsParadise.rbxlx
 ```
 
-**Note:** If build errors on `ServerScriptService` class conflict, use **`rojo serve` + Studio** (Step 7) — that is the primary dev loop. Build fix can be a follow-up PR.
+**Note:** `default.project.json` maps `src/server` → `ServerScriptService.Server` (not directly on the service) to avoid Rojo 7 `init.server.lua` class conflicts.
 
 **macOS shortcut:** double-click `setup.command` or `update.command` in repo root (installs Rojo via aftman if Rokit not used).
 
