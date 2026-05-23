@@ -16,23 +16,12 @@ foreach ($bin in @(
     if (Test-Path $bin) { $env:Path = "$bin;$env:Path" }
 }
 
-# Link or copy toolchain manifests
+# Always refresh toolchain manifests from staging (Windows copies go stale after git pull)
 $rokitSrc = Join-Path $Root "staging\toolchain\rokit.toml"
 $wallySrc = Join-Path $Root "staging\toolchain\wally.toml"
-if (-not (Test-Path "rokit.toml")) {
-    try {
-        cmd /c "mklink rokit.toml staging\toolchain\rokit.toml" 2>$null
-    } catch {
-        Copy-Item $rokitSrc "rokit.toml" -Force
-    }
-}
-if (-not (Test-Path "wally.toml")) {
-    try {
-        cmd /c "mklink wally.toml staging\toolchain\wally.toml" 2>$null
-    } catch {
-        Copy-Item $wallySrc "wally.toml" -Force
-    }
-}
+Copy-Item $rokitSrc "rokit.toml" -Force
+Copy-Item $wallySrc "wally.toml" -Force
+Write-Host "Synced rokit.toml and wally.toml from staging\toolchain"
 
 if (Get-Command rokit -ErrorAction SilentlyContinue) {
     Write-Host "Installing Rokit tools..."
