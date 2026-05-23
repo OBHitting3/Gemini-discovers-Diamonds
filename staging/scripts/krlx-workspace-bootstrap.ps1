@@ -8,10 +8,12 @@ Set-Location $Root
 
 Write-Host "=== KarLux Windows workspace bootstrap ===" -ForegroundColor Cyan
 
-# Ensure rokit on PATH
-$rokitBin = Join-Path $env:USERPROFILE ".rokit\bin"
-if (Test-Path $rokitBin) {
-    $env:Path = "$rokitBin;$env:Path"
+# Ensure rokit tools on PATH (user + project bins)
+foreach ($bin in @(
+        (Join-Path $Root ".rokit\bin"),
+        (Join-Path $env:USERPROFILE ".rokit\bin")
+    )) {
+    if (Test-Path $bin) { $env:Path = "$bin;$env:Path" }
 }
 
 # Link or copy toolchain manifests
