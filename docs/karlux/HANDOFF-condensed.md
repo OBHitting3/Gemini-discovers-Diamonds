@@ -129,6 +129,24 @@ docs/karlux/            # Architecture + install docs
 
 ## Next actions for new thread
 
+**If Step 0 is done** (folder open in Cursor, sidebar shows `src`, `staging`, `default.project.json`), run in **Cursor → PowerShell**:
+
+```powershell
+git --version
+git checkout cursor/karlux-foundation-292d
+irm https://raw.githubusercontent.com/rojo-rbx/rokit/main/scripts/install.ps1 | iex
+# New terminal, then:
+$env:Path += ";$env:USERPROFILE\.rokit\bin"
+Copy-Item staging\toolchain\rokit.toml . -Force
+Copy-Item staging\toolchain\wally.toml . -Force
+rokit install
+wally install
+powershell -ExecutionPolicy Bypass -File staging\scripts\krlx-workspace-bootstrap.ps1
+powershell -ExecutionPolicy Bypass -File staging\scripts\toolchain\verify.ps1
+```
+
+Then **Tasks → Rojo: Serve** → **Studio → Rojo Connect** → Play → `/coins 5000`.
+
 1. Confirm **Step 0–3** on Windows (`verify.ps1` all OK)
 2. Approve merge PR #24 or promote `staging/` pieces
 3. Manus: populate `vendor-imports/` + `asset-index.yaml`

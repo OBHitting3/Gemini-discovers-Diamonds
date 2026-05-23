@@ -32,6 +32,48 @@ foreach ($tool in @("darklua", "remodel")) {
 
 Write-Host "  OPT tarmac — use Studio Import 3D"
 
+Write-Host ""
+Write-Host "--- Repo layout ---"
+foreach ($rel in @("src", "staging", "default.project.json")) {
+    if (Test-Path (Join-Path $Root $rel)) {
+        Write-Host "  OK  $rel"
+    } else {
+        Write-Host "  MISS $rel"
+        $missing += "layout:$rel"
+    }
+}
+
+if ((Test-Path (Join-Path $Root "rokit.toml")) -or (Test-Path (Join-Path $Root "staging\toolchain\rokit.toml"))) {
+    Write-Host "  OK  rokit.toml present"
+} else {
+    Write-Host "  WARN rokit.toml — copy or mklink from staging\toolchain (Step 3)"
+}
+
+if (Test-Path (Join-Path $Root "Packages")) {
+    Write-Host "  OK  Packages/ (wally install done)"
+} else {
+    Write-Host "  INFO Packages/ missing — run: wally install"
+}
+
+if ((Test-Path (Join-Path $Root ".vscode")) -or (Test-Path (Join-Path $Root "staging\editor\.vscode"))) {
+    Write-Host "  OK  VS Code / Cursor workspace config present"
+} else {
+    Write-Host "  INFO run: staging\scripts\krlx-workspace-bootstrap.ps1"
+}
+
+try {
+    Push-Location $Root
+    $branch = (git rev-parse --abbrev-ref HEAD 2>$null)
+    if ($branch -eq "cursor/karlux-foundation-292d") {
+        Write-Host "  OK  git branch $branch"
+    } elseif ($branch) {
+        Write-Host "  WARN git on '$branch' — handoff branch: cursor/karlux-foundation-292d"
+        Write-Host "       git checkout cursor/karlux-foundation-292d"
+    }
+} finally {
+    Pop-Location
+}
+
 if ($missing.Count -gt 0) {
     Write-Host ""
     Write-Host "Install: rokit install (see docs/karlux/07-step-by-step-install-windows.md)"
