@@ -22,7 +22,13 @@
     {
       "label": "Rojo: Build Desktop Place",
       "type": "shell",
-      "command": "rojo build default.project.json -o ${env:HOME}/Desktop/PalmSpringsParadise.rbxlx",
+      "command": "rojo build default.project.json -o ${env:USERPROFILE}/Desktop/PalmSpringsParadise.rbxlx",
+      "windows": {
+        "command": "rojo build default.project.json -o ${env:USERPROFILE}\\Desktop\\PalmSpringsParadise.rbxlx"
+      },
+      "osx": {
+        "command": "rojo build default.project.json -o ${env:HOME}/Desktop/PalmSpringsParadise.rbxlx"
+      },
       "problemMatcher": []
     },
     {
@@ -47,6 +53,10 @@
       "label": "Toolchain: Verify",
       "type": "shell",
       "command": "bash staging/scripts/toolchain/verify.sh",
+      "windows": {
+        "command": "powershell -ExecutionPolicy Bypass -File staging/scripts/toolchain/verify.ps1"
+      },
+      "options": { "cwd": "${workspaceFolder}" },
       "problemMatcher": []
     },
     {
