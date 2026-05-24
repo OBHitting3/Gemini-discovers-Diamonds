@@ -141,6 +141,21 @@ if not eventOk then
 end
 
 ---------------------------------------------------------------------------
+-- 5a. CORE LOOP (day phases: Morning / Afternoon / Evening)
+---------------------------------------------------------------------------
+local CoreLoopService = require(script.Services.CoreLoopService)
+local coreOk, coreErr = pcall(function()
+    CoreLoopService:init({
+        garden = GardenService,
+        fashion = FashionService,
+        event = EventService,
+    })
+end)
+if not coreOk then
+    warn("[Bootstrap] CoreLoopService init failed: " .. tostring(coreErr))
+end
+
+---------------------------------------------------------------------------
 -- 5b. LEADERBOARD SERVICE
 ---------------------------------------------------------------------------
 local LeaderboardService = require(script.Services.LeaderboardService)

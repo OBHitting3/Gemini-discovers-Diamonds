@@ -38,15 +38,21 @@ GardenService._economyService = nil
 GardenService._gardenBuilder = nil
 GardenService._supabaseClient = nil
 GardenService._tickRunning = false
+GardenService._growthMultiplier = 1.0
 
 ---------------------------------------------------------------------------
 -- INITIALIZATION
 ---------------------------------------------------------------------------
 
+function GardenService:setGrowthMultiplier(multiplier: number)
+    self._growthMultiplier = multiplier
+end
+
 function GardenService:init(economyService, gardenBuilder, supabaseClient)
     self._economyService = economyService
     self._gardenBuilder = gardenBuilder
     self._supabaseClient = supabaseClient
+    self._growthMultiplier = 1.0
 
     -- Initialize all 16 garden plots
     for i = 1, GameConfig.World.GardenPlots do
@@ -292,8 +298,9 @@ function GardenService:_updateGrowthCycle()
                     changed = true
                 end
             else
-                -- Advance growth based on age
-                local newStage = self:_getStageForAge(age)
+                -- Advance growth based on age (day-phase multiplier from CoreLoopService)
+                local effectiveAge = age * (self._growthMultiplier or 1.0)
+                local newStage = self:_getStageForAge(effectiveAge)
                 if newStage ~= plot.growthStage then
                     plot.growthStage = newStage
                     changed = true

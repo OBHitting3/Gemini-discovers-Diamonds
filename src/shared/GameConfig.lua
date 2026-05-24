@@ -334,6 +334,7 @@ GameConfig.Remotes = {
         "NotifyPlayer",
         "EconomyUpdate",
         "ShopUpdate",
+        "DayPhaseUpdate",
     },
     Functions = {
         "GetPlotData",

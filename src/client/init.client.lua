@@ -63,6 +63,9 @@ ShopController:init(UIController)
 local NightToggleController = require(script.Controllers.NightToggleController)
 NightToggleController:init(UIController)
 
+local DayPhaseController = require(script.Controllers.DayPhaseController)
+DayPhaseController:init(UIController)
+
 local SoundController = require(script.Controllers.SoundController)
 SoundController:init()
 
@@ -119,8 +122,11 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
             PlotController:confirmPlacement()
         end
     elseif input.KeyCode == Enum.KeyCode.N then
-        -- Night toggle (if enabled)
-        NightToggleController:toggle()
+        if DayPhaseController:isNightAllowed() then
+            NightToggleController:toggle()
+        else
+            UIController:showNotification("Night mode unlocks in the evening.")
+        end
     elseif input.KeyCode == Enum.KeyCode.Escape then
         -- Close any open panel
         UIController:hideAllPanels()

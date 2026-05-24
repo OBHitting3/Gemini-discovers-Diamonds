@@ -88,6 +88,13 @@ function FashionService:_startEventLoop()
 end
 
 function FashionService:startEvent(theme: string?)
+    local DayPhaseConfig = require(ReplicatedStorage:WaitForChild("DayPhaseConfig"))
+    local phase = DayPhaseConfig.getCurrentPhase()
+    if not DayPhaseConfig.getModifiers(phase).fashionEventsAllowed then
+        print("[FashionService] Event skipped (phase: " .. phase .. ")")
+        return
+    end
+
     -- Rotate themes
     self._themeIndex += 1
     if self._themeIndex > #GameConfig.FashionThemes then

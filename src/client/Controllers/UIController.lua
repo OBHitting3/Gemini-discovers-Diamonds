@@ -53,6 +53,13 @@ function UIController:init(screenGui: ScreenGui)
     print("[UIController] Initialized")
 end
 
+--- Optional hook from DayPhaseController (phase hint chip / toast).
+function UIController:setDayPhaseHint(hint: any)
+    if hint and hint.title then
+        self:showNotification(hint.title)
+    end
+end
+
 ---------------------------------------------------------------------------
 -- PANEL MANAGEMENT
 ---------------------------------------------------------------------------
