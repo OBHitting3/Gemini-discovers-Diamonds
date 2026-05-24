@@ -30,7 +30,7 @@ function Test-FileExists($rel, $label) {
 
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan
-Write-Host " Palm Springs — Windows install audit" -ForegroundColor Cyan
+Write-Host " Palm Springs - Windows install audit" -ForegroundColor Cyan
 Write-Host " Repo: $Root" -ForegroundColor DarkGray
 Write-Host "========================================" -ForegroundColor Cyan
 
@@ -43,15 +43,15 @@ $required = @("git", "rokit", "rojo", "wally", "stylua", "selene")
 $missingRequired = @()
 foreach ($t in $required) {
     $r = Test-Tool $t
-    if ($r.ok) { Write-Host "  [OK]   $t — $($r.detail)" -ForegroundColor Green }
-    else { Write-Host "  [MISS] $t — $($r.detail)" -ForegroundColor Red; $missingRequired += $t }
+    if ($r.ok) { Write-Host "  [OK]   $t - $($r.detail)" -ForegroundColor Green }
+    else { Write-Host "  [MISS] $t - $($r.detail)" -ForegroundColor Red; $missingRequired += $t }
 }
 
 Write-Host "`n--- Optional CLI tools ---" -ForegroundColor Yellow
 foreach ($t in @("darklua", "remodel", "tarmac", "supabase")) {
     $r = Test-Tool $t
-    if ($r.ok) { Write-Host "  [OK]   $t — $($r.detail)" -ForegroundColor Green }
-    else { Write-Host "  [OPT]  $t — not installed" -ForegroundColor DarkYellow }
+    if ($r.ok) { Write-Host "  [OK]   $t - $($r.detail)" -ForegroundColor Green }
+    else { Write-Host "  [OPT]  $t - not installed" -ForegroundColor DarkYellow }
 }
 
 Write-Host "`n--- Rokit PATH ---" -ForegroundColor Yellow
@@ -64,7 +64,7 @@ if (Test-Path $rokitBin) {
         Write-Host "  [WARN] .rokit\bin NOT in User PATH (restart Cursor after adding)" -ForegroundColor Yellow
     }
 } else {
-    Write-Host "  [MISS] $rokitBin — run Rokit install script" -ForegroundColor Red
+    Write-Host "  [MISS] $rokitBin - run Rokit install script" -ForegroundColor Red
     $missingRequired += "rokit(install)"
 }
 
@@ -88,7 +88,7 @@ Write-Host "`n--- Wally packages ---" -ForegroundColor Yellow
 if (Test-Path (Join-Path $Root "Packages")) {
     Write-Host "  [OK]   Packages\ folder exists" -ForegroundColor Green
 } else {
-    Write-Host "  [INFO] Packages\ missing — run: wally install" -ForegroundColor DarkYellow
+    Write-Host "  [INFO] Packages\ missing - run: wally install" -ForegroundColor DarkYellow
 }
 
 Write-Host "`n--- External apps (manual check) ---" -ForegroundColor Yellow
@@ -101,14 +101,14 @@ foreach ($sp in $studioPaths) {
     if (Test-Path $sp) { $studioFound = $true; break }
 }
 if ($studioFound) { Write-Host "  [OK]   Roblox Studio (Versions folder found)" -ForegroundColor Green }
-else { Write-Host "  [???]  Roblox Studio — install from create.roblox.com" -ForegroundColor Yellow }
+else { Write-Host "  [???]  Roblox Studio - install from create.roblox.com" -ForegroundColor Yellow }
 
 $blender = @(
     "${env:ProgramFiles}\Blender Foundation",
     "${env:ProgramFiles(x86)}\Blender Foundation"
 ) | Where-Object { Test-Path $_ }
 if ($blender) { Write-Host "  [OK]   Blender folder found" -ForegroundColor Green }
-else { Write-Host "  [OPT]  Blender — not detected (optional for art)" -ForegroundColor DarkYellow }
+else { Write-Host "  [OPT]  Blender - not detected (optional for art)" -ForegroundColor DarkYellow }
 
 Write-Host "`n--- Summary ---" -ForegroundColor Cyan
 if ($missingRequired.Count -eq 0) {
@@ -127,7 +127,8 @@ if ($missingRequired.Count -eq 0) {
 }
 
 Write-Host "`n  Doc: docs\karlux\07-step-by-step-install-windows.md" -ForegroundColor DarkGray
-Write-Host "========================================`n" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host ""
 
 if ($missingRequired.Count -gt 0) { exit 1 }
 exit 0
