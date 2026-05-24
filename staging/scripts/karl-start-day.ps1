@@ -59,7 +59,9 @@ if (Test-Path $manifest) {
 $coreLoop = Join-Path $Root "staging\src\server\Services\CoreLoopService.lua"
 $srcCore = Join-Path $Root "src\server\Services\CoreLoopService.lua"
 if ((Test-Path $coreLoop) -and -not (Test-Path $srcCore)) {
-    Write-Host "  [TODO] Cursor+Karl: merge day-phase slice (PR #24) - CoreLoop in staging only" -ForegroundColor Yellow
+    Write-Host "  [TODO] Merge day-phase slice - CoreLoop in staging only" -ForegroundColor Yellow
+} elseif (Test-Path $srcCore) {
+    Write-Host "  [OK]   Day-phase CoreLoop merged to src/" -ForegroundColor Green
 }
 
 if (Test-Path (Join-Path $Root "staging\supabase\migrations")) {

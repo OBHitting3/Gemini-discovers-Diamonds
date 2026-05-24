@@ -290,6 +290,11 @@ end
 function TestCommands:_cmdStatus(player: Player)
     self:_notify(player, "=== SYSTEM STATUS ===")
 
+    local DayPhaseConfig = require(ReplicatedStorage:WaitForChild("DayPhaseConfig"))
+    local phase = DayPhaseConfig.getCurrentPhase()
+    local hint = DayPhaseConfig.getHint(phase)
+    self:_notify(player, "Day phase: " .. phase .. " - " .. hint.title)
+
     -- Economy
     local data = self._services.economy:getPlayerData(player)
     if data then
