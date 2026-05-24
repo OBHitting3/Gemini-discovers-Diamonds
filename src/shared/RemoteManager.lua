@@ -7,12 +7,12 @@
 ]]
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService        = game:GetService("RunService")
+local RunService = game:GetService("RunService")
 
 local GameConfig = require(script.Parent.GameConfig)
 
 local RemoteManager = {}
-RemoteManager._folder = nil   -- Folder instance holding all remotes
+RemoteManager._folder = nil -- Folder instance holding all remotes
 
 ---------------------------------------------------------------------------
 -- INITIALIZATION (server-only)
@@ -43,9 +43,13 @@ function RemoteManager:init()
     end
 
     self._folder = folder
-    print("[RemoteManager] Initialized " ..
-          #GameConfig.Remotes.Events .. " events + " ..
-          #GameConfig.Remotes.Functions .. " functions")
+    print(
+        "[RemoteManager] Initialized "
+            .. #GameConfig.Remotes.Events
+            .. " events + "
+            .. #GameConfig.Remotes.Functions
+            .. " functions"
+    )
 end
 
 ---------------------------------------------------------------------------
@@ -54,7 +58,9 @@ end
 
 --- Resolves the shared remotes folder, waiting on client if needed.
 function RemoteManager:_getFolder()
-    if self._folder then return self._folder end
+    if self._folder then
+        return self._folder
+    end
 
     if RunService:IsClient() then
         self._folder = ReplicatedStorage:WaitForChild("PalmSpringsRemotes", 30)

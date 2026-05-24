@@ -21,8 +21,8 @@ export type AssetKind = "MeshPart" | "Model" | "Sound" | "Decal" | "Animation"
 
 export type AssetEntry = {
     kind: AssetKind,
-    rbxassetid: string?,       -- rbxassetid://...
-    replicatedPath: string?,   -- e.g. "Assets.Furniture.eames_lounge"
+    rbxassetid: string?, -- rbxassetid://...
+    replicatedPath: string?, -- e.g. "Assets.Furniture.eames_lounge"
     tags: { string }?,
     partEstimate: number?,
     sourcePack: string?,
@@ -83,7 +83,9 @@ end
 
 function AssetRegistry:hasImportedAsset(slug: string): boolean
     local entry = self._entries[slug]
-    if not entry then return false end
+    if not entry then
+        return false
+    end
     if entry.rbxassetid and entry.rbxassetid ~= "" and not string.find(entry.rbxassetid, "//0") then
         return true
     end
@@ -117,7 +119,9 @@ end
 
 function AssetRegistry:applyCollectionTags(instance: Instance, slug: string)
     local entry = self._entries[slug]
-    if not entry or not entry.tags then return end
+    if not entry or not entry.tags then
+        return
+    end
     local CollectionService = game:GetService("CollectionService")
     for _, tag in ipairs(entry.tags) do
         CollectionService:AddTag(instance, tag)
@@ -136,12 +140,16 @@ end
 ---------------------------------------------------------------------------
 function AssetRegistry:_resolvePath(dotPath: string): Instance?
     local root = ReplicatedStorage:FindFirstChild("Assets")
-    if not root then return nil end
+    if not root then
+        return nil
+    end
     local current: Instance = root
     for segment in string.gmatch(dotPath, "[^%.]+") do
         if segment ~= "Assets" then
             local child = current:FindFirstChild(segment)
-            if not child then return nil end
+            if not child then
+                return nil
+            end
             current = child
         end
     end

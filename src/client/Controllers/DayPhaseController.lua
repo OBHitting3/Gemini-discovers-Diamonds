@@ -9,7 +9,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local DayPhaseConfig = require(ReplicatedStorage:WaitForChild("DayPhaseConfig"))
-local GameConfig     = require(ReplicatedStorage:WaitForChild("GameConfig"))
+local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
 
 local DayPhaseController = {}
 
@@ -52,10 +52,14 @@ end
 ---------------------------------------------------------------------------
 function DayPhaseController:_bindRemote()
     local folder = ReplicatedStorage:WaitForChild("PalmSpringsRemotes", 30)
-    if not folder then return end
+    if not folder then
+        return
+    end
 
     local ev = folder:WaitForChild("DayPhaseUpdate", 30)
-    if not ev then return end
+    if not ev then
+        return
+    end
 
     ev.OnClientEvent:Connect(function(payload)
         self:_onPhaseUpdate(payload)
@@ -74,7 +78,9 @@ end
 function DayPhaseController:_createPhaseLabel()
     local player = game:GetService("Players").LocalPlayer
     local gui = player:WaitForChild("PlayerGui"):FindFirstChild("MainHUD")
-    if not gui then return end
+    if not gui then
+        return
+    end
 
     local existing = gui:FindFirstChild("DayPhaseChip")
     if existing then
@@ -108,7 +114,9 @@ function DayPhaseController:_createPhaseLabel()
 end
 
 function DayPhaseController:_updateLabel(payload: any)
-    if not self._phaseLabel then return end
+    if not self._phaseLabel then
+        return
+    end
     local hint = payload.hint
     if hint then
         self._phaseLabel.Text = payload.phase .. " - " .. hint.title

@@ -16,9 +16,9 @@ DayPhaseConfig.Phases = { "Morning", "Afternoon", "Evening" } :: { DayPhase }
 
 -- Server clock boundaries (hour, 0–23). Uses os.date("*t").hour on server.
 DayPhaseConfig.Boundaries = {
-    Morning   = { startHour = 6,  endHour = 11 },
+    Morning = { startHour = 6, endHour = 11 },
     Afternoon = { startHour = 11, endHour = 17 },
-    Evening   = { startHour = 17, endHour = 22 },
+    Evening = { startHour = 17, endHour = 22 },
 }
 
 -- Outside 22–6 rolls to Morning (desert "early light" — keeps garden loop alive)
@@ -30,17 +30,17 @@ DayPhaseConfig.DefaultPhase = "Morning" :: DayPhase
 DayPhaseConfig.Hints = {
     Morning = {
         title = "Morning in the Desert",
-        body  = "Tend the community garden and stock your El Paseo boutique.",
+        body = "Tend the community garden and stock your El Paseo boutique.",
         actions = { "garden", "shop" },
     },
     Afternoon = {
         title = "Afternoon Glow",
-        body  = "Decorate your MCM home and curate poolside outfits.",
+        body = "Decorate your MCM home and curate poolside outfits.",
         actions = { "plot", "fashion_prep" },
     },
     Evening = {
         title = "Evening Soirée",
-        body  = "Join the runway, trade on the boulevard, catch the festival.",
+        body = "Join the runway, trade on the boulevard, catch the festival.",
         actions = { "fashion", "shop", "events" },
     },
 }
@@ -51,21 +51,21 @@ DayPhaseConfig.Hints = {
 DayPhaseConfig.Modifiers = {
     Morning = {
         gardenGrowthMultiplier = 1.25,
-        fashionEventsAllowed   = false,
-        nightToggleAllowed     = false,
-        shopRestockReminder    = true,
+        fashionEventsAllowed = false,
+        nightToggleAllowed = false,
+        shopRestockReminder = true,
     },
     Afternoon = {
         gardenGrowthMultiplier = 1.0,
-        fashionEventsAllowed   = false,  -- prep only; FashionService timer still runs
-        nightToggleAllowed     = false,
-        shopRestockReminder    = false,
+        fashionEventsAllowed = false, -- prep only; FashionService timer still runs
+        nightToggleAllowed = false,
+        shopRestockReminder = false,
     },
     Evening = {
         gardenGrowthMultiplier = 1.0,
-        fashionEventsAllowed   = true,
-        nightToggleAllowed     = true,
-        shopRestockReminder    = false,
+        fashionEventsAllowed = true,
+        nightToggleAllowed = true,
+        shopRestockReminder = false,
     },
 }
 
@@ -73,14 +73,20 @@ DayPhaseConfig.Modifiers = {
 -- Resolve phase from server hour
 ---------------------------------------------------------------------------
 function DayPhaseConfig.getPhaseFromHour(hour: number): DayPhase
-    if hour >= DayPhaseConfig.Boundaries.Morning.startHour
-        and hour < DayPhaseConfig.Boundaries.Morning.endHour then
+    if
+        hour >= DayPhaseConfig.Boundaries.Morning.startHour
+        and hour < DayPhaseConfig.Boundaries.Morning.endHour
+    then
         return "Morning"
-    elseif hour >= DayPhaseConfig.Boundaries.Afternoon.startHour
-        and hour < DayPhaseConfig.Boundaries.Afternoon.endHour then
+    elseif
+        hour >= DayPhaseConfig.Boundaries.Afternoon.startHour
+        and hour < DayPhaseConfig.Boundaries.Afternoon.endHour
+    then
         return "Afternoon"
-    elseif hour >= DayPhaseConfig.Boundaries.Evening.startHour
-        and hour < DayPhaseConfig.Boundaries.Evening.endHour then
+    elseif
+        hour >= DayPhaseConfig.Boundaries.Evening.startHour
+        and hour < DayPhaseConfig.Boundaries.Evening.endHour
+    then
         return "Evening"
     end
     return DayPhaseConfig.DefaultPhase

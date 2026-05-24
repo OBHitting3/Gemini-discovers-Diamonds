@@ -5,18 +5,18 @@
     toast notifications, and HUD updates.
 ]]
 
-local Players        = game:GetService("Players")
-local TweenService   = game:GetService("TweenService")
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
 
-local GameConfig    = require(ReplicatedStorage:WaitForChild("GameConfig"))
+local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
 local RemoteManager = require(ReplicatedStorage:WaitForChild("RemoteManager"))
 
 local UIController = {}
 
 -- References
 UIController._screenGui = nil
-UIController._panels = {}          -- panelName → Frame
+UIController._panels = {} -- panelName → Frame
 UIController._activePanel = nil
 UIController._hudFrame = nil
 UIController._notificationQueue = {}
@@ -123,7 +123,14 @@ function UIController:_animateIn(frame: Frame)
     local tween = TweenService:Create(
         frame,
         TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-        { Position = UDim2.new(0.5, -frame.AbsoluteSize.X / 2, frame.Position.Y.Scale, frame.Position.Y.Offset) }
+        {
+            Position = UDim2.new(
+                0.5,
+                -frame.AbsoluteSize.X / 2,
+                frame.Position.Y.Scale,
+                frame.Position.Y.Offset
+            ),
+        }
     )
 
     -- Simpler approach: slide from right
@@ -172,14 +179,16 @@ function UIController:_processNotifications()
         while #self._notificationQueue > 0 do
             local notif = table.remove(self._notificationQueue, 1)
             self:_displayNotification(notif.message, notif.duration)
-            task.wait(0.5)  -- gap between notifications
+            task.wait(0.5) -- gap between notifications
         end
         self._isProcessingNotifications = false
     end)
 end
 
 function UIController:_displayNotification(message: string, duration: number)
-    if not self._screenGui then return end
+    if not self._screenGui then
+        return
+    end
 
     local C = GameConfig.Colors
 

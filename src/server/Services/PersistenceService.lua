@@ -13,20 +13,20 @@
     Fallback: if Supabase is unavailable, all data stays in DataStore.
 ]]
 
-local Players          = game:GetService("Players")
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
 local ProfileServiceWrapper = require(ReplicatedStorage:WaitForChild("ProfileServiceWrapper"))
-local SupabaseClient        = require(ReplicatedStorage:WaitForChild("SupabaseClient"))
-local GameConfig            = require(ReplicatedStorage:WaitForChild("GameConfig"))
-local Utilities             = require(ReplicatedStorage:WaitForChild("Utilities"))
+local SupabaseClient = require(ReplicatedStorage:WaitForChild("SupabaseClient"))
+local Utilities = require(ReplicatedStorage:WaitForChild("Utilities"))
 
 local PersistenceService = {}
 
 -- Internal state
 PersistenceService._profileStore = nil
 PersistenceService._supabase = nil
-PersistenceService._supabaseQueue = {}   -- batch queue for cold-path writes
+PersistenceService._supabaseQueue = {} -- batch queue for cold-path writes
 PersistenceService._autoSaveRunning = false
 
 ---------------------------------------------------------------------------
@@ -37,7 +37,7 @@ function PersistenceService:init()
     -- Create DataStore profile store
     self._profileStore = ProfileServiceWrapper.ProfileStore.new(
         "PalmSpringsParadise_v1",
-        nil  -- uses Types.DefaultPlayerData as template
+        nil -- uses Types.DefaultPlayerData as template
     )
 
     -- Create Supabase client (auto-detects mock mode in Play Solo)
@@ -148,7 +148,9 @@ end
 ---------------------------------------------------------------------------
 
 function PersistenceService:_startSupabaseSync()
-    if self._autoSaveRunning then return end
+    if self._autoSaveRunning then
+        return
+    end
     self._autoSaveRunning = true
 
     task.spawn(function()
@@ -160,7 +162,9 @@ function PersistenceService:_startSupabaseSync()
 end
 
 function PersistenceService:_processSupabaseQueue()
-    if #self._supabaseQueue == 0 then return end
+    if #self._supabaseQueue == 0 then
+        return
+    end
 
     local batch = self._supabaseQueue
     self._supabaseQueue = {}
@@ -242,8 +246,8 @@ end
 
 function PersistenceService:_loadSupabaseData(player: Player, data: table)
     -- Attempt to load detailed plot layout from Supabase
-    local ok, result = self._supabase:select("plot_layouts",
-        "user_id=eq." .. player.UserId .. "&select=*")
+    local ok, result =
+        self._supabase:select("plot_layouts", "user_id=eq." .. player.UserId .. "&select=*")
 
     if ok and type(result) == "table" and #result > 0 then
         -- Merge Supabase data into player data

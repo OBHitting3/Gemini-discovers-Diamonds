@@ -8,13 +8,13 @@
     real uploaded audio after publish.
 ]]
 
-local Players           = game:GetService("Players")
-local SoundService      = game:GetService("SoundService")
-local TweenService      = game:GetService("TweenService")
-local RunService        = game:GetService("RunService")
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local SoundService = game:GetService("SoundService")
+local TweenService = game:GetService("TweenService")
 
-local GameConfig    = require(ReplicatedStorage:WaitForChild("GameConfig"))
+local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
 local RemoteManager = require(ReplicatedStorage:WaitForChild("RemoteManager"))
 
 local SoundController = {}
@@ -32,19 +32,19 @@ SoundController._masterVolume = 0.5
 local SOUND_DEFS = {
     -- Ambient loops
     desert_ambience = {
-        id = "rbxassetid://9112854440",  -- gentle wind / nature
+        id = "rbxassetid://9112854440", -- gentle wind / nature
         volume = 0.3,
         looped = true,
         group = "ambient",
     },
     pool_water = {
-        id = "rbxassetid://6677463651",  -- water lapping
+        id = "rbxassetid://6677463651", -- water lapping
         volume = 0.15,
         looped = true,
         group = "ambient",
     },
     boulevard_chatter = {
-        id = "rbxassetid://9112854440",  -- light ambience
+        id = "rbxassetid://9112854440", -- light ambience
         volume = 0.1,
         looped = true,
         group = "ambient",
@@ -52,19 +52,19 @@ local SOUND_DEFS = {
 
     -- UI sounds
     ui_click = {
-        id = "rbxassetid://6895079853",  -- soft click
+        id = "rbxassetid://6895079853", -- soft click
         volume = 0.4,
         looped = false,
         group = "ui",
     },
     ui_success = {
-        id = "rbxassetid://6895079853",  -- success chime
+        id = "rbxassetid://6895079853", -- success chime
         volume = 0.5,
         looped = false,
         group = "ui",
     },
     ui_purchase = {
-        id = "rbxassetid://6895079853",  -- cash register
+        id = "rbxassetid://6895079853", -- cash register
         volume = 0.5,
         looped = false,
         group = "ui",
@@ -72,31 +72,31 @@ local SOUND_DEFS = {
 
     -- Interaction sounds
     plant_seed = {
-        id = "rbxassetid://6895079853",  -- soft thud
+        id = "rbxassetid://6895079853", -- soft thud
         volume = 0.4,
         looped = false,
         group = "sfx",
     },
     water_splash = {
-        id = "rbxassetid://6677463651",  -- water pour
+        id = "rbxassetid://6677463651", -- water pour
         volume = 0.5,
         looped = false,
         group = "sfx",
     },
     harvest_pop = {
-        id = "rbxassetid://6895079853",  -- pop
+        id = "rbxassetid://6895079853", -- pop
         volume = 0.5,
         looped = false,
         group = "sfx",
     },
     fashion_fanfare = {
-        id = "rbxassetid://6895079853",  -- fanfare
+        id = "rbxassetid://6895079853", -- fanfare
         volume = 0.6,
         looped = false,
         group = "sfx",
     },
     level_up = {
-        id = "rbxassetid://6895079853",  -- ascending chime
+        id = "rbxassetid://6895079853", -- ascending chime
         volume = 0.7,
         looped = false,
         group = "sfx",
@@ -136,8 +136,7 @@ function SoundController:init()
     -- Listen for game events that trigger sounds
     self:_connectEventSounds()
 
-    print("[SoundController] Initialized — " ..
-          tostring(self:_countSounds()) .. " sounds loaded")
+    print("[SoundController] Initialized — " .. tostring(self:_countSounds()) .. " sounds loaded")
 end
 
 ---------------------------------------------------------------------------
@@ -157,10 +156,13 @@ end
 --- Stop a sound by name (with optional fade).
 function SoundController:stopSound(name: string, fadeTime: number?)
     local sound = self._sounds[name]
-    if not sound or not sound.IsPlaying then return end
+    if not sound or not sound.IsPlaying then
+        return
+    end
 
     if fadeTime and fadeTime > 0 then
-        local tween = TweenService:Create(sound,
+        local tween = TweenService:Create(
+            sound,
             TweenInfo.new(fadeTime, Enum.EasingStyle.Linear),
             { Volume = 0 }
         )
@@ -211,15 +213,23 @@ function SoundController:_startZoneDetection()
         while true do
             task.wait(2)
             local player = Players.LocalPlayer
-            if not player or not player.Character then continue end
+            if not player or not player.Character then
+                continue
+            end
             local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-            if not hrp then continue end
+            if not hrp then
+                continue
+            end
 
             local pos = hrp.Position
             local newZone = "desert"
 
             -- Check if near El Paseo boulevard
-            if math.abs(pos.X) < 30 and pos.Z > world.ElPaseoStart.Z and pos.Z < world.ElPaseoEnd.Z then
+            if
+                math.abs(pos.X) < 30
+                and pos.Z > world.ElPaseoStart.Z
+                and pos.Z < world.ElPaseoEnd.Z
+            then
                 newZone = "boulevard"
             -- Check if near any pool (residential plots)
             elseif self:_isNearPool(pos) then
@@ -268,10 +278,9 @@ function SoundController:_transitionZone(fromZone: string, toZone: string)
     local desertSound = self._sounds.desert_ambience
     if desertSound then
         local targetVol = (toZone == "desert") and 0.3 or 0.1
-        TweenService:Create(desertSound,
-            TweenInfo.new(1, Enum.EasingStyle.Linear),
-            { Volume = targetVol }
-        ):Play()
+        TweenService
+            :Create(desertSound, TweenInfo.new(1, Enum.EasingStyle.Linear), { Volume = targetVol })
+            :Play()
     end
 end
 
@@ -299,7 +308,7 @@ function SoundController:_connectEventSounds()
             if data.action == "started" then
                 self:playSFX("fashion_fanfare")
             elseif data.action == "ended" then
-                self:playSFX("fashion_fanfare")
+                self:playSFX("ui_success")
             end
         end)
     end
@@ -319,7 +328,9 @@ end
 
 function SoundController:_countSounds(): number
     local count = 0
-    for _ in pairs(self._sounds) do count += 1 end
+    for _ in pairs(self._sounds) do
+        count += 1
+    end
     return count
 end
 

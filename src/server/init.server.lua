@@ -18,7 +18,7 @@ print("===========================================")
 print("  PALM SPRINGS PARADISE — Server Starting  ")
 print("===========================================")
 
-local Players          = game:GetService("Players")
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- Wait for shared modules to replicate
@@ -57,10 +57,10 @@ end
 -- 4. ENVIRONMENT BUILDERS
 ---------------------------------------------------------------------------
 local EnvironmentBuilder = require(script.Builders.EnvironmentBuilder)
-local HomeBuilder        = require(script.Builders.HomeBuilder)
-local StorefrontBuilder  = require(script.Builders.StorefrontBuilder)
-local GardenBuilder      = require(script.Builders.GardenBuilder)
-local RunwayBuilder      = require(script.Builders.RunwayBuilder)
+local GardenBuilder = require(script.Builders.GardenBuilder)
+local HomeBuilder = require(script.Builders.HomeBuilder)
+local RunwayBuilder = require(script.Builders.RunwayBuilder)
+local StorefrontBuilder = require(script.Builders.StorefrontBuilder)
 
 local totalEnvParts = 0
 
@@ -107,14 +107,18 @@ end
 
 local GardenService = require(script.Services.GardenService)
 local gardenSvcOk, gardenSvcErr = pcall(function()
-    GardenService:init(EconomyService, GardenBuilder, PersistenceService and PersistenceService:getSupabaseClient())
+    GardenService:init(
+        EconomyService,
+        GardenBuilder,
+        PersistenceService and PersistenceService:getSupabaseClient()
+    )
 end)
 if not gardenSvcOk then
     warn("[Bootstrap] GardenService init failed: " .. tostring(gardenSvcErr))
 end
 
 local WebhookClient = require(ReplicatedStorage.WebhookClient)
-local webhooks = WebhookClient.new()  -- placeholder mode
+local webhooks = WebhookClient.new() -- placeholder mode
 
 local ShopService = require(script.Services.ShopService)
 local shopOk, shopErr = pcall(function()
@@ -225,8 +229,7 @@ local function onPlayerAdded(player: Player)
     end)
 
     if not loadOk or not data then
-        warn("[Bootstrap] Failed to load data for " .. player.Name ..
-             ": " .. tostring(loadErr))
+        warn("[Bootstrap] Failed to load data for " .. player.Name .. ": " .. tostring(loadErr))
         -- Create minimal data so player can still play
         data = {
             userId = player.UserId,
@@ -263,7 +266,7 @@ local function onPlayerAdded(player: Player)
 
     -- Send welcome notification
     task.delay(2, function()
-        if player.Parent then  -- still in game
+        if player.Parent then -- still in game
             local DayPhaseConfig = require(ReplicatedStorage:WaitForChild("DayPhaseConfig"))
             local welcome = "Welcome to Palm Springs Paradise! Head to El Paseo to explore."
             if DayPhaseConfig.getCurrentPhase() == "Evening" then

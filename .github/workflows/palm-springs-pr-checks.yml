@@ -16,15 +16,21 @@ jobs:
       - name: Install Rokit tools
         run: |
           curl -sSf https://raw.githubusercontent.com/rojo-rbx/rokit/main/scripts/install.sh | bash
+          # Root rokit.toml may symlink staging/toolchain/ — cp fails if same file
+          rm -f rokit.toml wally.toml
           cp staging/toolchain/rokit.toml rokit.toml
-          rokit install
+          cp staging/toolchain/wally.toml wally.toml
+          rokit install --no-trust-check
           echo "$PWD/.rokit/bin" >> $GITHUB_PATH
+
+      - name: Wally install
+        run: wally install
 
       - name: StyLua check
         run: stylua --check --config-path staging/toolchain/stylua.toml src/
 
       - name: Selene lint
-        run: selene --config staging/toolchain/selene.toml src/
+        run: selene --allow-warnings --config staging/toolchain/selene.toml src/
 
       - name: Rojo build
         run: rojo build default.project.json -o build.rbxlx

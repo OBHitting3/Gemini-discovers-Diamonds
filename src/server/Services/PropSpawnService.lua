@@ -3,7 +3,6 @@
     Spawns procedural (or imported) props for Play Solo testing and future gameplay.
 ]]
 
-local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
@@ -28,9 +27,13 @@ end
 
 function PropSpawnService:getSpawnPosition(player: Player): Vector3?
     local char = player.Character
-    if not char then return nil end
+    if not char then
+        return nil
+    end
     local hrp = char:FindFirstChild("HumanoidRootPart")
-    if not hrp then return nil end
+    if not hrp then
+        return nil
+    end
     return hrp.Position + hrp.CFrame.LookVector * 10 + Vector3.new(0, 1, 0)
 end
 
@@ -40,17 +43,15 @@ function PropSpawnService:spawnProp(player: Player, slugOrItemId: string): (bool
         return false, "Character not loaded."
     end
 
-    local slug = slugOrItemId
     local def = ProceduralAssetCatalog.getBySlug(slugOrItemId)
         or ProceduralAssetCatalog.getByItemCatalogId(slugOrItemId)
-    if def then
-        slug = def.slug
-    end
+    local buildSlug = if def then def.slug else slugOrItemId
 
     local model: Model? = nil
     local partCount = 0
 
-    local imported = AssetRegistry:getTemplate(slugOrItemId)
+    local imported = AssetRegistry:getTemplate(buildSlug)
+        or AssetRegistry:getTemplate(slugOrItemId)
         or (def and def.itemCatalogId and AssetRegistry:getTemplate(def.itemCatalogId))
     if imported then
         model = imported :: Model
@@ -68,7 +69,7 @@ function PropSpawnService:spawnProp(player: Player, slugOrItemId: string): (bool
             end
         end
     else
-        local built, parts = PropBuilder:build(slugOrItemId, self._propsFolder, CFrame.new(position))
+        local built, parts = PropBuilder:build(buildSlug, self._propsFolder, CFrame.new(position))
         model = built
         partCount = parts
     end
@@ -94,11 +95,17 @@ end
 function PropSpawnService:listPropsForPlayer(player: Player)
     RemoteManager:fireClient("NotifyPlayer", player, "=== Procedural 3D props (prompt-built) ===")
     for _, def in ipairs(ProceduralAssetCatalog.Assets) do
-        RemoteManager:fireClient("NotifyPlayer", player,
-            "  " .. def.slug .. " — " .. def.displayName)
+        RemoteManager:fireClient(
+            "NotifyPlayer",
+            player,
+            "  " .. def.slug .. " — " .. def.displayName
+        )
     end
-    RemoteManager:fireClient("NotifyPlayer", player,
-        "Spawn: /spawnprop [slug]  |  Place on plot: /placefurniture [itemId]")
+    RemoteManager:fireClient(
+        "NotifyPlayer",
+        player,
+        "Spawn: /spawnprop [slug]  |  Place on plot: /placefurniture [itemId]"
+    )
 end
 
 return PropSpawnService

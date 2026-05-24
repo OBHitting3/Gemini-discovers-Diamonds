@@ -18,7 +18,7 @@ local CollectionService = game:GetService("CollectionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
-local Utilities  = require(ReplicatedStorage:WaitForChild("Utilities"))
+local Utilities = require(ReplicatedStorage:WaitForChild("Utilities"))
 
 local C = GameConfig.Colors
 
@@ -60,10 +60,22 @@ local function buildPool(parent, origin: CFrame, sizeX: number, sizeZ: number): 
     -- Pool rim
     local rimThickness = 0.4
     local rimParts = {
-        { Vector3.new(sizeX + rimThickness * 2, 0.3, rimThickness), CFrame.new(0, 0.15, sizeZ / 2 + rimThickness / 2) },
-        { Vector3.new(sizeX + rimThickness * 2, 0.3, rimThickness), CFrame.new(0, 0.15, -sizeZ / 2 - rimThickness / 2) },
-        { Vector3.new(rimThickness, 0.3, sizeZ), CFrame.new(sizeX / 2 + rimThickness / 2, 0.15, 0) },
-        { Vector3.new(rimThickness, 0.3, sizeZ), CFrame.new(-sizeX / 2 - rimThickness / 2, 0.15, 0) },
+        {
+            Vector3.new(sizeX + rimThickness * 2, 0.3, rimThickness),
+            CFrame.new(0, 0.15, sizeZ / 2 + rimThickness / 2),
+        },
+        {
+            Vector3.new(sizeX + rimThickness * 2, 0.3, rimThickness),
+            CFrame.new(0, 0.15, -sizeZ / 2 - rimThickness / 2),
+        },
+        {
+            Vector3.new(rimThickness, 0.3, sizeZ),
+            CFrame.new(sizeX / 2 + rimThickness / 2, 0.15, 0),
+        },
+        {
+            Vector3.new(rimThickness, 0.3, sizeZ),
+            CFrame.new(-sizeX / 2 - rimThickness / 2, 0.15, 0),
+        },
     }
     for i, rim in ipairs(rimParts) do
         Utilities.createPart({
@@ -114,7 +126,13 @@ local function buildBreezeScreen(parent, origin: CFrame, width: number, height: 
 end
 
 --- Build a flat roof slab over a rectangular area.
-local function buildFlatRoof(parent, origin: CFrame, sizeX: number, sizeZ: number, height: number): number
+local function buildFlatRoof(
+    parent,
+    origin: CFrame,
+    sizeX: number,
+    sizeZ: number,
+    height: number
+): number
     Utilities.createPart({
         Name = "FlatRoof",
         Size = Vector3.new(sizeX + 2, 0.5, sizeZ + 2), -- slight overhang
@@ -128,7 +146,13 @@ local function buildFlatRoof(parent, origin: CFrame, sizeX: number, sizeZ: numbe
 end
 
 --- Build a butterfly roof (V-shape) over a rectangular area.
-local function buildButterflyRoof(parent, origin: CFrame, sizeX: number, sizeZ: number, height: number): number
+local function buildButterflyRoof(
+    parent,
+    origin: CFrame,
+    sizeX: number,
+    sizeZ: number,
+    height: number
+): number
     local parts = 0
     local halfX = sizeX / 2 + 1
     local overhang = sizeZ + 2
@@ -137,8 +161,7 @@ local function buildButterflyRoof(parent, origin: CFrame, sizeX: number, sizeZ: 
     Utilities.createPart({
         Name = "ButterflyRoof_L",
         Size = Vector3.new(halfX, 0.4, overhang),
-        CFrame = origin * CFrame.new(-halfX / 2, height + 1, 0) *
-                 CFrame.Angles(0, 0, math.rad(8)),
+        CFrame = origin * CFrame.new(-halfX / 2, height + 1, 0) * CFrame.Angles(0, 0, math.rad(8)),
         Color = C.RoofDarkGrey,
         Material = Enum.Material.Concrete,
         Tag = "Roof",
@@ -150,8 +173,7 @@ local function buildButterflyRoof(parent, origin: CFrame, sizeX: number, sizeZ: 
     Utilities.createPart({
         Name = "ButterflyRoof_R",
         Size = Vector3.new(halfX, 0.4, overhang),
-        CFrame = origin * CFrame.new(halfX / 2, height + 1, 0) *
-                 CFrame.Angles(0, 0, math.rad(-8)),
+        CFrame = origin * CFrame.new(halfX / 2, height + 1, 0) * CFrame.Angles(0, 0, math.rad(-8)),
         Color = C.RoofDarkGrey,
         Material = Enum.Material.Concrete,
         Tag = "Roof",
@@ -178,7 +200,13 @@ local function buildGlassWall(parent, origin: CFrame, width: number, height: num
 end
 
 --- Build a solid wall.
-local function buildWall(parent, origin: CFrame, width: number, height: number, color: Color3?): number
+local function buildWall(
+    parent,
+    origin: CFrame,
+    width: number,
+    height: number,
+    color: Color3?
+): number
     Utilities.createPart({
         Name = "Wall",
         Size = Vector3.new(width, height, 0.5),
@@ -223,7 +251,12 @@ local function buildKaufmann(plotPos: Vector3): (Model, number)
     -- Back wall
     parts += buildWall(model, mainOrigin * CFrame.new(0, 0, -8), 24, wallH)
     -- Left wall
-    parts += buildWall(model, mainOrigin * CFrame.new(-12, 0, 0) * CFrame.Angles(0, math.rad(90), 0), 16, wallH)
+    parts += buildWall(
+        model,
+        mainOrigin * CFrame.new(-12, 0, 0) * CFrame.Angles(0, math.rad(90), 0),
+        16,
+        wallH
+    )
     -- Glass front (facing pool)
     parts += buildGlassWall(model, mainOrigin * CFrame.new(0, 0, 8), 24, wallH)
 
@@ -231,7 +264,12 @@ local function buildKaufmann(plotPos: Vector3): (Model, number)
     local wingOrigin = CFrame.new(plotPos) * CFrame.new(12, 0, 2)
     parts += buildFloor(model, wingOrigin, 12, 12)
     parts += buildWall(model, wingOrigin * CFrame.new(0, 0, -6), 12, wallH)
-    parts += buildWall(model, wingOrigin * CFrame.new(6, 0, 0) * CFrame.Angles(0, math.rad(90), 0), 12, wallH)
+    parts += buildWall(
+        model,
+        wingOrigin * CFrame.new(6, 0, 0) * CFrame.Angles(0, math.rad(90), 0),
+        12,
+        wallH
+    )
     parts += buildGlassWall(model, wingOrigin * CFrame.new(0, 0, 6), 12, wallH)
 
     -- Flat roof over both wings
@@ -281,8 +319,18 @@ local function buildFrey(plotPos: Vector3): (Model, number)
     -- Back wall only solid wall
     parts += buildWall(model, origin * CFrame.new(0, 0, -7), 28, wallH)
     -- Glass on left, right, front
-    parts += buildGlassWall(model, origin * CFrame.new(-14, 0, 0) * CFrame.Angles(0, math.rad(90), 0), 14, wallH)
-    parts += buildGlassWall(model, origin * CFrame.new(14, 0, 0) * CFrame.Angles(0, math.rad(90), 0), 14, wallH)
+    parts += buildGlassWall(
+        model,
+        origin * CFrame.new(-14, 0, 0) * CFrame.Angles(0, math.rad(90), 0),
+        14,
+        wallH
+    )
+    parts += buildGlassWall(
+        model,
+        origin * CFrame.new(14, 0, 0) * CFrame.Angles(0, math.rad(90), 0),
+        14,
+        wallH
+    )
     parts += buildGlassWall(model, origin * CFrame.new(0, 0, 7), 28, wallH)
 
     -- Butterfly roof
@@ -293,7 +341,7 @@ local function buildFrey(plotPos: Vector3): (Model, number)
     parts += buildFloor(model, carportOrigin, 8, 10)
     parts += buildFlatRoof(model, carportOrigin, 8, 10, wallH - 1)
     -- Carport support columns (2 thin pillars)
-    for _, cx in ipairs({-3, 3}) do
+    for _, cx in ipairs({ -3, 3 }) do
         Utilities.createPart({
             Name = "CarportColumn",
             Size = Vector3.new(0.6, wallH - 1, 0.6),
@@ -348,12 +396,22 @@ local function buildWexler(plotPos: Vector3): (Model, number)
     -- Left wing (10 × 12)
     local leftOrigin = origin * CFrame.new(-10, 0, 1)
     parts += buildFloor(model, leftOrigin, 10, 12)
-    parts += buildWall(model, leftOrigin * CFrame.new(-5, 0, 0) * CFrame.Angles(0, math.rad(90), 0), 12, wallH)
+    parts += buildWall(
+        model,
+        leftOrigin * CFrame.new(-5, 0, 0) * CFrame.Angles(0, math.rad(90), 0),
+        12,
+        wallH
+    )
 
     -- Right wing (10 × 12)
     local rightOrigin = origin * CFrame.new(10, 0, 1)
     parts += buildFloor(model, rightOrigin, 10, 12)
-    parts += buildWall(model, rightOrigin * CFrame.new(5, 0, 0) * CFrame.Angles(0, math.rad(90), 0), 12, wallH)
+    parts += buildWall(
+        model,
+        rightOrigin * CFrame.new(5, 0, 0) * CFrame.Angles(0, math.rad(90), 0),
+        12,
+        wallH
+    )
 
     -- Dusty-pink accent wall (interior back of courtyard)
     parts += buildWall(model, backOrigin * CFrame.new(0, 0, 5.3), 10, wallH, C.DustyPink)
@@ -394,8 +452,18 @@ local function buildNeutra(plotPos: Vector3): (Model, number)
     -- Back wall
     parts += buildWall(model, origin * CFrame.new(0, 0, -6), 36, wallH)
     -- Side walls
-    parts += buildWall(model, origin * CFrame.new(-18, 0, 0) * CFrame.Angles(0, math.rad(90), 0), 12, wallH)
-    parts += buildWall(model, origin * CFrame.new(18, 0, 0) * CFrame.Angles(0, math.rad(90), 0), 12, wallH)
+    parts += buildWall(
+        model,
+        origin * CFrame.new(-18, 0, 0) * CFrame.Angles(0, math.rad(90), 0),
+        12,
+        wallH
+    )
+    parts += buildWall(
+        model,
+        origin * CFrame.new(18, 0, 0) * CFrame.Angles(0, math.rad(90), 0),
+        12,
+        wallH
+    )
     -- Full glass front
     parts += buildGlassWall(model, origin * CFrame.new(0, 0, 6), 36, wallH)
 
@@ -450,9 +518,9 @@ end
 
 local styleBuilders = {
     Kaufmann = buildKaufmann,
-    Frey     = buildFrey,
-    Wexler   = buildWexler,
-    Neutra   = buildNeutra,
+    Frey = buildFrey,
+    Wexler = buildWexler,
+    Neutra = buildNeutra,
 }
 
 --- Build a home on a plot.
@@ -482,8 +550,15 @@ function HomeBuilder:buildHome(plotPosition: Vector3, style: string): (Model?, n
         model.Parent = plotsFolder
 
         self._partCount += parts
-        print("[HomeBuilder] Built " .. style .. " at " ..
-              tostring(plotPosition) .. " (" .. parts .. " parts)")
+        print(
+            "[HomeBuilder] Built "
+                .. style
+                .. " at "
+                .. tostring(plotPosition)
+                .. " ("
+                .. parts
+                .. " parts)"
+        )
     end
 
     return model, parts

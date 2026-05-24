@@ -21,7 +21,13 @@ local C = GameConfig.Colors
 -- HELPER: Create styled button
 ---------------------------------------------------------------------------
 
-local function createButton(name: string, text: string, icon: string, parent: Instance, layoutOrder: number): TextButton
+local function createButton(
+    name: string,
+    text: string,
+    icon: string,
+    parent: Instance,
+    layoutOrder: number
+): TextButton
     local btn = Instance.new("TextButton")
     btn.Name = name
     btn.Size = UDim2.new(1, 0, 0, 48)

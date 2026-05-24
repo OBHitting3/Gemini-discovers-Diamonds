@@ -5,8 +5,8 @@
 ]]
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local GameConfig    = require(ReplicatedStorage:WaitForChild("GameConfig"))
-local ItemCatalog   = require(ReplicatedStorage:WaitForChild("ItemCatalog"))
+local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
+local ItemCatalog = require(ReplicatedStorage:WaitForChild("ItemCatalog"))
 
 local FashionUI = {}
 local C = GameConfig.Colors
@@ -205,8 +205,7 @@ function FashionUI:build(screenGui: ScreenGui, uiController, fashionController)
             task.wait(2)
             local event = fashionController:getCurrentEvent()
             if event then
-                eventStatus.Text = "ACTIVE: " .. event.theme ..
-                    "\nJoin and walk the runway!"
+                eventStatus.Text = "ACTIVE: " .. event.theme .. "\nJoin and walk the runway!"
                 eventStatus.BackgroundColor3 = Color3.fromRGB(220, 255, 220)
             else
                 eventStatus.Text = "No event currently active.\nEvents run every 10 minutes!"

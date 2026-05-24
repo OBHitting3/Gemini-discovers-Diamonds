@@ -14,12 +14,12 @@
     Part budget: < 1,500 for entire environment.
 ]]
 
-local Lighting         = game:GetService("Lighting")
 local CollectionService = game:GetService("CollectionService")
+local Lighting = game:GetService("Lighting")
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
-local Utilities  = require(ReplicatedStorage:WaitForChild("Utilities"))
+local Utilities = require(ReplicatedStorage:WaitForChild("Utilities"))
 
 local EnvironmentBuilder = {}
 EnvironmentBuilder._partCount = 0
@@ -49,8 +49,7 @@ function EnvironmentBuilder:buildAll(): number
     self:_buildDecorations()
     self:_buildSpawnPoint()
 
-    print("[EnvironmentBuilder] Build complete — " ..
-          self._partCount .. " parts used")
+    print("[EnvironmentBuilder] Build complete — " .. self._partCount .. " parts used")
     return self._partCount
 end
 
@@ -62,15 +61,15 @@ function EnvironmentBuilder:_buildSkyAndLighting()
     local cfg = GameConfig.Lighting
 
     -- Core Lighting properties
-    Lighting.ClockTime           = cfg.ClockTime
-    Lighting.Brightness          = cfg.Brightness
-    Lighting.GeographicLatitude  = cfg.GeographicLatitude
-    Lighting.Ambient             = cfg.Ambient
-    Lighting.OutdoorAmbient      = cfg.OutdoorAmbient
-    Lighting.ColorShift_Top      = cfg.ColorShift_Top
-    Lighting.ColorShift_Bottom   = cfg.ColorShift_Bottom
-    Lighting.GlobalShadows       = cfg.GlobalShadows
-    Lighting.ShadowSoftness      = cfg.ShadowSoftness
+    Lighting.ClockTime = cfg.ClockTime
+    Lighting.Brightness = cfg.Brightness
+    Lighting.GeographicLatitude = cfg.GeographicLatitude
+    Lighting.Ambient = cfg.Ambient
+    Lighting.OutdoorAmbient = cfg.OutdoorAmbient
+    Lighting.ColorShift_Top = cfg.ColorShift_Top
+    Lighting.ColorShift_Bottom = cfg.ColorShift_Bottom
+    Lighting.GlobalShadows = cfg.GlobalShadows
+    Lighting.ShadowSoftness = cfg.ShadowSoftness
 
     -- Technology (use pcall as some versions don't support all values)
     pcall(function()
@@ -84,11 +83,11 @@ function EnvironmentBuilder:_buildSkyAndLighting()
         atmo.Parent = Lighting
     end
     atmo.Density = cfg.Atmosphere.Density
-    atmo.Offset  = cfg.Atmosphere.Offset
-    atmo.Color   = cfg.Atmosphere.Color
-    atmo.Decay   = cfg.Atmosphere.Decay
-    atmo.Glare   = cfg.Atmosphere.Glare
-    atmo.Haze    = cfg.Atmosphere.Haze
+    atmo.Offset = cfg.Atmosphere.Offset
+    atmo.Color = cfg.Atmosphere.Color
+    atmo.Decay = cfg.Atmosphere.Decay
+    atmo.Glare = cfg.Atmosphere.Glare
+    atmo.Haze = cfg.Atmosphere.Haze
 
     -- Sky object (bright blue with default sun)
     local sky = Lighting:FindFirstChildOfClass("Sky")
@@ -97,8 +96,8 @@ function EnvironmentBuilder:_buildSkyAndLighting()
         sky.Parent = Lighting
     end
     sky.CelestialBodiesShown = true
-    sky.SunAngularSize       = 15
-    sky.MoonAngularSize      = 8
+    sky.SunAngularSize = 15
+    sky.MoonAngularSize = 8
 
     -- Bloom for soft midday glow
     local bloom = Lighting:FindFirstChildOfClass("BloomEffect")
@@ -107,7 +106,7 @@ function EnvironmentBuilder:_buildSkyAndLighting()
         bloom.Parent = Lighting
     end
     bloom.Intensity = 0.3
-    bloom.Size      = 24
+    bloom.Size = 24
     bloom.Threshold = 0.9
 
     -- Sun rays for that desert feel
@@ -117,7 +116,7 @@ function EnvironmentBuilder:_buildSkyAndLighting()
         sunRays.Parent = Lighting
     end
     sunRays.Intensity = 0.05
-    sunRays.Spread    = 0.8
+    sunRays.Spread = 0.8
 
     print("[EnvironmentBuilder] Sky & lighting configured (bright blue daytime)")
 end
@@ -130,22 +129,24 @@ function EnvironmentBuilder:_buildTerrain()
     local terrain = workspace.Terrain
     terrain:Clear()
 
-    local size   = GameConfig.World.TerrainSize
+    local size = GameConfig.World.TerrainSize
     local center = GameConfig.World.TerrainCenter
 
     -- Fill a flat region with Sand material
-    local region = Region3.new(
-        center - size / 2,
-        center + size / 2
-    )
+    local region = Region3.new(center - size / 2, center + size / 2)
 
     -- Align to terrain grid (4-stud voxels)
     region = region:ExpandToGrid(4)
 
     terrain:FillRegion(region, 4, Enum.Material.Sand)
 
-    print("[EnvironmentBuilder] Terrain filled (sand, " ..
-          tostring(size.X) .. "x" .. tostring(size.Z) .. " studs)")
+    print(
+        "[EnvironmentBuilder] Terrain filled (sand, "
+            .. tostring(size.X)
+            .. "x"
+            .. tostring(size.Z)
+            .. " studs)"
+    )
 end
 
 ---------------------------------------------------------------------------
@@ -174,26 +175,26 @@ end
 
 function EnvironmentBuilder:_buildMountains()
     local colors = GameConfig.Colors
-    local dist   = GameConfig.World.MountainDistance
+    local dist = GameConfig.World.MountainDistance
     local height = GameConfig.World.MountainHeight
 
     -- Mountain peak definitions: { xOffset, zOffset, width, height, depth }
     local peaks = {
         -- North range (San Jacinto-inspired)
-        { x = -120, z = -dist, w = 80, h = height,      d = 40 },
-        { x = -40,  z = -dist, w = 60, h = height * 0.8, d = 35 },
-        { x = 40,   z = -dist, w = 70, h = height * 0.9, d = 38 },
-        { x = 120,  z = -dist, w = 80, h = height * 0.7, d = 30 },
+        { x = -120, z = -dist, w = 80, h = height, d = 40 },
+        { x = -40, z = -dist, w = 60, h = height * 0.8, d = 35 },
+        { x = 40, z = -dist, w = 70, h = height * 0.9, d = 38 },
+        { x = 120, z = -dist, w = 80, h = height * 0.7, d = 30 },
         -- East range
-        { x = dist,  z = -60, w = 40, h = height * 0.6, d = 70 },
-        { x = dist,  z = 40,  w = 40, h = height * 0.5, d = 60 },
+        { x = dist, z = -60, w = 40, h = height * 0.6, d = 70 },
+        { x = dist, z = 40, w = 40, h = height * 0.5, d = 60 },
         -- West range
         { x = -dist, z = -60, w = 40, h = height * 0.5, d = 70 },
-        { x = -dist, z = 40,  w = 40, h = height * 0.6, d = 60 },
+        { x = -dist, z = 40, w = 40, h = height * 0.6, d = 60 },
         -- South range (lower foothills)
         { x = -80, z = dist, w = 60, h = height * 0.4, d = 30 },
-        { x = 0,   z = dist, w = 70, h = height * 0.5, d = 35 },
-        { x = 80,  z = dist, w = 60, h = height * 0.4, d = 30 },
+        { x = 0, z = dist, w = 70, h = height * 0.5, d = 35 },
+        { x = 80, z = dist, w = 60, h = height * 0.4, d = 30 },
     }
 
     for i, peak in ipairs(peaks) do
@@ -214,7 +215,7 @@ function EnvironmentBuilder:_buildMountains()
             Name = "MountainPeak_" .. i,
             Size = Vector3.new(peak.w * 0.8, peak.h * 0.5, peak.d * 0.8),
             CFrame = CFrame.new(peak.x, peak.h * 0.6 + peak.h * 0.25, peak.z)
-                     * CFrame.Angles(0, math.rad(math.random(-15, 15)), 0),
+                * CFrame.Angles(0, math.rad(math.random(-15, 15)), 0),
             Color = Utilities.lerpColor(colors.MountainPurple, Color3.fromRGB(180, 170, 190), 0.3),
             Material = Enum.Material.Rock,
             Parent = self._folder,
@@ -231,7 +232,7 @@ end
 
 function EnvironmentBuilder:_buildRoads()
     local colors = GameConfig.Colors
-    local world  = GameConfig.World
+    local world = GameConfig.World
 
     -- El Paseo main boulevard (runs along Z axis)
     local boulevardLength = (world.ElPaseoEnd - world.ElPaseoStart).Magnitude + 40
@@ -267,7 +268,8 @@ function EnvironmentBuilder:_buildRoads()
         Size = Vector3.new(world.SidewalkWidth, 0.25, boulevardLength),
         CFrame = CFrame.new(
             roadCenter.X + world.ElPaseoWidth / 2 + world.SidewalkWidth / 2,
-            0.125, roadCenter.Z
+            0.125,
+            roadCenter.Z
         ),
         Color = colors.Sidewalk,
         Material = Enum.Material.Concrete,
@@ -282,7 +284,8 @@ function EnvironmentBuilder:_buildRoads()
         Size = Vector3.new(world.SidewalkWidth, 0.25, boulevardLength),
         CFrame = CFrame.new(
             roadCenter.X - world.ElPaseoWidth / 2 - world.SidewalkWidth / 2,
-            0.125, roadCenter.Z
+            0.125,
+            roadCenter.Z
         ),
         Color = colors.Sidewalk,
         Material = Enum.Material.Concrete,
@@ -331,7 +334,7 @@ end
 
 function EnvironmentBuilder:_buildPalmTrees()
     local colors = GameConfig.Colors
-    local world  = GameConfig.World
+    local world = GameConfig.World
 
     --- Build a single palm tree at a position.
     local function buildTree(pos: Vector3, height: number)
@@ -348,8 +351,8 @@ function EnvironmentBuilder:_buildPalmTrees()
             Shape = Enum.PartType.Cylinder,
         })
         -- Rotate cylinder to stand vertical
-        trunk.CFrame = CFrame.new(pos.X, pos.Y + height / 2, pos.Z) *
-                        CFrame.Angles(0, 0, math.rad(90))
+        trunk.CFrame = CFrame.new(pos.X, pos.Y + height / 2, pos.Z)
+            * CFrame.Angles(0, 0, math.rad(90))
         trunk.Parent = treeModel
         self._partCount += 1
 
@@ -363,11 +366,7 @@ function EnvironmentBuilder:_buildPalmTrees()
                     pos.X + math.cos(angle) * 2,
                     pos.Y + height - 0.5,
                     pos.Z + math.sin(angle) * 2
-                ) * CFrame.Angles(
-                    math.rad(-20 + math.random(-5, 5)),
-                    angle,
-                    0
-                ),
+                ) * CFrame.Angles(math.rad(-20 + math.random(-5, 5)), angle, 0),
                 Color = colors.PalmCanopy,
                 Material = Enum.Material.Grass,
             })
@@ -382,7 +381,7 @@ function EnvironmentBuilder:_buildPalmTrees()
 
     -- El Paseo boulevard trees (both sides, spaced every 30 studs)
     local startZ = world.ElPaseoStart.Z + 10
-    local endZ   = world.ElPaseoEnd.Z - 10
+    local endZ = world.ElPaseoEnd.Z - 10
     local spacing = 30
 
     for z = startZ, endZ, spacing do
@@ -441,12 +440,11 @@ function EnvironmentBuilder:_buildDecorations()
                 Utilities.randomInRange(2, 5),
                 Utilities.randomInRange(4, 8)
             ),
-            CFrame = CFrame.new(pos.X, pos.Y + 1, pos.Z) *
-                     CFrame.Angles(
-                         math.rad(Utilities.randomInRange(-10, 10)),
-                         math.rad(Utilities.randomInRange(0, 360)),
-                         math.rad(Utilities.randomInRange(-10, 10))
-                     ),
+            CFrame = CFrame.new(pos.X, pos.Y + 1, pos.Z) * CFrame.Angles(
+                math.rad(Utilities.randomInRange(-10, 10)),
+                math.rad(Utilities.randomInRange(0, 360)),
+                math.rad(Utilities.randomInRange(-10, 10))
+            ),
             Color = Color3.fromRGB(
                 160 + math.random(0, 30),
                 140 + math.random(0, 20),
@@ -483,7 +481,7 @@ function EnvironmentBuilder:_buildDecorations()
     local cactiCount = 15
     for i = 1, cactiCount do
         local angle = math.rad(Utilities.randomInRange(0, 360))
-        local dist  = Utilities.randomInRange(50, 140)
+        local dist = Utilities.randomInRange(50, 140)
         local cx = math.cos(angle) * dist
         local cz = math.sin(angle) * dist
 
@@ -504,8 +502,8 @@ function EnvironmentBuilder:_buildDecorations()
                 Parent = self._folder,
             })
             -- Stand the cylinder upright
-            cactus.CFrame = CFrame.new(cx, cactus.Size.X / 2, cz) *
-                            CFrame.Angles(0, 0, math.rad(90))
+            cactus.CFrame = CFrame.new(cx, cactus.Size.X / 2, cz)
+                * CFrame.Angles(0, 0, math.rad(90))
             self._partCount += 1
         end
     end
@@ -513,7 +511,7 @@ function EnvironmentBuilder:_buildDecorations()
     -- Low desert scrub (flat green wedges scattered around)
     for i = 1, 10 do
         local angle = math.rad(Utilities.randomInRange(0, 360))
-        local dist  = Utilities.randomInRange(60, 130)
+        local dist = Utilities.randomInRange(60, 130)
         local sx = math.cos(angle) * dist
         local sz = math.sin(angle) * dist
 
@@ -525,8 +523,8 @@ function EnvironmentBuilder:_buildDecorations()
                     Utilities.randomInRange(0.5, 1.5),
                     Utilities.randomInRange(2, 4)
                 ),
-                CFrame = CFrame.new(sx, 0.5, sz) *
-                         CFrame.Angles(0, math.rad(math.random(0, 360)), 0),
+                CFrame = CFrame.new(sx, 0.5, sz)
+                    * CFrame.Angles(0, math.rad(math.random(0, 360)), 0),
                 Color = Color3.fromRGB(
                     80 + math.random(0, 20),
                     120 + math.random(0, 30),
@@ -554,14 +552,13 @@ function EnvironmentBuilder:_buildSpawnPoint()
     spawn.CFrame = CFrame.new(GameConfig.World.SpawnPosition)
     spawn.Anchored = true
     spawn.CanCollide = true
-    spawn.Transparency = 1           -- invisible spawn pad
+    spawn.Transparency = 1 -- invisible spawn pad
     spawn.TopSurface = Enum.SurfaceType.Smooth
     spawn.BottomSurface = Enum.SurfaceType.Smooth
     spawn.Parent = self._folder
     self._partCount += 1
 
-    print("[EnvironmentBuilder] Spawn point placed at " ..
-          tostring(GameConfig.World.SpawnPosition))
+    print("[EnvironmentBuilder] Spawn point placed at " .. tostring(GameConfig.World.SpawnPosition))
 end
 
 ---------------------------------------------------------------------------

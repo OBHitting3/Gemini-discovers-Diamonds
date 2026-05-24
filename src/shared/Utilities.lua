@@ -24,17 +24,38 @@ function Utilities.createPart(props: { [string]: any }): Part
     part.BottomSurface = Enum.SurfaceType.Smooth
 
     -- Apply explicit properties
-    if props.Name then part.Name = props.Name end
-    if props.Size then part.Size = props.Size end
-    if props.CFrame then part.CFrame = props.CFrame
-    elseif props.Position then part.CFrame = CFrame.new(props.Position) end
-    if props.Color then part.Color = props.Color end
-    if props.BrickColor then part.BrickColor = props.BrickColor end
-    if props.Material then part.Material = props.Material end
-    if props.Transparency then part.Transparency = props.Transparency end
-    if props.Shape then part.Shape = props.Shape end
-    if props.Reflectance then part.Reflectance = props.Reflectance end
-    if props.CastShadow ~= nil then part.CastShadow = props.CastShadow end
+    if props.Name then
+        part.Name = props.Name
+    end
+    if props.Size then
+        part.Size = props.Size
+    end
+    if props.CFrame then
+        part.CFrame = props.CFrame
+    elseif props.Position then
+        part.CFrame = CFrame.new(props.Position)
+    end
+    if props.Color then
+        part.Color = props.Color
+    end
+    if props.BrickColor then
+        part.BrickColor = props.BrickColor
+    end
+    if props.Material then
+        part.Material = props.Material
+    end
+    if props.Transparency then
+        part.Transparency = props.Transparency
+    end
+    if props.Shape then
+        part.Shape = props.Shape
+    end
+    if props.Reflectance then
+        part.Reflectance = props.Reflectance
+    end
+    if props.CastShadow ~= nil then
+        part.CastShadow = props.CastShadow
+    end
 
     -- CollectionService tag
     if props.Tag then
@@ -42,7 +63,9 @@ function Utilities.createPart(props: { [string]: any }): Part
     end
 
     -- Parent last to avoid unnecessary property-changed events
-    if props.Parent then part.Parent = props.Parent end
+    if props.Parent then
+        part.Parent = props.Parent
+    end
 
     return part
 end
@@ -54,20 +77,37 @@ function Utilities.createWedge(props: { [string]: any }): WedgePart
     wedge.TopSurface = Enum.SurfaceType.Smooth
     wedge.BottomSurface = Enum.SurfaceType.Smooth
 
-    if props.Name then wedge.Name = props.Name end
-    if props.Size then wedge.Size = props.Size end
-    if props.CFrame then wedge.CFrame = props.CFrame
-    elseif props.Position then wedge.CFrame = CFrame.new(props.Position) end
-    if props.Color then wedge.Color = props.Color end
-    if props.Material then wedge.Material = props.Material end
-    if props.Transparency then wedge.Transparency = props.Transparency end
-    if props.CastShadow ~= nil then wedge.CastShadow = props.CastShadow end
+    if props.Name then
+        wedge.Name = props.Name
+    end
+    if props.Size then
+        wedge.Size = props.Size
+    end
+    if props.CFrame then
+        wedge.CFrame = props.CFrame
+    elseif props.Position then
+        wedge.CFrame = CFrame.new(props.Position)
+    end
+    if props.Color then
+        wedge.Color = props.Color
+    end
+    if props.Material then
+        wedge.Material = props.Material
+    end
+    if props.Transparency then
+        wedge.Transparency = props.Transparency
+    end
+    if props.CastShadow ~= nil then
+        wedge.CastShadow = props.CastShadow
+    end
 
     if props.Tag then
         game:GetService("CollectionService"):AddTag(wedge, props.Tag)
     end
 
-    if props.Parent then wedge.Parent = props.Parent end
+    if props.Parent then
+        wedge.Parent = props.Parent
+    end
     return wedge
 end
 
@@ -85,7 +125,9 @@ function Utilities.createModel(name: string, parts: { BasePart }, parent: Instan
     for _, part in ipairs(parts) do
         part.Parent = model
     end
-    if parent then model.Parent = parent end
+    if parent then
+        model.Parent = parent
+    end
     return model
 end
 
@@ -136,8 +178,8 @@ end
 function Utilities.isInsideBox(pos: Vector3, center: Vector3, size: Vector3): boolean
     local half = size / 2
     return math.abs(pos.X - center.X) <= half.X
-       and math.abs(pos.Y - center.Y) <= half.Y
-       and math.abs(pos.Z - center.Z) <= half.Z
+        and math.abs(pos.Y - center.Y) <= half.Y
+        and math.abs(pos.Z - center.Z) <= half.Z
 end
 
 ---------------------------------------------------------------------------
@@ -146,7 +188,9 @@ end
 
 --- Deep-copy a table (handles nested tables, not metatables).
 function Utilities.tableDeepCopy(original)
-    if type(original) ~= "table" then return original end
+    if type(original) ~= "table" then
+        return original
+    end
     local copy = {}
     for key, value in pairs(original) do
         copy[Utilities.tableDeepCopy(key)] = Utilities.tableDeepCopy(value)
@@ -165,7 +209,9 @@ end
 --- Count entries in a dictionary-style table.
 function Utilities.tableCount(t): number
     local count = 0
-    for _ in pairs(t) do count += 1 end
+    for _ in pairs(t) do
+        count += 1
+    end
     return count
 end
 
@@ -226,8 +272,12 @@ end
 function Utilities.safeRequire(moduleScript)
     local ok, result = pcall(require, moduleScript)
     if not ok then
-        warn("[Utilities.safeRequire] Failed to require " ..
-             tostring(moduleScript) .. ": " .. tostring(result))
+        warn(
+            "[Utilities.safeRequire] Failed to require "
+                .. tostring(moduleScript)
+                .. ": "
+                .. tostring(result)
+        )
         return nil
     end
     return result

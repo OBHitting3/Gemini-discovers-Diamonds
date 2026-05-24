@@ -13,13 +13,13 @@ local CollectionService = game:GetService("CollectionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
-local Utilities  = require(ReplicatedStorage:WaitForChild("Utilities"))
+local Utilities = require(ReplicatedStorage:WaitForChild("Utilities"))
 
 local C = GameConfig.Colors
 
 local GardenBuilder = {}
 GardenBuilder._partCount = 0
-GardenBuilder._plotParts = {}   -- plotIndex → { bed, plant, ... }
+GardenBuilder._plotParts = {} -- plotIndex → { bed, plant, ... }
 
 ---------------------------------------------------------------------------
 -- BUILD GARDEN
@@ -57,9 +57,9 @@ function GardenBuilder:buildGarden(): number
     local halfZ = gardenSize.Z / 2
     local fences = {
         { CFrame.new(0, fenceH / 2, -halfZ - 0.25), Vector3.new(gardenSize.X + 1, fenceH, 0.5) },
-        { CFrame.new(0, fenceH / 2, halfZ + 0.25),  Vector3.new(gardenSize.X + 1, fenceH, 0.5) },
+        { CFrame.new(0, fenceH / 2, halfZ + 0.25), Vector3.new(gardenSize.X + 1, fenceH, 0.5) },
         { CFrame.new(-halfX - 0.25, fenceH / 2, 0), Vector3.new(0.5, fenceH, gardenSize.Z) },
-        { CFrame.new(halfX + 0.25, fenceH / 2, 0),  Vector3.new(0.5, fenceH, gardenSize.Z) },
+        { CFrame.new(halfX + 0.25, fenceH / 2, 0), Vector3.new(0.5, fenceH, gardenSize.Z) },
     }
     for i, f in ipairs(fences) do
         Utilities.createPart({
@@ -136,8 +136,8 @@ function GardenBuilder:buildGarden(): number
     lbl.Parent = gui
 
     -- Planting plots (4×4 grid)
-    local plotSize = world.GardenPlotSize  -- 4×0.5×4
-    local plotSpacing = 2   -- gap between plots
+    local plotSize = world.GardenPlotSize -- 4×0.5×4
+    local plotSpacing = 2 -- gap between plots
     local totalPlotW = 4 * plotSize.X + 3 * plotSpacing
     local totalPlotZ = 4 * plotSize.Z + 3 * plotSpacing
     local startX = -totalPlotW / 2 + plotSize.X / 2
@@ -230,7 +230,7 @@ function GardenBuilder:buildGarden(): number
     for i, wall in ipairs({
         { CFrame.new(0, shedH / 2, -shedD / 2), Vector3.new(shedW, shedH, 0.4) },
         { CFrame.new(-shedW / 2, shedH / 2, 0), Vector3.new(0.4, shedH, shedD) },
-        { CFrame.new(shedW / 2, shedH / 2, 0),  Vector3.new(0.4, shedH, shedD) },
+        { CFrame.new(shedW / 2, shedH / 2, 0), Vector3.new(0.4, shedH, shedD) },
     }) do
         Utilities.createPart({
             Name = "ShedWall_" .. i,
@@ -269,22 +269,32 @@ end
 --- @param plotIndex number — 1–16
 --- @param growthStage string — "empty"|"seed"|"sprout"|"growing"|"mature"|"wilting"|"dead"
 --- @param plantColor Color3? — optional color override based on plant type
-function GardenBuilder:updatePlantVisual(plotIndex: number, growthStage: string, plantColor: Color3?)
+function GardenBuilder:updatePlantVisual(
+    plotIndex: number,
+    growthStage: string,
+    plantColor: Color3?
+)
     local plotData = self._plotParts[plotIndex]
-    if not plotData then return end
+    if not plotData then
+        return
+    end
 
     local plant = plotData.plant
     local prompt = plotData.prompt
     local color = plantColor or C.CactusGreen
 
     local stages = {
-        empty   = { size = Vector3.new(0.1, 0.1, 0.1), transparency = 1, promptText = "Plant Seed" },
-        seed    = { size = Vector3.new(0.5, 0.3, 0.5),  transparency = 0, promptText = "Water" },
-        sprout  = { size = Vector3.new(1, 1.5, 1),      transparency = 0, promptText = "Water" },
-        growing = { size = Vector3.new(2, 3, 2),         transparency = 0, promptText = "Water" },
-        mature  = { size = Vector3.new(2.5, 4, 2.5),    transparency = 0, promptText = "Harvest" },
-        wilting = { size = Vector3.new(2, 2.5, 2),       transparency = 0, promptText = "Water NOW!" },
-        dead    = { size = Vector3.new(1, 0.5, 1),       transparency = 0, promptText = "Clear" },
+        empty = { size = Vector3.new(0.1, 0.1, 0.1), transparency = 1, promptText = "Plant Seed" },
+        seed = { size = Vector3.new(0.5, 0.3, 0.5), transparency = 0, promptText = "Water" },
+        sprout = { size = Vector3.new(1, 1.5, 1), transparency = 0, promptText = "Water" },
+        growing = { size = Vector3.new(2, 3, 2), transparency = 0, promptText = "Water" },
+        mature = { size = Vector3.new(2.5, 4, 2.5), transparency = 0, promptText = "Harvest" },
+        wilting = {
+            size = Vector3.new(2, 2.5, 2),
+            transparency = 0,
+            promptText = "Water NOW!",
+        },
+        dead = { size = Vector3.new(1, 0.5, 1), transparency = 0, promptText = "Clear" },
     }
 
     local stage = stages[growthStage] or stages.empty
@@ -297,11 +307,11 @@ function GardenBuilder:updatePlantVisual(plotIndex: number, growthStage: string,
 
     -- Color based on stage
     if growthStage == "wilting" then
-        plant.Color = Color3.fromRGB(180, 160, 50)  -- yellow-brown
+        plant.Color = Color3.fromRGB(180, 160, 50) -- yellow-brown
     elseif growthStage == "dead" then
-        plant.Color = Color3.fromRGB(100, 80, 60)   -- dark brown
+        plant.Color = Color3.fromRGB(100, 80, 60) -- dark brown
     elseif growthStage == "seed" then
-        plant.Color = Color3.fromRGB(139, 90, 43)   -- seed brown
+        plant.Color = Color3.fromRGB(139, 90, 43) -- seed brown
     else
         plant.Color = color
     end

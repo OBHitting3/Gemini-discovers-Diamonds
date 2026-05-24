@@ -16,14 +16,14 @@ export type PlayerData = {
     sunCoins: number,
     prestige: number,
     level: number,
-    plotId: number?,              -- nil if no plot claimed
-    shopId: number?,              -- nil if no shop claimed
-    homeStyle: string?,           -- "Kaufmann" | "Frey" | "Wexler" | "Neutra"
+    plotId: number?, -- nil if no plot claimed
+    shopId: number?, -- nil if no shop claimed
+    homeStyle: string?, -- "Kaufmann" | "Frey" | "Wexler" | "Neutra"
     inventory: { [string]: number }, -- itemId → quantity
     outfits: { OutfitData },
     stats: PlayerStats,
-    lastLogin: number,            -- os.time()
-    firstJoin: number,            -- os.time()
+    lastLogin: number, -- os.time()
+    firstJoin: number, -- os.time()
 }
 
 export type PlayerStats = {
@@ -42,7 +42,7 @@ export type PlayerStats = {
 Types.DefaultPlayerData = {
     userId = 0,
     displayName = "",
-    sunCoins = 200,  -- matches GameConfig.Economy.StartingCoins
+    sunCoins = 200, -- matches GameConfig.Economy.StartingCoins
     prestige = 0,
     level = 1,
     plotId = nil,
@@ -76,11 +76,11 @@ export type PlotData = {
 }
 
 export type FurniturePlacement = {
-    instanceId: string,        -- unique per placement
-    itemId: string,            -- catalog reference
+    instanceId: string, -- unique per placement
+    itemId: string, -- catalog reference
     position: { x: number, y: number, z: number },
-    rotation: number,          -- Y-axis degrees
-    placedAt: number,          -- os.time()
+    rotation: number, -- Y-axis degrees
+    placedAt: number, -- os.time()
 }
 
 ---------------------------------------------------------------------------
@@ -91,12 +91,12 @@ export type GardenState = {
 }
 
 export type GardenPlot = {
-    index: number,              -- 1–16
-    plantId: string?,           -- nil if empty
-    plantedBy: number?,         -- userId
-    plantedAt: number?,         -- os.time()
-    growthStage: string,        -- "empty" | "seed" | "sprout" | "growing" | "mature" | "wilting" | "dead"
-    lastWatered: number?,       -- os.time()
+    index: number, -- 1–16
+    plantId: string?, -- nil if empty
+    plantedBy: number?, -- userId
+    plantedAt: number?, -- os.time()
+    growthStage: string, -- "empty" | "seed" | "sprout" | "growing" | "mature" | "wilting" | "dead"
+    lastWatered: number?, -- os.time()
     waterCount: number,
 }
 
@@ -104,19 +104,19 @@ export type GardenPlot = {
 -- SHOP DATA
 ---------------------------------------------------------------------------
 export type ShopData = {
-    shopId: number,              -- storefront slot 1–6
+    shopId: number, -- storefront slot 1–6
     ownerId: number?,
     displayName: string,
     inventory: { ShopItem },
     totalSales: number,
-    rating: number,              -- 0–5
+    rating: number, -- 0–5
 }
 
 export type ShopItem = {
     itemId: string,
     quantity: number,
-    price: number,               -- seller-set price in SunCoins
-    listedAt: number,            -- os.time()
+    price: number, -- seller-set price in SunCoins
+    listedAt: number, -- os.time()
 }
 
 ---------------------------------------------------------------------------
@@ -129,7 +129,7 @@ export type FashionEvent = {
     startedAt: number,
     endsAt: number,
     participants: { FashionParticipant },
-    votes: { [number]: number },  -- voterId → targetPlayerId
+    votes: { [number]: number }, -- voterId → targetPlayerId
     winnerId: number?,
 }
 
@@ -144,7 +144,7 @@ export type FashionParticipant = {
 export type OutfitData = {
     name: string,
     category: string,
-    items: { string },           -- list of item IDs worn
+    items: { string }, -- list of item IDs worn
 }
 
 ---------------------------------------------------------------------------
@@ -153,11 +153,11 @@ export type OutfitData = {
 export type FurnitureItem = {
     id: string,
     name: string,
-    category: string,           -- "seating" | "table" | "decor" | "lighting" | "outdoor"
+    category: string, -- "seating" | "table" | "decor" | "lighting" | "outdoor"
     price: number,
     size: { x: number, y: number, z: number },
-    color: string,              -- key into GameConfig.Colors
-    material: string?,          -- Enum.Material name
+    color: string, -- key into GameConfig.Colors
+    material: string?, -- Enum.Material name
     description: string?,
 }
 
@@ -165,9 +165,9 @@ export type PlantItem = {
     id: string,
     name: string,
     seedPrice: number,
-    growTime: number,            -- total seconds seed → mature
-    waterInterval: number,       -- max seconds between waterings
-    harvestValue: number,        -- SunCoins reward
+    growTime: number, -- total seconds seed → mature
+    waterInterval: number, -- max seconds between waterings
+    harvestValue: number, -- SunCoins reward
     prestigeReward: number,
     description: string?,
 }
@@ -175,7 +175,7 @@ export type PlantItem = {
 export type BoutiqueItem = {
     id: string,
     name: string,
-    category: string,            -- "accessory" | "art" | "home" | "fashion" | "vintage"
+    category: string, -- "accessory" | "art" | "home" | "fashion" | "vintage"
     basePrice: number,
     description: string?,
 }
@@ -183,7 +183,7 @@ export type BoutiqueItem = {
 export type FashionOutfitItem = {
     id: string,
     name: string,
-    category: string,            -- "poolside" | "cocktail" | "desert_casual" | "formal" | "vintage" | "resort"
+    category: string, -- "poolside" | "cocktail" | "desert_casual" | "formal" | "vintage" | "resort"
     price: number,
     prestigeBonus: number,
     description: string?,
@@ -195,7 +195,7 @@ export type FashionOutfitItem = {
 export type Transaction = {
     id: string,
     buyerId: number,
-    sellerId: number?,           -- nil if system sale
+    sellerId: number?, -- nil if system sale
     itemId: string,
     amount: number,
     tax: number,

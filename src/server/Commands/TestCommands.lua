@@ -12,13 +12,13 @@
         etc.
 ]]
 
-local Players          = game:GetService("Players")
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local GameConfig    = require(ReplicatedStorage:WaitForChild("GameConfig"))
-local ItemCatalog   = require(ReplicatedStorage:WaitForChild("ItemCatalog"))
+local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
+local ItemCatalog = require(ReplicatedStorage:WaitForChild("ItemCatalog"))
 local RemoteManager = require(ReplicatedStorage:WaitForChild("RemoteManager"))
-local Utilities     = require(ReplicatedStorage:WaitForChild("Utilities"))
+local Utilities = require(ReplicatedStorage:WaitForChild("Utilities"))
 
 local TestCommands = {}
 TestCommands._services = nil
@@ -54,7 +54,9 @@ end
 
 function TestCommands:_handleChat(player: Player, message: string)
     -- Only process commands starting with "/"
-    if string.sub(message, 1, 1) ~= "/" then return end
+    if string.sub(message, 1, 1) ~= "/" then
+        return
+    end
 
     local parts = string.split(message, " ")
     local command = string.lower(parts[1])
@@ -223,7 +225,10 @@ end
 function TestCommands:_cmdPlant(player: Player, plantId: string?, plotIndexStr: string?)
     if not plantId then
         self:_notify(player, "Usage: /plant [plantId] [plotIndex]")
-        self:_notify(player, "Plants: saguaro_cactus, barrel_cactus, agave, desert_marigold, desert_rose, bougainvillea")
+        self:_notify(
+            player,
+            "Plants: saguaro_cactus, barrel_cactus, agave, desert_marigold, desert_rose, bougainvillea"
+        )
         return
     end
 
@@ -286,7 +291,10 @@ end
 function TestCommands:_cmdEvent(player: Player, themeName: string?)
     if not themeName or themeName == "" then
         self:_notify(player, "Usage: /event [theme name]")
-        self:_notify(player, "Themes: Poolside Paradise, Desert Bloom, Retro Revival, Modernism Week")
+        self:_notify(
+            player,
+            "Themes: Poolside Paradise, Desert Bloom, Retro Revival, Modernism Week"
+        )
         return
     end
     self._services.event:startWeeklyTheme(themeName)
@@ -332,26 +340,38 @@ function TestCommands:_cmdStatus(player: Player)
     local gardenState = self._services.garden:getFullState()
     local planted = 0
     for _, plot in pairs(gardenState) do
-        if plot.growthStage ~= "empty" then planted += 1 end
+        if plot.growthStage ~= "empty" then
+            planted += 1
+        end
     end
     self:_notify(player, "Garden: " .. planted .. "/16 plots active")
 
     -- Fashion
     local fashionEvent = self._services.fashion:getCurrentEvent()
-    self:_notify(player, "Fashion: " ..
-        (fashionEvent and (fashionEvent.theme .. " (" .. #fashionEvent.participants .. " participants)") or "No event"))
+    self:_notify(
+        player,
+        "Fashion: "
+            .. (
+                fashionEvent
+                    and (fashionEvent.theme .. " (" .. #fashionEvent.participants .. " participants)")
+                or "No event"
+            )
+    )
 
     -- Event
     local currentEvent = self._services.event:getCurrentEvent()
-    self:_notify(player, "Event: " ..
-        (currentEvent and currentEvent.name or "None"))
-    self:_notify(player, "Modernism Week: " ..
-        (self._services.event:isModernismWeek() and "ACTIVE" or "inactive"))
+    self:_notify(player, "Event: " .. (currentEvent and currentEvent.name or "None"))
+    self:_notify(
+        player,
+        "Modernism Week: " .. (self._services.event:isModernismWeek() and "ACTIVE" or "inactive")
+    )
 
     -- Parts
     local partCount = 0
     for _, obj in ipairs(workspace:GetDescendants()) do
-        if obj:IsA("BasePart") then partCount += 1 end
+        if obj:IsA("BasePart") then
+            partCount += 1
+        end
     end
     self:_notify(player, "Parts: " .. partCount .. "/" .. GameConfig.PartLimits.MaxTotalParts)
 
@@ -378,7 +398,9 @@ function TestCommands:_cmdBuy(player: Player, shopIdStr: string?, itemId: string
         return
     end
     local shopId = tonumber(shopIdStr)
-    if not shopId then return end
+    if not shopId then
+        return
+    end
     self._services.shop:purchaseFromShop(player, shopId, itemId)
 end
 
@@ -437,8 +459,10 @@ function TestCommands:_cmdRunwayInfo(player: Player)
     local fashionEvent = self._services.fashion:getCurrentEvent()
     if fashionEvent then
         local count = fashionEvent.participants and #fashionEvent.participants or 0
-        self:_notify(player, "Runway: " .. tostring(fashionEvent.theme) ..
-            " | " .. count .. " participant(s)")
+        self:_notify(
+            player,
+            "Runway: " .. tostring(fashionEvent.theme) .. " | " .. count .. " participant(s)"
+        )
     else
         self:_notify(player, "No active runway event. Evening phase auto-starts fashion events.")
     end

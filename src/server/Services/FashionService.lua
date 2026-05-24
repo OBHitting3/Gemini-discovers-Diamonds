@@ -8,12 +8,12 @@
     and support up to 5 participants per event.
 ]]
 
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Players           = game:GetService("Players")
 
-local GameConfig    = require(ReplicatedStorage:WaitForChild("GameConfig"))
+local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
 local RemoteManager = require(ReplicatedStorage:WaitForChild("RemoteManager"))
-local Utilities     = require(ReplicatedStorage:WaitForChild("Utilities"))
+local Utilities = require(ReplicatedStorage:WaitForChild("Utilities"))
 
 local FashionService = {}
 
@@ -55,8 +55,11 @@ function FashionService:init(economyService)
     -- Start the event loop
     self:_startEventLoop()
 
-    print("[FashionService] Initialized — events every " ..
-          GameConfig.Timing.FashionEventInterval .. "s")
+    print(
+        "[FashionService] Initialized — events every "
+            .. GameConfig.Timing.FashionEventInterval
+            .. "s"
+    )
 end
 
 ---------------------------------------------------------------------------
@@ -64,7 +67,9 @@ end
 ---------------------------------------------------------------------------
 
 function FashionService:_startEventLoop()
-    if self._eventLoop then return end
+    if self._eventLoop then
+        return
+    end
     self._eventLoop = true
 
     task.spawn(function()
@@ -82,7 +87,9 @@ function FashionService:_startEventLoop()
             self:endEvent()
 
             -- Wait for cooldown until next event
-            task.wait(GameConfig.Timing.FashionEventInterval - GameConfig.Timing.FashionEventDuration)
+            task.wait(
+                GameConfig.Timing.FashionEventInterval - GameConfig.Timing.FashionEventDuration
+            )
         end
     end)
 end
@@ -122,14 +129,18 @@ function FashionService:startEvent(theme: string?)
         eventId = self._currentEvent.eventId,
     })
 
-    RemoteManager:fireAllClients("NotifyPlayer",
-        "Fashion Event: " .. eventTheme .. "! Head to the runway to compete!")
+    RemoteManager:fireAllClients(
+        "NotifyPlayer",
+        "Fashion Event: " .. eventTheme .. "! Head to the runway to compete!"
+    )
 
     print("[FashionService] Event started: " .. eventTheme)
 end
 
 function FashionService:endEvent()
-    if not self._currentEvent or not self._currentEvent.isActive then return end
+    if not self._currentEvent or not self._currentEvent.isActive then
+        return
+    end
 
     self._currentEvent.isActive = false
 
@@ -142,8 +153,11 @@ function FashionService:endEvent()
         if prize then
             local player = Players:GetPlayerByUserId(result.userId)
             if player then
-                self._economyService:addCoins(player, prize.coins,
-                    "Fashion #" .. result.place .. ": " .. self._currentEvent.theme)
+                self._economyService:addCoins(
+                    player,
+                    prize.coins,
+                    "Fashion #" .. result.place .. ": " .. self._currentEvent.theme
+                )
                 self._economyService:addPrestige(player, prize.prestige)
 
                 if result.place == 1 then
@@ -153,9 +167,17 @@ function FashionService:endEvent()
                     end
                 end
 
-                RemoteManager:fireClient("NotifyPlayer", player,
-                    "Fashion Event Results: #" .. result.place .. "! +" ..
-                    prize.coins .. " SC, +" .. prize.prestige .. " Prestige")
+                RemoteManager:fireClient(
+                    "NotifyPlayer",
+                    player,
+                    "Fashion Event Results: #"
+                        .. result.place
+                        .. "! +"
+                        .. prize.coins
+                        .. " SC, +"
+                        .. prize.prestige
+                        .. " Prestige"
+                )
             end
         end
     end
@@ -173,11 +195,11 @@ function FashionService:endEvent()
         winnerName = winner and winner.Name or "Unknown"
     end
 
-    RemoteManager:fireAllClients("NotifyPlayer",
-        "Fashion Event ended! Winner: " .. winnerName)
+    RemoteManager:fireAllClients("NotifyPlayer", "Fashion Event ended! Winner: " .. winnerName)
 
-    print("[FashionService] Event ended: " .. self._currentEvent.theme ..
-          " | Winner: " .. winnerName)
+    print(
+        "[FashionService] Event ended: " .. self._currentEvent.theme .. " | Winner: " .. winnerName
+    )
 
     self._currentEvent = nil
 end
@@ -188,23 +210,24 @@ end
 
 function FashionService:joinEvent(player: Player): boolean
     if not self._currentEvent or not self._currentEvent.isActive then
-        RemoteManager:fireClient("NotifyPlayer", player,
-            "No fashion event is currently active!")
+        RemoteManager:fireClient("NotifyPlayer", player, "No fashion event is currently active!")
         return false
     end
 
     -- Check max participants
     if #self._currentEvent.participants >= GameConfig.Timing.FashionMaxParticipants then
-        RemoteManager:fireClient("NotifyPlayer", player,
-            "This event is full! (" .. GameConfig.Timing.FashionMaxParticipants .. " max)")
+        RemoteManager:fireClient(
+            "NotifyPlayer",
+            player,
+            "This event is full! (" .. GameConfig.Timing.FashionMaxParticipants .. " max)"
+        )
         return false
     end
 
     -- Check not already joined
     for _, p in ipairs(self._currentEvent.participants) do
         if p.userId == player.UserId then
-            RemoteManager:fireClient("NotifyPlayer", player,
-                "You're already in this event!")
+            RemoteManager:fireClient("NotifyPlayer", player, "You're already in this event!")
             return false
         end
     end
@@ -217,8 +240,11 @@ function FashionService:joinEvent(player: Player): boolean
         voteCount = 0,
     })
 
-    RemoteManager:fireClient("NotifyPlayer", player,
-        "Joined fashion event: " .. self._currentEvent.theme .. "!")
+    RemoteManager:fireClient(
+        "NotifyPlayer",
+        player,
+        "Joined fashion event: " .. self._currentEvent.theme .. "!"
+    )
 
     -- Broadcast updated participant list
     RemoteManager:fireAllClients("FashionEventUpdate", {
@@ -231,32 +257,41 @@ function FashionService:joinEvent(player: Player): boolean
 end
 
 function FashionService:submitOutfit(player: Player, outfitData: table): boolean
-    if not self._currentEvent or not self._currentEvent.isActive then return false end
+    if not self._currentEvent or not self._currentEvent.isActive then
+        return false
+    end
 
     -- Find participant
     for _, p in ipairs(self._currentEvent.participants) do
         if p.userId == player.UserId then
             p.outfit = outfitData or p.outfit
-            RemoteManager:fireClient("NotifyPlayer", player,
-                "Outfit submitted! Walk the runway when ready.")
+            RemoteManager:fireClient(
+                "NotifyPlayer",
+                player,
+                "Outfit submitted! Walk the runway when ready."
+            )
             return true
         end
     end
 
-    RemoteManager:fireClient("NotifyPlayer", player,
-        "Join the event first!")
+    RemoteManager:fireClient("NotifyPlayer", player, "Join the event first!")
     return false
 end
 
 function FashionService:walkRunway(player: Player): boolean
-    if not self._currentEvent or not self._currentEvent.isActive then return false end
+    if not self._currentEvent or not self._currentEvent.isActive then
+        return false
+    end
 
     -- Find participant
     for _, p in ipairs(self._currentEvent.participants) do
         if p.userId == player.UserId then
             if p.hasWalked then
-                RemoteManager:fireClient("NotifyPlayer", player,
-                    "You've already walked the runway!")
+                RemoteManager:fireClient(
+                    "NotifyPlayer",
+                    player,
+                    "You've already walked the runway!"
+                )
                 return false
             end
 
@@ -277,19 +312,19 @@ function FashionService:walkRunway(player: Player): boolean
 end
 
 function FashionService:voteForOutfit(voter: Player, targetUserId: number): boolean
-    if not self._currentEvent or not self._currentEvent.isActive then return false end
+    if not self._currentEvent or not self._currentEvent.isActive then
+        return false
+    end
 
     -- Can't vote for yourself
     if voter.UserId == targetUserId then
-        RemoteManager:fireClient("NotifyPlayer", voter,
-            "You can't vote for yourself!")
+        RemoteManager:fireClient("NotifyPlayer", voter, "You can't vote for yourself!")
         return false
     end
 
     -- Check not already voted
     if self._currentEvent.votes[voter.UserId] then
-        RemoteManager:fireClient("NotifyPlayer", voter,
-            "You've already voted in this event!")
+        RemoteManager:fireClient("NotifyPlayer", voter, "You've already voted in this event!")
         return false
     end
 
@@ -304,8 +339,7 @@ function FashionService:voteForOutfit(voter: Player, targetUserId: number): bool
     end
 
     if not found then
-        RemoteManager:fireClient("NotifyPlayer", voter,
-            "That player isn't in this event!")
+        RemoteManager:fireClient("NotifyPlayer", voter, "That player isn't in this event!")
         return false
     end
 
@@ -319,8 +353,17 @@ end
 -- VOTE TALLYING
 ---------------------------------------------------------------------------
 
-function FashionService:_tallyVotes(): { { userId: number, place: number, votes: number, displayName: string } }
-    if not self._currentEvent then return {} end
+function FashionService:_tallyVotes(): {
+    {
+        userId: number,
+        place: number,
+        votes: number,
+        displayName: string,
+    }
+}
+    if not self._currentEvent then
+        return {}
+    end
 
     -- Sort participants by vote count (descending)
     local sorted = {}
@@ -332,7 +375,9 @@ function FashionService:_tallyVotes(): { { userId: number, place: number, votes:
         })
     end
 
-    table.sort(sorted, function(a, b) return a.votes > b.votes end)
+    table.sort(sorted, function(a, b)
+        return a.votes > b.votes
+    end)
 
     -- Assign places
     local results = {}

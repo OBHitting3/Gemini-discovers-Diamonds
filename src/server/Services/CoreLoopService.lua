@@ -12,13 +12,13 @@
       - Reads AssetRegistry for future imported templates (no-op until merge)
 ]]
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local AssetRegistry = require(ReplicatedStorage:WaitForChild("AssetRegistry"))
+local DayPhaseConfig = require(ReplicatedStorage:WaitForChild("DayPhaseConfig"))
 local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
 local RemoteManager = require(ReplicatedStorage:WaitForChild("RemoteManager"))
-local DayPhaseConfig = require(ReplicatedStorage:WaitForChild("DayPhaseConfig"))
-local AssetRegistry = require(ReplicatedStorage:WaitForChild("AssetRegistry"))
 
 local CoreLoopService = {}
 
@@ -67,7 +67,9 @@ end
 ---------------------------------------------------------------------------
 function CoreLoopService:_ensureDayPhaseRemote()
     local folder = ReplicatedStorage:FindFirstChild("PalmSpringsRemotes")
-    if not folder then return end
+    if not folder then
+        return
+    end
     if not folder:FindFirstChild("DayPhaseUpdate") then
         local ev = Instance.new("RemoteEvent")
         ev.Name = "DayPhaseUpdate"
@@ -76,7 +78,9 @@ function CoreLoopService:_ensureDayPhaseRemote()
 end
 
 function CoreLoopService:_startPhaseLoop()
-    if self._loopRunning then return end
+    if self._loopRunning then
+        return
+    end
     self._loopRunning = true
 
     task.spawn(function()
@@ -100,12 +104,17 @@ function CoreLoopService:_setPhase(phase: DayPhaseConfig.DayPhase, isStartup: bo
     self:_applyGardenModifier(modifiers.gardenGrowthMultiplier)
     self:_broadcastPhase(phase, hint, modifiers, previous, isStartup)
 
-    print("[CoreLoopService] Phase → " .. phase ..
-        (previous and (" (from " .. previous .. ")") or " (startup)"))
+    print(
+        "[CoreLoopService] Phase → "
+            .. phase
+            .. (previous and (" (from " .. previous .. ")") or " (startup)")
+    )
 end
 
 function CoreLoopService:_applyGardenModifier(multiplier: number)
-    if not self._gardenService then return end
+    if not self._gardenService then
+        return
+    end
     -- GardenService can read this field each tick (add method on merge)
     if self._gardenService.setGrowthMultiplier then
         self._gardenService:setGrowthMultiplier(multiplier)
@@ -143,8 +152,7 @@ function CoreLoopService:_broadcastPhase(
 
     if not isStartup then
         for _, player in ipairs(Players:GetPlayers()) do
-            RemoteManager:fireClient("NotifyPlayer", player,
-                hint.title .. " - " .. hint.body)
+            RemoteManager:fireClient("NotifyPlayer", player, hint.title .. " - " .. hint.body)
         end
     end
 end

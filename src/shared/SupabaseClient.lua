@@ -14,7 +14,7 @@
 ]]
 
 local HttpService = game:GetService("HttpService")
-local RunService  = game:GetService("RunService")
+local RunService = game:GetService("RunService")
 
 local SupabaseClient = {}
 SupabaseClient.__index = SupabaseClient
@@ -28,10 +28,10 @@ SupabaseClient.__index = SupabaseClient
 --- @param apiKey string — anon/public API key (or use secrets in prod)
 function SupabaseClient.new(url: string?, apiKey: string?)
     local self = setmetatable({}, SupabaseClient)
-    self._url    = url or ""
+    self._url = url or ""
     self._apiKey = apiKey or ""
     self._mockMode = (url == nil or url == "" or not RunService:IsServer())
-    self._log = {}  -- stores mock-mode call log for debugging
+    self._log = {} -- stores mock-mode call log for debugging
 
     if self._mockMode then
         print("[SupabaseClient] Running in MOCK MODE (no external calls)")
@@ -69,10 +69,10 @@ end
 
 function SupabaseClient:_headers()
     return {
-        ["apikey"]        = self._apiKey,
+        ["apikey"] = self._apiKey,
         ["Authorization"] = "Bearer " .. self._apiKey,
-        ["Content-Type"]  = "application/json",
-        ["Prefer"]        = "return=representation",
+        ["Content-Type"] = "application/json",
+        ["Prefer"] = "return=representation",
     }
 end
 
@@ -80,9 +80,9 @@ function SupabaseClient:_request(method: string, path: string, body: string?): (
     if self._mockMode then
         local entry = {
             method = method,
-            path   = path,
-            body   = body,
-            time   = os.time(),
+            path = path,
+            body = body,
+            time = os.time(),
         }
         table.insert(self._log, entry)
         print("[SupabaseClient:MOCK] " .. method .. " " .. path)
@@ -94,7 +94,13 @@ function SupabaseClient:_request(method: string, path: string, body: string?): (
         if method == "GET" then
             return HttpService:GetAsync(url, false, self:_headers())
         else
-            return HttpService:PostAsync(url, body or "{}", Enum.HttpContentType.ApplicationJson, false, self:_headers())
+            return HttpService:PostAsync(
+                url,
+                body or "{}",
+                Enum.HttpContentType.ApplicationJson,
+                false,
+                self:_headers()
+            )
         end
     end)
 
@@ -111,7 +117,7 @@ function SupabaseClient:_request(method: string, path: string, body: string?): (
     if decodeOk then
         return true, decoded
     else
-        return true, result  -- return raw string if not JSON
+        return true, result -- return raw string if not JSON
     end
 end
 

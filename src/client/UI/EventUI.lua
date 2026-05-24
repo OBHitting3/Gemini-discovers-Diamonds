@@ -5,7 +5,7 @@
 ]]
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local GameConfig    = require(ReplicatedStorage:WaitForChild("GameConfig"))
+local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
 local RemoteManager = require(ReplicatedStorage:WaitForChild("RemoteManager"))
 
 local EventUI = {}

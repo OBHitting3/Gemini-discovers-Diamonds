@@ -10,19 +10,19 @@
 local CollectionService = game:GetService("CollectionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local GameConfig    = require(ReplicatedStorage:WaitForChild("GameConfig"))
-local RemoteManager = require(ReplicatedStorage:WaitForChild("RemoteManager"))
-local ItemCatalog   = require(ReplicatedStorage:WaitForChild("ItemCatalog"))
 local AssetRegistry = require(ReplicatedStorage:WaitForChild("AssetRegistry"))
-local Utilities     = require(ReplicatedStorage:WaitForChild("Utilities"))
+local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
+local ItemCatalog = require(ReplicatedStorage:WaitForChild("ItemCatalog"))
+local RemoteManager = require(ReplicatedStorage:WaitForChild("RemoteManager"))
+local Utilities = require(ReplicatedStorage:WaitForChild("Utilities"))
 
 local PropBuilder = require(script.Parent.Parent.Builders.PropBuilder)
 
 local PlotService = {}
 
 -- Internal state
-PlotService._plots = {}           -- plotId → PlotData
-PlotService._homeModels = {}      -- plotId → Model
+PlotService._plots = {} -- plotId → PlotData
+PlotService._homeModels = {} -- plotId → Model
 PlotService._economyService = nil
 PlotService._homeBuilder = nil
 PlotService._persistenceService = nil
@@ -74,8 +74,10 @@ function PlotService:init(economyService, homeBuilder, persistenceService)
         local prompt = Instance.new("ProximityPrompt")
         prompt.Name = "ClaimPlotPrompt"
         prompt.ActionText = "Claim Plot"
-        prompt.ObjectText = "Plot #" .. plotId .. " - " ..
-                           Utilities.formatCurrency(GameConfig.Economy.PlotPrices[plotId])
+        prompt.ObjectText = "Plot #"
+            .. plotId
+            .. " - "
+            .. Utilities.formatCurrency(GameConfig.Economy.PlotPrices[plotId])
         prompt.MaxActivationDistance = 15
         prompt.HoldDuration = 1.5
         prompt.Parent = marker
@@ -136,24 +138,29 @@ function PlotService:claimPlot(player: Player, plotId: number): boolean
 
     -- Already claimed?
     if plot.ownerId then
-        RemoteManager:fireClient("NotifyPlayer", player,
-            "This plot is already claimed!")
+        RemoteManager:fireClient("NotifyPlayer", player, "This plot is already claimed!")
         return false
     end
 
     -- Player already owns a plot?
     local data = self._economyService:getPlayerData(player)
     if data and data.plotId then
-        RemoteManager:fireClient("NotifyPlayer", player,
-            "You already own a plot! (#" .. data.plotId .. ")")
+        RemoteManager:fireClient(
+            "NotifyPlayer",
+            player,
+            "You already own a plot! (#" .. data.plotId .. ")"
+        )
         return false
     end
 
     -- Afford check
     local price = GameConfig.Economy.PlotPrices[plotId]
     if not self._economyService:removeCoins(player, price, "Claim plot #" .. plotId) then
-        RemoteManager:fireClient("NotifyPlayer", player,
-            "Not enough SunCoins! Need " .. Utilities.formatCurrency(price))
+        RemoteManager:fireClient(
+            "NotifyPlayer",
+            player,
+            "Not enough SunCoins! Need " .. Utilities.formatCurrency(price)
+        )
         return false
     end
 
@@ -169,7 +176,9 @@ function PlotService:claimPlot(player: Player, plotId: number): boolean
         local marker = plotsFolder:FindFirstChild("PlotMarker_" .. plotId)
         if marker then
             local prompt = marker:FindFirstChild("ClaimPlotPrompt")
-            if prompt then prompt:Destroy() end
+            if prompt then
+                prompt:Destroy()
+            end
             marker.Color = GameConfig.Colors.DustyPink
             marker.Transparency = 0.5
 
@@ -191,12 +200,18 @@ function PlotService:claimPlot(player: Player, plotId: number): boolean
     end
 
     self:_markDirty(player)
-    RemoteManager:fireClient("NotifyPlayer", player,
-        "Plot #" .. plotId .. " claimed! Choose a home style to build.")
+    RemoteManager:fireClient(
+        "NotifyPlayer",
+        player,
+        "Plot #" .. plotId .. " claimed! Choose a home style to build."
+    )
 
     if plotId == 1 then
-        RemoteManager:fireClient("NotifyPlayer", player,
-            "Tip: Afternoon is great for decorating — try /buildhouse kaufmann")
+        RemoteManager:fireClient(
+            "NotifyPlayer",
+            player,
+            "Tip: Afternoon is great for decorating — try /buildhouse kaufmann"
+        )
     end
 
     print("[PlotService] " .. player.Name .. " claimed plot #" .. plotId)
@@ -217,8 +232,7 @@ function PlotService:buildHome(player: Player, style: string): boolean
     -- Find player's plot
     local data = self._economyService:getPlayerData(player)
     if not data or not data.plotId then
-        RemoteManager:fireClient("NotifyPlayer", player,
-            "You need to claim a plot first!")
+        RemoteManager:fireClient("NotifyPlayer", player, "You need to claim a plot first!")
         return false
     end
 
@@ -227,8 +241,7 @@ function PlotService:buildHome(player: Player, style: string): boolean
 
     -- Already built?
     if plot.homeStyle then
-        RemoteManager:fireClient("NotifyPlayer", player,
-            "You already have a home built!")
+        RemoteManager:fireClient("NotifyPlayer", player, "You already have a home built!")
         return false
     end
 
@@ -248,8 +261,11 @@ function PlotService:buildHome(player: Player, style: string): boolean
         data.homeStyle = style
         self:_markDirty(player)
 
-        RemoteManager:fireClient("NotifyPlayer", player,
-            "Built " .. GameConfig.HomeStyles[style].name .. "! (" .. partCount .. " parts)")
+        RemoteManager:fireClient(
+            "NotifyPlayer",
+            player,
+            "Built " .. GameConfig.HomeStyles[style].name .. "! (" .. partCount .. " parts)"
+        )
         print("[PlotService] " .. player.Name .. " built " .. style .. " on plot #" .. plotId)
         return true
     end
@@ -261,7 +277,12 @@ end
 -- FURNITURE PLACEMENT
 ---------------------------------------------------------------------------
 
-function PlotService:placeFurniture(player: Player, furnitureId: string, position: Vector3, rotation: number?): boolean
+function PlotService:placeFurniture(
+    player: Player,
+    furnitureId: string,
+    position: Vector3,
+    rotation: number?
+): boolean
     local data = self._economyService:getPlayerData(player)
     if not data or not data.plotId then
         RemoteManager:fireClient("NotifyPlayer", player, "Claim a plot first!")
@@ -273,15 +294,17 @@ function PlotService:placeFurniture(player: Player, furnitureId: string, positio
 
     -- Check item in inventory
     if not self._economyService:hasItem(player, furnitureId) then
-        RemoteManager:fireClient("NotifyPlayer", player,
-            "You don't have this furniture item!")
+        RemoteManager:fireClient("NotifyPlayer", player, "You don't have this furniture item!")
         return false
     end
 
     -- Check part limit
     if plot.partCount >= GameConfig.PartLimits.MaxPartsPerPlot then
-        RemoteManager:fireClient("NotifyPlayer", player,
-            "Plot part limit reached! Remove something first.")
+        RemoteManager:fireClient(
+            "NotifyPlayer",
+            player,
+            "Plot part limit reached! Remove something first."
+        )
         return false
     end
 
@@ -289,8 +312,11 @@ function PlotService:placeFurniture(player: Player, furnitureId: string, positio
     local plotPos = GameConfig.World.PlotPositions[plotId]
     local plotSize = GameConfig.World.PlotSize
     if not Utilities.isInsideBox(position, plotPos, plotSize + Vector3.new(0, 20, 0)) then
-        RemoteManager:fireClient("NotifyPlayer", player,
-            "Furniture must be placed within your plot!")
+        RemoteManager:fireClient(
+            "NotifyPlayer",
+            player,
+            "Furniture must be placed within your plot!"
+        )
         return false
     end
 
@@ -311,7 +337,9 @@ function PlotService:placeFurniture(player: Player, furnitureId: string, positio
     local partsAdded = 1
 
     local imported = AssetRegistry:getTemplate(furnitureId)
-    local propModel = if not imported then PropBuilder:build(furnitureId, parent, placeCFrame) else nil
+    local propModel = if not imported
+        then PropBuilder:build(furnitureId, parent, placeCFrame)
+        else nil
 
     if imported then
         imported:PivotTo(placeCFrame)
@@ -343,7 +371,8 @@ function PlotService:placeFurniture(player: Player, furnitureId: string, positio
         end
     else
         local itemColor = GameConfig.Colors[item.color] or GameConfig.Colors.WallWhite
-        local itemMaterial = Enum.Material[item.material or "SmoothPlastic"] or Enum.Material.SmoothPlastic
+        local itemMaterial = Enum.Material[item.material or "SmoothPlastic"]
+            or Enum.Material.SmoothPlastic
 
         local part = Utilities.createPart({
             Name = "Furniture_" .. furnitureId,
@@ -372,15 +401,20 @@ function PlotService:placeFurniture(player: Player, furnitureId: string, positio
     self:_updateVibesScore(plotId)
     self:_markDirty(player)
 
-    RemoteManager:fireClient("NotifyPlayer", player,
-        "Placed " .. item.name .. "! Vibes Score: " .. plot.vibesScore)
+    RemoteManager:fireClient(
+        "NotifyPlayer",
+        player,
+        "Placed " .. item.name .. "! Vibes Score: " .. plot.vibesScore
+    )
 
     return true
 end
 
 function PlotService:removeFurniture(player: Player, instanceId: string): boolean
     local data = self._economyService:getPlayerData(player)
-    if not data or not data.plotId then return false end
+    if not data or not data.plotId then
+        return false
+    end
 
     local plotId = data.plotId
     local plot = self._plots[plotId]
@@ -396,22 +430,50 @@ function PlotService:removeFurniture(player: Player, instanceId: string): boolea
         end
     end
 
-    if not foundIndex then return false end
+    if not foundIndex then
+        return false
+    end
 
-    -- Remove physical part
+    -- Remove physical instance (Model for procedural/imported, Part for legacy box)
+    local partsRemoved = 1
     local homeModel = self._homeModels[plotId]
     if homeModel then
-        for _, child in ipairs(homeModel:GetDescendants()) do
-            if child:IsA("BasePart") and child:GetAttribute("InstanceId") == instanceId then
-                child:Destroy()
+        local target: Instance? = nil
+        for _, desc in ipairs(homeModel:GetDescendants()) do
+            if desc:GetAttribute("InstanceId") == instanceId and desc:IsA("Model") then
+                target = desc
                 break
             end
+        end
+        if not target then
+            for _, desc in ipairs(homeModel:GetDescendants()) do
+                if desc:GetAttribute("InstanceId") == instanceId and desc:IsA("BasePart") then
+                    target = desc
+                    break
+                end
+            end
+        end
+        if target then
+            partsRemoved = 0
+            if target:IsA("Model") then
+                for _, desc in ipairs(target:GetDescendants()) do
+                    if desc:IsA("BasePart") then
+                        partsRemoved += 1
+                    end
+                end
+            elseif target:IsA("BasePart") then
+                partsRemoved = 1
+            end
+            if partsRemoved == 0 then
+                partsRemoved = 1
+            end
+            target:Destroy()
         end
     end
 
     -- Update records
     table.remove(plot.furniturePlacements, foundIndex)
-    plot.partCount = math.max(0, plot.partCount - 1)
+    plot.partCount = math.max(0, plot.partCount - partsRemoved)
 
     -- Return item to inventory
     if foundItemId then
@@ -430,12 +492,16 @@ end
 
 function PlotService:_updateVibesScore(plotId: number)
     local plot = self._plots[plotId]
-    if not plot then return end
+    if not plot then
+        return
+    end
 
     local score = 0
 
     -- Base points for having a home
-    if plot.homeStyle then score += 10 end
+    if plot.homeStyle then
+        score += 10
+    end
 
     -- Points for furniture variety
     local categories = {}
@@ -443,7 +509,7 @@ function PlotService:_updateVibesScore(plotId: number)
         local item = ItemCatalog.getFurniture(placement.itemId)
         if item then
             categories[item.category] = true
-            score += 2  -- each piece adds 2
+            score += 2 -- each piece adds 2
         end
     end
 
@@ -453,7 +519,9 @@ function PlotService:_updateVibesScore(plotId: number)
     end
 
     -- Pool presence bonus
-    if plot.homeStyle then score += 5 end  -- all homes have pools
+    if plot.homeStyle then
+        score += 5
+    end -- all homes have pools
 
     plot.vibesScore = score
 end
@@ -483,8 +551,11 @@ function PlotService:startHomeTour(player: Player, targetPlotId: number)
             data.stats.homeTourVisits += 1
         end
 
-        RemoteManager:fireClient("NotifyPlayer", player,
-            "Welcome to plot #" .. targetPlotId .. "! Vibes Score: " .. plot.vibesScore)
+        RemoteManager:fireClient(
+            "NotifyPlayer",
+            player,
+            "Welcome to plot #" .. targetPlotId .. "! Vibes Score: " .. plot.vibesScore
+        )
     end
 end
 
