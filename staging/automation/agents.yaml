@@ -89,6 +89,26 @@ agents:
     must_not:
       - open_studio_or_rojo_serve_on_karl_pc
 
+cross_repo:
+  org: OBHitting3
+  playbook: docs/karlux/12-cross-repo-success-hardening.md
+  siblings:
+    - name: Content_Shield
+      local_path: content-shield/
+      patterns: [retry, circuit_breaker, ci_matrix]
+    - name: 55-_AI_Intergration
+      remote_path: game/PalmLuxeTycoon
+      patterns: [agent_lanes, karl_twin_approval_gates]
+    - name: karl-twin
+      parent_repo: 55-_AI_Intergration
+      patterns: [no_untrusted_cli_for_karl, verify_before_execute]
+  karl_launcher:
+    preflight: staging/scripts/karl-preflight.cmd
+    serve: Start-PalmSprings.cmd
+  resilience:
+    module: src/shared/Resilience.lua
+    adopted_from: content-shield
+
 integrations:
   supabase:
     code: src/shared/SupabaseClient.lua

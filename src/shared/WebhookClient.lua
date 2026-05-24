@@ -13,6 +13,8 @@
 
 local HttpService = game:GetService("HttpService")
 
+local Resilience = require(script.Parent:WaitForChild("Resilience"))
+
 local WebhookClient = {}
 WebhookClient.__index = WebhookClient
 
@@ -77,18 +79,28 @@ function WebhookClient:_send(endpointKey: string, payload: table): boolean
         return true
     end
 
-    -- Attempt real HTTP POST
+    -- Attempt real HTTP POST (retry transient failures — content-shield pattern)
     local body = HttpService:JSONEncode(payload)
-    local ok, err = pcall(function()
-        HttpService:PostAsync(url, body, Enum.HttpContentType.ApplicationJson)
+    local ok = Resilience.retryBool({
+        maxAttempts = 3,
+        delaySeconds = 0.4,
+        label = "webhook_" .. endpointKey,
+    }, function()
+        local postOk, postErr = pcall(function()
+            HttpService:PostAsync(url, body, Enum.HttpContentType.ApplicationJson)
+        end)
+        if not postOk then
+            warn("[WebhookClient] POST error: " .. tostring(postErr))
+        end
+        return postOk
     end)
 
     entry.sent = ok
-    entry.status = ok and "sent" or ("error: " .. tostring(err))
+    entry.status = ok and "sent" or "error: retries exhausted"
     table.insert(self._log, entry)
 
     if not ok then
-        warn("[WebhookClient] Failed to send " .. endpointKey .. ": " .. tostring(err))
+        warn("[WebhookClient] Failed to send " .. endpointKey .. " after retries")
     else
         print("[WebhookClient] Sent " .. endpointKey .. " to " .. url)
     end

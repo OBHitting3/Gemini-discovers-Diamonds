@@ -25,11 +25,21 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 ReplicatedStorage:WaitForChild("GameConfig")
 ReplicatedStorage:WaitForChild("RemoteManager")
 
+local BootstrapHealth = require(ReplicatedStorage:WaitForChild("BootstrapHealth"))
+
+local function recordBoot(name: string, ok: boolean, err: any?)
+    BootstrapHealth:setService(name, ok, if err then tostring(err) else nil)
+    if not ok then
+        warn("[Bootstrap] " .. name .. " init failed: " .. tostring(err))
+    end
+end
+
 ---------------------------------------------------------------------------
 -- 1. REMOTE MANAGER  (must be first — creates all remotes)
 ---------------------------------------------------------------------------
 local RemoteManager = require(ReplicatedStorage.RemoteManager)
 RemoteManager:init()
+recordBoot("RemoteManager", true, nil)
 
 ---------------------------------------------------------------------------
 -- 2. PERSISTENCE SERVICE
@@ -38,9 +48,7 @@ local PersistenceService = require(script.Services.PersistenceService)
 local persistOk, persistErr = pcall(function()
     PersistenceService:init()
 end)
-if not persistOk then
-    warn("[Bootstrap] PersistenceService init failed: " .. tostring(persistErr))
-end
+recordBoot("PersistenceService", persistOk, persistErr)
 
 ---------------------------------------------------------------------------
 -- 3. ECONOMY SERVICE
@@ -49,9 +57,7 @@ local EconomyService = require(script.Services.EconomyService)
 local econOk, econErr = pcall(function()
     EconomyService:init(PersistenceService)
 end)
-if not econOk then
-    warn("[Bootstrap] EconomyService init failed: " .. tostring(econErr))
-end
+recordBoot("EconomyService", econOk, econErr)
 
 ---------------------------------------------------------------------------
 -- 4. ENVIRONMENT BUILDERS
@@ -67,30 +73,22 @@ local totalEnvParts = 0
 local envOk, envErr = pcall(function()
     totalEnvParts += EnvironmentBuilder:buildAll()
 end)
-if not envOk then
-    warn("[Bootstrap] EnvironmentBuilder failed: " .. tostring(envErr))
-end
+recordBoot("EnvironmentBuilder", envOk, envErr)
 
 local sfOk, sfErr = pcall(function()
     totalEnvParts += StorefrontBuilder:buildBoulevard()
 end)
-if not sfOk then
-    warn("[Bootstrap] StorefrontBuilder failed: " .. tostring(sfErr))
-end
+recordBoot("StorefrontBuilder", sfOk, sfErr)
 
 local gardenOk, gardenErr = pcall(function()
     totalEnvParts += GardenBuilder:buildGarden()
 end)
-if not gardenOk then
-    warn("[Bootstrap] GardenBuilder failed: " .. tostring(gardenErr))
-end
+recordBoot("GardenBuilder", gardenOk, gardenErr)
 
 local runwayOk, runwayErr = pcall(function()
     totalEnvParts += RunwayBuilder:buildRunway()
 end)
-if not runwayOk then
-    warn("[Bootstrap] RunwayBuilder failed: " .. tostring(runwayErr))
-end
+recordBoot("RunwayBuilder", runwayOk, runwayErr)
 
 print("[Bootstrap] Environment built — " .. totalEnvParts .. " base parts")
 
@@ -101,9 +99,7 @@ local PlotService = require(script.Services.PlotService)
 local plotOk, plotErr = pcall(function()
     PlotService:init(EconomyService, HomeBuilder, PersistenceService)
 end)
-if not plotOk then
-    warn("[Bootstrap] PlotService init failed: " .. tostring(plotErr))
-end
+recordBoot("PlotService", plotOk, plotErr)
 
 local GardenService = require(script.Services.GardenService)
 local gardenSvcOk, gardenSvcErr = pcall(function()
@@ -113,9 +109,7 @@ local gardenSvcOk, gardenSvcErr = pcall(function()
         PersistenceService and PersistenceService:getSupabaseClient()
     )
 end)
-if not gardenSvcOk then
-    warn("[Bootstrap] GardenService init failed: " .. tostring(gardenSvcErr))
-end
+recordBoot("GardenService", gardenSvcOk, gardenSvcErr)
 
 local WebhookClient = require(ReplicatedStorage.WebhookClient)
 local webhooks = WebhookClient.new() -- placeholder mode
@@ -124,33 +118,25 @@ local ShopService = require(script.Services.ShopService)
 local shopOk, shopErr = pcall(function()
     ShopService:init(EconomyService, webhooks, PersistenceService)
 end)
-if not shopOk then
-    warn("[Bootstrap] ShopService init failed: " .. tostring(shopErr))
-end
+recordBoot("ShopService", shopOk, shopErr)
 
 local PropSpawnService = require(script.Services.PropSpawnService)
 local propSpawnOk, propSpawnErr = pcall(function()
     PropSpawnService:init()
 end)
-if not propSpawnOk then
-    warn("[Bootstrap] PropSpawnService init failed: " .. tostring(propSpawnErr))
-end
+recordBoot("PropSpawnService", propSpawnOk, propSpawnErr)
 
 local FashionService = require(script.Services.FashionService)
 local fashionOk, fashionErr = pcall(function()
     FashionService:init(EconomyService)
 end)
-if not fashionOk then
-    warn("[Bootstrap] FashionService init failed: " .. tostring(fashionErr))
-end
+recordBoot("FashionService", fashionOk, fashionErr)
 
 local EventService = require(script.Services.EventService)
 local eventOk, eventErr = pcall(function()
     EventService:init(webhooks)
 end)
-if not eventOk then
-    warn("[Bootstrap] EventService init failed: " .. tostring(eventErr))
-end
+recordBoot("EventService", eventOk, eventErr)
 
 ---------------------------------------------------------------------------
 -- 5a. CORE LOOP (day phases: Morning / Afternoon / Evening)
@@ -163,9 +149,7 @@ local coreOk, coreErr = pcall(function()
         event = EventService,
     })
 end)
-if not coreOk then
-    warn("[Bootstrap] CoreLoopService init failed: " .. tostring(coreErr))
-end
+recordBoot("CoreLoopService", coreOk, coreErr)
 
 ---------------------------------------------------------------------------
 -- 5b. LEADERBOARD SERVICE
@@ -174,9 +158,7 @@ local LeaderboardService = require(script.Services.LeaderboardService)
 local lbOk, lbErr = pcall(function()
     LeaderboardService:init(EconomyService, PlotService)
 end)
-if not lbOk then
-    warn("[Bootstrap] LeaderboardService init failed: " .. tostring(lbErr))
-end
+recordBoot("LeaderboardService", lbOk, lbErr)
 
 ---------------------------------------------------------------------------
 -- 5c. GAME PASS SERVICE
@@ -186,9 +168,7 @@ local gpOk, gpErr = pcall(function()
     GamePassService:init(EconomyService, GardenService)
     GamePassService:startAutoWaterLoop()
 end)
-if not gpOk then
-    warn("[Bootstrap] GamePassService init failed: " .. tostring(gpErr))
-end
+recordBoot("GamePassService", gpOk, gpErr)
 
 ---------------------------------------------------------------------------
 -- 6. TEST COMMANDS
@@ -211,9 +191,7 @@ local testOk, testErr = pcall(function()
         runwayBuilder = RunwayBuilder,
     })
 end)
-if not testOk then
-    warn("[Bootstrap] TestCommands init failed: " .. tostring(testErr))
-end
+recordBoot("TestCommands", testOk, testErr)
 
 ---------------------------------------------------------------------------
 -- 7. PLAYER LIFECYCLE
@@ -324,8 +302,11 @@ end)
 ---------------------------------------------------------------------------
 -- STARTUP COMPLETE
 ---------------------------------------------------------------------------
+BootstrapHealth:setPartCount(totalEnvParts)
+local health = BootstrapHealth:getSnapshot()
 print("===========================================")
 print("  PALM SPRINGS PARADISE — Server Ready!    ")
 print("  Total base parts: " .. totalEnvParts)
 print("  Players: " .. #Players:GetPlayers())
+print("  Bootstrap: " .. health.servicesPassed .. " ok, " .. health.servicesFailed .. " failed")
 print("===========================================")

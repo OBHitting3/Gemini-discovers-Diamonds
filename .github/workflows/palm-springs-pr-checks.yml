@@ -10,12 +10,17 @@ on:
 jobs:
   luau-quality:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
       - name: Install Rokit tools
         run: |
-          curl -sSf https://raw.githubusercontent.com/rojo-rbx/rokit/main/scripts/install.sh | bash
+          for i in 1 2 3; do
+            curl -sSf https://raw.githubusercontent.com/rojo-rbx/rokit/main/scripts/install.sh | bash && break
+            echo "rokit install script retry $i..."
+            sleep 4
+          done
           echo "$HOME/.rokit/bin" >> $GITHUB_PATH
           export PATH="$HOME/.rokit/bin:$PATH"
           # Root rokit.toml may symlink staging/toolchain/ — cp fails if same file

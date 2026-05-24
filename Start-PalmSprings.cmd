@@ -2,13 +2,14 @@
 title Palm Springs Paradise - Rojo Server
 cd /d "%~dp0"
 
+call "%~dp0staging\scripts\karl-preflight.cmd"
+if errorlevel 1 (
+    pause
+    exit /b 1
+)
+
 set "ROKIT=%USERPROFILE%\.rokit\bin"
 set "PATH=%ROKIT%;%PATH%"
-
-if not exist "rokit.toml" (
-    copy /Y "staging\toolchain\rokit.toml" "rokit.toml" >nul 2>&1
-    copy /Y "staging\toolchain\wally.toml" "wally.toml" >nul 2>&1
-)
 
 echo.
 echo  ========================================

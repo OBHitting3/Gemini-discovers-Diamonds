@@ -32,7 +32,7 @@ Machine-readable registry: `staging/automation/agents.yaml`
 | 2 | Studio → Rojo **Connect** → **Play Solo** |
 | 3 | Cursor chat — paste prompts from `docs/karlux/karl-prompt-menu.md` |
 
-Guide: **`docs/karlux/10-karl-prompt-to-game.md`** · 3D: **`docs/karlux/11-karl-prompt-to-3d.md`** (`/spawnprop`, `/listprops`)
+Guide: **`docs/karlux/10-karl-prompt-to-game.md`** · 3D: **`docs/karlux/11-karl-prompt-to-3d.md`** · Hardening: **`docs/karlux/12-cross-repo-success-hardening.md`** (`/health`, preflight launcher)
 
 **Eddie / technical:** `staging/scripts/karl-start-day.ps1` for full toolchain audit.
 

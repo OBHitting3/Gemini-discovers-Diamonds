@@ -117,6 +117,8 @@ function TestCommands:_handleChat(player: Player, message: string)
         self:_cmdSpawnProp(player, parts[2])
     elseif command == "/listprops" then
         self:_cmdListProps(player)
+    elseif command == "/health" then
+        self:_cmdHealth(player)
     else
         self:_notify(player, "Unknown command: " .. command .. " — type /help")
     end
@@ -156,6 +158,7 @@ function TestCommands:_cmdHelp(player: Player)
         "/stockshop — Stock your shop with 5 random boutique items (test)",
         "/spawnprop [slug] — Spawn a 3D prop in front of you (see /listprops)",
         "/listprops — List prompt-built procedural 3D models",
+        "/health — Bootstrap + service health (troubleshooting)",
     }
     for _, line in ipairs(lines) do
         self:_notify(player, line)
@@ -501,6 +504,23 @@ function TestCommands:_cmdStockShop(player: Player)
     end
 
     self:_notify(player, "Stocked " .. stocked .. " boutique item(s) in your shop.")
+end
+
+function TestCommands:_cmdHealth(player: Player)
+    local BootstrapHealth = require(ReplicatedStorage:WaitForChild("BootstrapHealth"))
+    local snap = BootstrapHealth:getSnapshot()
+    self:_notify(player, "=== HEALTH ===")
+    self:_notify(player, "Overall: " .. (snap.healthy and "HEALTHY" or "DEGRADED"))
+    self:_notify(
+        player,
+        "Services ok: " .. snap.servicesPassed .. " | failed: " .. snap.servicesFailed
+    )
+    self:_notify(player, "Env parts: " .. snap.envParts .. " | uptime: " .. snap.uptimeSec .. "s")
+    for name, entry in pairs(snap.services) do
+        local status = if entry.ok then "OK" else ("FAIL: " .. tostring(entry.error))
+        self:_notify(player, "  " .. name .. ": " .. status)
+    end
+    self:_notify(player, "=== END HEALTH ===")
 end
 
 function TestCommands:_cmdSpawnProp(player: Player, slug: string?)

@@ -61,6 +61,11 @@ Include:
 
 **Prompt-built props (no Blender):** [11-karl-prompt-to-3d.md](./11-karl-prompt-to-3d.md) — `/listprops`, `/spawnprop [slug]`
 
+## If Play Solo fails
+
+Type **`/health`** in chat. If anything shows FAIL, paste Output + `/health` lines into Cursor.  
+Launcher runs **preflight** automatically: [12-cross-repo-success-hardening.md](./12-cross-repo-success-hardening.md)
+
 ## What still needs other lanes (not Cursor chat)
 
 | Need | Who |

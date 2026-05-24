@@ -13,16 +13,18 @@ Write-Host "========================================" -ForegroundColor Cyan
 $rokitBin = Join-Path $env:USERPROFILE ".rokit\bin"
 $env:Path = "$rokitBin;$env:Path"
 
-# 1. Toolchain manifests
+# 1. Toolchain manifests (symlink-safe — same as CI)
 $rokitSrc = Join-Path $Root "staging\toolchain\rokit.toml"
 $wallySrc = Join-Path $Root "staging\toolchain\wally.toml"
-Copy-Item $rokitSrc "rokit.toml" -Force
-Copy-Item $wallySrc "wally.toml" -Force
+Remove-Item (Join-Path $Root "rokit.toml") -Force -ErrorAction SilentlyContinue
+Remove-Item (Join-Path $Root "wally.toml") -Force -ErrorAction SilentlyContinue
+Copy-Item $rokitSrc (Join-Path $Root "rokit.toml") -Force
+Copy-Item $wallySrc (Join-Path $Root "wally.toml") -Force
 Write-Host "[1/5] Synced rokit.toml + wally.toml from staging" -ForegroundColor Green
 
 # 2. Install CLI tools
 if (Get-Command rokit -ErrorAction SilentlyContinue) {
-    rokit install 2>&1 | Out-Null
+    rokit install --no-trust-check 2>&1 | Out-Null
     Write-Host "[2/5] rokit install - done" -ForegroundColor Green
 } else {
     Write-Host "[2/5] MISS rokit - install from 07-step-by-step-install-windows.md" -ForegroundColor Red
@@ -56,12 +58,17 @@ if (Test-Path $manifest) {
     Write-Host "  [TODO] Manus: populate vendor-imports\_manifests\asset-index.yaml" -ForegroundColor Yellow
 }
 
-$coreLoop = Join-Path $Root "staging\src\server\Services\CoreLoopService.lua"
 $srcCore = Join-Path $Root "src\server\Services\CoreLoopService.lua"
-if ((Test-Path $coreLoop) -and -not (Test-Path $srcCore)) {
-    Write-Host "  [TODO] Merge day-phase slice - CoreLoop in staging only" -ForegroundColor Yellow
-} elseif (Test-Path $srcCore) {
-    Write-Host "  [OK]   Day-phase CoreLoop merged to src/" -ForegroundColor Green
+$propBuilder = Join-Path $Root "src\server\Builders\PropBuilder.lua"
+if (Test-Path $srcCore) {
+    Write-Host "  [OK]   Day-phase CoreLoop in src/" -ForegroundColor Green
+} else {
+    Write-Host "  [TODO] CoreLoop missing in src/" -ForegroundColor Yellow
+}
+if (Test-Path $propBuilder) {
+    Write-Host "  [OK]   Prompt-to-3D PropBuilder in src/" -ForegroundColor Green
+} else {
+    Write-Host "  [TODO] Pull latest for PropBuilder (Karl /spawnprop)" -ForegroundColor Yellow
 }
 
 if (Test-Path (Join-Path $Root "staging\supabase\migrations")) {
@@ -74,9 +81,9 @@ Write-Host "  [INFO] SuperbulletAI: see docs\karlux\08-karl-automation-playbook.
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host " NEXT (Karl)" -ForegroundColor Green
-Write-Host "   1. Tasks -> Rojo: Serve  (or: rojo serve)" -ForegroundColor Green
+Write-Host "   1. Double-click Start-PalmSprings.cmd (Karl)" -ForegroundColor Green
 Write-Host "   2. Studio -> Rojo Connect -> Play Solo" -ForegroundColor Green
-Write-Host "   3. Chat: /help  /coins 5000  /status" -ForegroundColor Green
+Write-Host "   3. Chat: /help  /health  /spawnprop flamingo_lawn" -ForegroundColor Green
 Write-Host " Doc: docs\karlux\08-karl-automation-playbook.md" -ForegroundColor DarkGray
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
