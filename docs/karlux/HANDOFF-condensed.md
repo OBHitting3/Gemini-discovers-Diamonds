@@ -86,8 +86,13 @@ docs/karlux/            # Architecture + install docs
 | Agent | Owns |
 |-------|------|
 | **Cursor** | `src/`, `staging/`, Luau, Rojo, Wally, PRs, `.vscode` |
-| **Manus** | `vendor-imports/`, Tarmac/upload, Supabase `db push`, secrets, n8n |
+| **Manus** | `vendor-imports/`, uploads, Supabase `db push`, secrets, n8n |
+| **SuperbulletAI** | Daily checklists, `karl-start-day.ps1`, dispatch Manus/Cursor |
 | **Karl/Eddie** | Intent, Studio publish, merge PRs |
+
+**Unified automation:** [08-karl-automation-playbook.md](./08-karl-automation-playbook.md) · [AGENTS.md](../../AGENTS.md) · `staging/automation/agents.yaml`
+
+**Karl (Windows):** `powershell -ExecutionPolicy Bypass -File staging\scripts\karl-start-day.ps1`
 
 ---
 
@@ -102,7 +107,9 @@ docs/karlux/            # Architecture + install docs
 | `05-unified-dev-stack.md` | Studio/Blender/Supabase map |
 | `06-friction-reduction-additions.md` | Selene, LFS, CI, pre-commit |
 | `07-step-by-step-install-windows.md` | **Windows start here** |
+| `08-karl-automation-playbook.md` | Karl + all agents unified automation |
 | `HANDOFF-condensed.md` | This file |
+| `AGENTS.md` (repo root) | Agent router for Cursor / cloud |
 
 ---
 

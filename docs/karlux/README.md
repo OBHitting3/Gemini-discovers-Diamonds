@@ -16,6 +16,8 @@
 | [06-friction-reduction-additions.md](./06-friction-reduction-additions.md) | Selene, LSP, LFS, CI, pre-commit, extras |
 | [07-step-by-step-install.md](./07-step-by-step-install.md) | **Start here** — macOS install walkthrough |
 | [07-step-by-step-install-windows.md](./07-step-by-step-install-windows.md) | **Start here** — Windows + Cursor (PowerShell) |
+| [08-karl-automation-playbook.md](./08-karl-automation-playbook.md) | **Karl automation** — Cursor + Manus + SuperbulletAI + Supabase phases |
+| [../AGENTS.md](../AGENTS.md) | Agent router (repo root) |
 
 ## Staged code
 

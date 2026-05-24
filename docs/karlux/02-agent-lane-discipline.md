@@ -1,6 +1,8 @@
-# Agent Lane Discipline — Cursor vs Manus
+# Agent Lane Discipline — Cursor · Manus · SuperbulletAI
 
 **Goal:** Zero tool overlap. One agent per concern so Karl and Eddie stay in flow state.
+
+**Unified playbook:** [08-karl-automation-playbook.md](./08-karl-automation-playbook.md) · **Registry:** `staging/automation/agents.yaml` · **Router:** `AGENTS.md`
 
 ---
 
@@ -10,6 +12,7 @@
 |------|-------|-------------|------|
 | **A — Logic** | **Cursor** (this agent) | Repo `src/`, `staging/`, Rojo, Luau | Gameplay, services, UI code, builders, config, tests, PRs |
 | **B — Boundary** | **Manus** | Sandboxed APIs, KRLX filesystem, Roblox Open Cloud | Asset ingest, transcoding, bulk upload, webhooks, Supabase/n8n, secrets |
+| **D — Orchestration** | **SuperbulletAI** | Karl PC schedules, n8n, checklists | Daily audits, agent dispatch, handoff reminders — **not** Luau or uploads |
 | **C — Intent** | **Karl / Eddie** | Studio, Blender, GitHub merge | Creative direction, approvals, publish |
 
 ---
@@ -53,6 +56,24 @@
 
 ---
 
+## SuperbulletAI — orchestration (Karl’s automation co-pilot)
+
+- Run **`staging/scripts/karl-start-day.ps1`** (or remind Karl) at session start.
+- Run **`staging/scripts/toolchain/audit-windows.ps1`** when toolchain drifts.
+- Report status from **`staging/automation/agents.yaml`** phases (Supabase live, asset manifest, day-phase merge).
+- **Dispatch** work:
+  - → **Manus** when `asset-index.yaml` is missing, Supabase not pushed, or secrets not in Roblox.
+  - → **Cursor** when Studio Output shows Luau errors or `staging/` is ahead of `src/`.
+- Optional: trigger **n8n** flows documented in `WebhookClient` / `AUTOMATED_TYCOON_CAPABILITIES.md`.
+
+**SuperbulletAI must NOT:**
+
+- Edit `src/**/*.lua` or merge git branches (use **Cursor** + Karl approval).
+- Upload Roblox assets or run `supabase db push` without repo migrations (**Manus**).
+- Override KarLux 10-80-10 merge decisions.
+
+---
+
 ## Toolchain ownership (Rokit / Wally / StyLua / Darklua / Remodel / Tarmac)
 
 | Tool | Cursor | Manus | Karl/Eddie |
@@ -85,6 +106,7 @@ These files are the **API between lanes**:
 | `staging/src/shared/AssetRegistry.lua` | Cursor | Karl/Eddie merge → `src/` |
 | `GameConfig.Remotes` names | Cursor | Both (frozen contract) |
 | Webhook URLs / Supabase keys | Manus (env) | Cursor (read via Secrets mock) |
+| Daily automation runbook | SuperbulletAI | Karl (start-day script) |
 
 ---
 
@@ -93,14 +115,17 @@ These files are the **API between lanes**:
 ```mermaid
 sequenceDiagram
     participant K as Karl/Eddie
+    participant SB as SuperbulletAI
     participant M as Manus
     participant C as Cursor
     participant R as Roblox Studio
 
+    SB->>K: start-day.ps1 + handoff status
     K->>K: Define intent (10%) — slice, theme, assets
     M->>M: Ingest + QA + upload assets
     M->>C: asset-index.yaml PR or handoff file
     C->>C: Stage Luau + AssetRegistry in staging/
+    SB->>M: Remind if Supabase/assets blocked
     K->>K: Review diff (10%)
     K->>R: Merge + rojo serve + Play Solo
     C->>C: Fix bugs from Studio output only in src/ after approval

@@ -7,6 +7,7 @@
 ```
 staging/
 ├── README.md
+├── automation/           # agents.yaml — Cursor, Manus, SuperbulletAI registry
 ├── toolchain/            # Rokit, Wally, StyLua, Selene, Darklua, Tarmac, Remodel
 ├── editor/               # .vscode + .cursor rules → promote to repo root
 ├── supabase/             # migrations + config (Manus)

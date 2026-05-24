@@ -41,13 +41,31 @@ Palm Springs Paradise is a Roblox experience where players arrive as new residen
 
 ---
 
+## Agents & automation (KarLux)
+
+| Agent | Role |
+|-------|------|
+| **Karl / Eddie** | Intent, approvals, Studio publish |
+| **Cursor** | Luau, Rojo, `staging/` + `src/` PRs |
+| **Manus** | Assets, Supabase, secrets, webhooks |
+| **SuperbulletAI** | Daily checklists, dispatch other agents |
+
+**Start here:** [AGENTS.md](./AGENTS.md) · [docs/karlux/08-karl-automation-playbook.md](./docs/karlux/08-karl-automation-playbook.md)
+
+**Karl (Windows):** `powershell -ExecutionPolicy Bypass -File staging\scripts\karl-start-day.ps1`
+
+---
+
 ## Project Structure
 
 ```
 /
+├── AGENTS.md                          # Agent router
 ├── .cursor/rules/roblox-mcm.md       # Locked visual identity rules
+├── docs/karlux/                       # Architecture + install + automation
 ├── default.project.json               # Rojo v7 project config
 ├── README.md                          # This file
+├── staging/                           # Gated code + automation (10-80-10)
 └── src/
     ├── server/                        → ServerScriptService
     │   ├── init.server.lua            # Server bootstrap

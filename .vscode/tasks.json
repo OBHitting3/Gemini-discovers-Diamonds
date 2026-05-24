@@ -50,6 +50,17 @@
       "problemMatcher": []
     },
     {
+      "label": "Karl: Start Dev Day",
+      "type": "shell",
+      "command": "powershell -ExecutionPolicy Bypass -File staging/scripts/karl-start-day.ps1",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
       "label": "Toolchain: Verify",
       "type": "shell",
       "command": "bash staging/scripts/toolchain/verify.sh",
