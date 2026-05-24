@@ -1,5 +1,5 @@
 --[[
-    DayPhaseController.lua  (STAGING — merge to src/client/Controllers)
+    DayPhaseController.lua
     Client-side day phase HUD + input gating (night toggle, fashion hints).
 
     Listens: RemoteEvent DayPhaseUpdate (created by CoreLoopService)
@@ -9,6 +9,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local DayPhaseConfig = require(ReplicatedStorage:WaitForChild("DayPhaseConfig"))
+local GameConfig     = require(ReplicatedStorage:WaitForChild("GameConfig"))
 
 local DayPhaseController = {}
 
@@ -83,14 +84,14 @@ function DayPhaseController:_createPhaseLabel()
 
     local chip = Instance.new("TextLabel")
     chip.Name = "DayPhaseChip"
-    chip.Size = UDim2.new(0, 200, 0, 28)
+    chip.Size = UDim2.new(0, 240, 0, 34)
     chip.Position = UDim2.new(0, 12, 0, 48)
-    chip.BackgroundColor3 = Color3.fromRGB(255, 252, 245)
+    chip.BackgroundColor3 = GameConfig.Colors.UIBackground
     chip.BackgroundTransparency = 0.15
     chip.BorderSizePixel = 0
     chip.Font = Enum.Font.GothamMedium
-    chip.TextSize = 14
-    chip.TextColor3 = Color3.fromRGB(50, 50, 50)
+    chip.TextSize = 15
+    chip.TextColor3 = GameConfig.Colors.UIAccent
     chip.Text = "…"
     chip.Parent = gui
 

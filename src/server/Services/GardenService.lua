@@ -10,8 +10,9 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local GameConfig    = require(ReplicatedStorage:WaitForChild("GameConfig"))
-local RemoteManager = require(ReplicatedStorage:WaitForChild("RemoteManager"))
+local GameConfig       = require(ReplicatedStorage:WaitForChild("GameConfig"))
+local DayPhaseConfig   = require(ReplicatedStorage:WaitForChild("DayPhaseConfig"))
+local RemoteManager    = require(ReplicatedStorage:WaitForChild("RemoteManager"))
 local ItemCatalog   = require(ReplicatedStorage:WaitForChild("ItemCatalog"))
 local Utilities     = require(ReplicatedStorage:WaitForChild("Utilities"))
 
@@ -256,6 +257,11 @@ function GardenService:harvestPlant(player: Player, plotIndex: number): boolean
     RemoteManager:fireClient("NotifyPlayer", player,
         "Harvested " .. plant.name .. "! +" .. plant.harvestValue ..
         " SC, +" .. plant.prestigeReward .. " Prestige")
+
+    if DayPhaseConfig.getCurrentPhase() == "Morning" then
+        RemoteManager:fireClient("NotifyPlayer", player,
+            "Morning harvest bonus!")
+    end
 
     print("[GardenService] " .. player.Name .. " harvested " ..
           plant.name .. " from plot #" .. plotIndex)

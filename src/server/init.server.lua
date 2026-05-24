@@ -222,7 +222,7 @@ local function onPlayerAdded(player: Player)
         data = {
             userId = player.UserId,
             displayName = player.DisplayName,
-            sunCoins = 100,
+            sunCoins = 200,
             prestige = 0,
             level = 1,
             plotId = nil,
@@ -255,8 +255,12 @@ local function onPlayerAdded(player: Player)
     -- Send welcome notification
     task.delay(2, function()
         if player.Parent then  -- still in game
-            RemoteManager:fireClient("NotifyPlayer", player,
-                "Welcome to Palm Springs Paradise! Head to El Paseo to explore.")
+            local DayPhaseConfig = require(ReplicatedStorage:WaitForChild("DayPhaseConfig"))
+            local welcome = "Welcome to Palm Springs Paradise! Head to El Paseo to explore."
+            if DayPhaseConfig.getCurrentPhase() == "Evening" then
+                welcome = "Evening soirée — head to the runway!"
+            end
+            RemoteManager:fireClient("NotifyPlayer", player, welcome)
 
             -- Send initial economy update
             RemoteManager:fireClient("EconomyUpdate", player, {

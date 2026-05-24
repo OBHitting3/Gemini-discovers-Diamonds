@@ -294,6 +294,16 @@ ItemCatalog.Plants = {
         description     = "Bright yellow wildflower that thrives in sand",
     },
     {
+        id              = "desert_rose",
+        name            = "Desert Rose",
+        seedPrice       = 12,
+        growTime         = 240,
+        waterInterval   = 100,
+        harvestValue    = 40,
+        prestigeReward  = 4,
+        description     = "Compact succulent with pink blooms — easy desert starter",
+    },
+    {
         id              = "bougainvillea",
         name            = "Bougainvillea",
         seedPrice       = 30,

@@ -21,6 +21,15 @@ echo  1. Open Roblox Studio (your Palm Springs place)
 echo  2. Plugins - Rojo - Connect
 echo  3. Press Play to test
 echo.
+
+if exist "%USERPROFILE%\Documents\Roblox\PalmSpringsDev.rbxlx" (
+    echo  Opening PalmSpringsDev.rbxlx in Studio...
+    start "" "%USERPROFILE%\Documents\Roblox\PalmSpringsDev.rbxlx"
+) else if exist "%USERPROFILE%\Desktop\PalmSpringsParadise.rbxlx" (
+    echo  Opening PalmSpringsParadise.rbxlx on Desktop...
+    start "" "%USERPROFILE%\Desktop\PalmSpringsParadise.rbxlx"
+)
+echo.
 echo  To add ideas: use Cursor chat (see docs\karlux\karl-prompt-menu.md)
 echo  Do NOT close this window until you are done for the day.
 echo.

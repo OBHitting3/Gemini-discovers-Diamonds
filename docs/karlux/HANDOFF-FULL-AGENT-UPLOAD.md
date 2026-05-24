@@ -301,13 +301,13 @@ This blocked `PersistenceService` and entire server bootstrap (empty world).
 ### P0 — Documentation hygiene (quick)
 
 - [x] This file (`HANDOFF-FULL-AGENT-UPLOAD.md`)  
-- [ ] Update `HANDOFF-condensed.md` day-phase section (was stale)  
-- [ ] Update `staging/automation/agents.yaml` — `day_phase_merge: completed`  
+- [x] Update `HANDOFF-condensed.md` day-phase section (was stale)  
+- [x] Update `staging/automation/agents.yaml` — `day_phase_merge: completed`  
 
 ### P1 — Karl UX
 
-- [ ] Pin desktop shortcut to `Start-PalmSprings.cmd`  
-- [ ] Optional: open `PalmSpringsDev.rbxlx` on launcher start  
+- [ ] Pin desktop shortcut to `Start-PalmSprings.cmd` (manual on Karl's PC)  
+- [x] Optional: open `PalmSpringsDev.rbxlx` on launcher start (`Start-PalmSprings.cmd`)  
 - [ ] Permanent User PATH: `.rokit\bin` above `C:\Tools\rojo`  
 
 ### P2 — Manus lane

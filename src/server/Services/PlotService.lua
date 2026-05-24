@@ -191,6 +191,11 @@ function PlotService:claimPlot(player: Player, plotId: number): boolean
     RemoteManager:fireClient("NotifyPlayer", player,
         "Plot #" .. plotId .. " claimed! Choose a home style to build.")
 
+    if plotId == 1 then
+        RemoteManager:fireClient("NotifyPlayer", player,
+            "Tip: Afternoon is great for decorating — try /buildhouse kaufmann")
+    end
+
     print("[PlotService] " .. player.Name .. " claimed plot #" .. plotId)
     return true
 end

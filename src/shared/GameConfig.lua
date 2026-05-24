@@ -89,7 +89,7 @@ GameConfig.Lighting = {
 -- ECONOMY
 ---------------------------------------------------------------------------
 GameConfig.Economy = {
-    StartingCoins     = 100,
+    StartingCoins     = 200,
     StartingPrestige  = 0,
 
     -- Plot prices  (SunCoins)
