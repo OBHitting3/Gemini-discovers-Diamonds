@@ -18,6 +18,7 @@
 | [07-step-by-step-install-windows.md](./07-step-by-step-install-windows.md) | **Start here** — Windows + Cursor (PowerShell) |
 | [08-karl-automation-playbook.md](./08-karl-automation-playbook.md) | **Karl automation** — Cursor + Manus + SuperbulletAI + Supabase phases |
 | [10-karl-prompt-to-game.md](./10-karl-prompt-to-game.md) | **Karl: no PowerShell** — prompt → AI → Studio |
+| [11-karl-prompt-to-3d.md](./11-karl-prompt-to-3d.md) | **Karl: prompt → 3D** — procedural props + Manus path |
 | [karl-prompt-menu.md](./karl-prompt-menu.md) | Copy-paste prompts for Cursor chat |
 | [HANDOFF-FULL-AGENT-UPLOAD.md](./HANDOFF-FULL-AGENT-UPLOAD.md) | **Upload to new agent** — full session handoff |
 | [HANDOFF-condensed.md](./HANDOFF-condensed.md) | Short session handoff |

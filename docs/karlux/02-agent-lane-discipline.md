@@ -26,6 +26,7 @@
 - Code review responses, unit-style Studio test commands (`TestCommands`).
 - Document merge paths in `docs/karlux/`.
 - Map **approved** `rbxassetid` values into `AssetRegistry` (from Manus manifest).
+- Build **Tier 1 procedural 3D** in `PropBuilder.lua` when Karl prompts (see [11-karl-prompt-to-3d.md](./11-karl-prompt-to-3d.md)).
 
 **Cursor must NOT:**
 

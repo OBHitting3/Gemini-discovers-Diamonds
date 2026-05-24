@@ -1,5 +1,5 @@
 --[[
-    AssetRegistry.lua  (STAGING — merge to src/shared after Manus manifest)
+    AssetRegistry.lua
     Maps ItemCatalog slugs → Roblox asset IDs and optional ReplicatedStorage paths.
 
     IMPORT HOOKUP:

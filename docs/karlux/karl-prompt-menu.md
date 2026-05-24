@@ -108,6 +108,30 @@ Design a new mini-game idea for pool volleyball in staging/docs only — no Luau
 
 ---
 
+## 3D models (prompt-built — no Blender)
+
+```
+Add a new procedural 3D prop: [DESCRIBE SHAPE AND COLORS]. Use slug [snake_case_name]. Register in ProceduralAssetCatalog and PropBuilder. MCM style. Add to /listprops.
+```
+
+```
+Make /placefurniture [itemId] use the procedural 3D model from PropBuilder instead of a plain box.
+```
+
+```
+/spawnprop [slug] did not work. Here is Server Output: [PASTE]. Fix PropBuilder or the slug list.
+```
+
+```
+I want a real downloaded mesh (FBX), not blocks. Write a Manus handoff in staging/manus-handoffs/ for [DESCRIBE ASSET] — do not ask me to upload.
+```
+
+**Try now:** `/listprops` then `/spawnprop flamingo_lawn`
+
+**Guide:** [11-karl-prompt-to-3d.md](./11-karl-prompt-to-3d.md)
+
+---
+
 ## Hand off to Manus (assets / database)
 
 ```

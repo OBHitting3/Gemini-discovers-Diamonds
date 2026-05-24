@@ -57,11 +57,16 @@ Include:
 
 ---
 
+## 3D models
+
+**Prompt-built props (no Blender):** [11-karl-prompt-to-3d.md](./11-karl-prompt-to-3d.md) — `/listprops`, `/spawnprop [slug]`
+
 ## What still needs other lanes (not Cursor chat)
 
 | Need | Who |
 |------|-----|
-| 3D meshes, sounds, rbxassetid | **Manus** (or Studio Import 3D) |
+| Downloaded FBX / high-poly meshes → rbxassetid | **Manus** (Tier 2 handoff) |
+| Sounds with real rbxassetid | **Manus** |
 | Database / live saves in cloud | **Manus** + Supabase |
 | Approve big merges to production | **Karl / Eddie** (10-80-10) |
 | Publish game to Roblox players | **Karl / Eddie** in Studio |

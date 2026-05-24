@@ -111,6 +111,10 @@ function TestCommands:_handleChat(player: Player, message: string)
         self:_cmdRunwayInfo(player)
     elseif command == "/stockshop" then
         self:_cmdStockShop(player)
+    elseif command == "/spawnprop" then
+        self:_cmdSpawnProp(player, parts[2])
+    elseif command == "/listprops" then
+        self:_cmdListProps(player)
     else
         self:_notify(player, "Unknown command: " .. command .. " — type /help")
     end
@@ -148,6 +152,8 @@ function TestCommands:_cmdHelp(player: Player)
         "/vip — Test: set prestige to 10",
         "/runwayinfo — Fashion event theme and participants",
         "/stockshop — Stock your shop with 5 random boutique items (test)",
+        "/spawnprop [slug] — Spawn a 3D prop in front of you (see /listprops)",
+        "/listprops — List prompt-built procedural 3D models",
     }
     for _, line in ipairs(lines) do
         self:_notify(player, line)
@@ -471,6 +477,26 @@ function TestCommands:_cmdStockShop(player: Player)
     end
 
     self:_notify(player, "Stocked " .. stocked .. " boutique item(s) in your shop.")
+end
+
+function TestCommands:_cmdSpawnProp(player: Player, slug: string?)
+    if not slug or slug == "" then
+        self:_notify(player, "Usage: /spawnprop [slug] — type /listprops")
+        return
+    end
+    if self._services.propSpawn then
+        self._services.propSpawn:notifySpawn(player, slug)
+    else
+        self:_notify(player, "Prop spawn service not available.")
+    end
+end
+
+function TestCommands:_cmdListProps(player: Player)
+    if self._services.propSpawn then
+        self._services.propSpawn:listPropsForPlayer(player)
+    else
+        self:_notify(player, "Prop spawn service not available.")
+    end
 end
 
 function TestCommands:_cmdInventory(player: Player)

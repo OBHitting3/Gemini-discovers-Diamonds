@@ -13,7 +13,10 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local GameConfig    = require(ReplicatedStorage:WaitForChild("GameConfig"))
 local RemoteManager = require(ReplicatedStorage:WaitForChild("RemoteManager"))
 local ItemCatalog   = require(ReplicatedStorage:WaitForChild("ItemCatalog"))
+local AssetRegistry = require(ReplicatedStorage:WaitForChild("AssetRegistry"))
 local Utilities     = require(ReplicatedStorage:WaitForChild("Utilities"))
+
+local PropBuilder = require(script.Parent.Parent.Builders.PropBuilder)
 
 local PlotService = {}
 
@@ -301,25 +304,60 @@ function PlotService:placeFurniture(player: Player, furnitureId: string, positio
     -- Remove from inventory
     self._economyService:removeItem(player, furnitureId)
 
-    -- Create furniture part
     local rot = rotation or 0
-    local itemColor = GameConfig.Colors[item.color] or GameConfig.Colors.WallWhite
-    local itemMaterial = Enum.Material[item.material or "SmoothPlastic"] or Enum.Material.SmoothPlastic
-
-    local part = Utilities.createPart({
-        Name = "Furniture_" .. furnitureId,
-        Size = Vector3.new(item.size.x, item.size.y, item.size.z),
-        CFrame = CFrame.new(position) * CFrame.Angles(0, math.rad(rot), 0),
-        Color = itemColor,
-        Material = itemMaterial,
-        Tag = "PlacedFurniture",
-        Parent = self._homeModels[plotId] or workspace:FindFirstChild("Plots"),
-    })
-
+    local parent = self._homeModels[plotId] or workspace:FindFirstChild("Plots")
+    local placeCFrame = CFrame.new(position) * CFrame.Angles(0, math.rad(rot), 0)
     local instanceId = Utilities.generateId()
-    part:SetAttribute("InstanceId", instanceId)
-    part:SetAttribute("ItemId", furnitureId)
-    part:SetAttribute("OwnerId", player.UserId)
+    local partsAdded = 1
+
+    local imported = AssetRegistry:getTemplate(furnitureId)
+    local propModel = if not imported then PropBuilder:build(furnitureId, parent, placeCFrame) else nil
+
+    if imported then
+        imported:PivotTo(placeCFrame)
+        imported.Parent = parent
+        AssetRegistry:applyCollectionTags(imported, furnitureId)
+        imported:SetAttribute("InstanceId", instanceId)
+        imported:SetAttribute("ItemId", furnitureId)
+        imported:SetAttribute("OwnerId", player.UserId)
+        CollectionService:AddTag(imported, "PlacedFurniture")
+        partsAdded = 0
+        for _, desc in ipairs(imported:GetDescendants()) do
+            if desc:IsA("BasePart") then
+                partsAdded += 1
+            end
+        end
+    elseif propModel then
+        propModel:SetAttribute("InstanceId", instanceId)
+        propModel:SetAttribute("ItemId", furnitureId)
+        propModel:SetAttribute("OwnerId", player.UserId)
+        CollectionService:AddTag(propModel, "PlacedFurniture")
+        partsAdded = 0
+        for _, desc in ipairs(propModel:GetDescendants()) do
+            if desc:IsA("BasePart") then
+                partsAdded += 1
+            end
+        end
+        if partsAdded == 0 then
+            partsAdded = 1
+        end
+    else
+        local itemColor = GameConfig.Colors[item.color] or GameConfig.Colors.WallWhite
+        local itemMaterial = Enum.Material[item.material or "SmoothPlastic"] or Enum.Material.SmoothPlastic
+
+        local part = Utilities.createPart({
+            Name = "Furniture_" .. furnitureId,
+            Size = Vector3.new(item.size.x, item.size.y, item.size.z),
+            CFrame = placeCFrame,
+            Color = itemColor,
+            Material = itemMaterial,
+            Tag = "PlacedFurniture",
+            Parent = parent,
+        })
+        part:SetAttribute("InstanceId", instanceId)
+        part:SetAttribute("ItemId", furnitureId)
+        part:SetAttribute("OwnerId", player.UserId)
+    end
 
     -- Record placement
     table.insert(plot.furniturePlacements, {
@@ -330,7 +368,7 @@ function PlotService:placeFurniture(player: Player, furnitureId: string, positio
         placedAt = os.time(),
     })
 
-    plot.partCount += 1
+    plot.partCount += partsAdded
     self:_updateVibesScore(plotId)
     self:_markDirty(player)
 

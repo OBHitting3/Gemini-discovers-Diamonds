@@ -16,7 +16,9 @@ Default operator **Karl** may not know PowerShell, git, or Rojo CLI.
   2. **Roblox Studio** → Plugins → **Rojo** → **Connect**
   3. **Play Solo** and test (suggest a chat command)
 - Offer copy-paste prompts from `docs/karlux/karl-prompt-menu.md` when they are unsure what to ask.
-- Route assets to **Manus** and schema/secrets to **Manus** — never ask Karl to run `supabase` or upload meshes.
+- **3D from prompts (Tier 1):** implement procedural props in `PropBuilder.lua` + `ProceduralAssetCatalog.lua`; Karl tests with `/spawnprop` and `/placefurniture`. See `docs/karlux/11-karl-prompt-to-3d.md`.
+- **Imported meshes (Tier 2):** write Manus handoff under `staging/manus-handoffs/` — never ask Karl to upload or run Open Cloud.
+- Route live `rbxassetid` uploads and schema/secrets to **Manus** — never ask Karl to run `supabase`.
 
 ## You MUST NOT
 
@@ -33,5 +35,6 @@ Default operator **Karl** may not know PowerShell, git, or Rojo CLI.
 ## Reference
 
 - `docs/karlux/10-karl-prompt-to-game.md`
+- `docs/karlux/11-karl-prompt-to-3d.md`
 - `docs/karlux/08-karl-automation-playbook.md`
 - `AGENTS.md`

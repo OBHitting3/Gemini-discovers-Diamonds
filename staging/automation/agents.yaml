@@ -27,6 +27,7 @@ agents:
     environment: [cursor, vscode, cloud_agent]
     automates:
       - luau_services_ui_builders
+      - procedural_3d_prop_builder_tier1
       - rojo_project_and_default_project_json
       - staging_vertical_slices
       - pr_checks_via_staging_ci
@@ -113,6 +114,10 @@ phases:
   - id: supabase_live
     status: pending
     blocked_by: manus_db_push_and_roblox_secrets
+  - id: procedural_3d_tier1
+    status: active
+    code: src/server/Builders/PropBuilder.lua src/shared/ProceduralAssetCatalog.lua
+    karl_test: "/listprops /spawnprop"
   - id: asset_manifest
     status: pending
     blocked_by: manus_asset_index_yaml

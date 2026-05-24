@@ -124,6 +124,14 @@ if not shopOk then
     warn("[Bootstrap] ShopService init failed: " .. tostring(shopErr))
 end
 
+local PropSpawnService = require(script.Services.PropSpawnService)
+local propSpawnOk, propSpawnErr = pcall(function()
+    PropSpawnService:init()
+end)
+if not propSpawnOk then
+    warn("[Bootstrap] PropSpawnService init failed: " .. tostring(propSpawnErr))
+end
+
 local FashionService = require(script.Services.FashionService)
 local fashionOk, fashionErr = pcall(function()
     FashionService:init(EconomyService)
@@ -191,6 +199,7 @@ local testOk, testErr = pcall(function()
         shop = ShopService,
         event = EventService,
         persistence = PersistenceService,
+        propSpawn = PropSpawnService,
         homeBuilder = HomeBuilder,
         gardenBuilder = GardenBuilder,
         environmentBuilder = EnvironmentBuilder,
