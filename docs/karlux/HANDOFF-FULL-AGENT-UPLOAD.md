@@ -1,9 +1,10 @@
 # Palm Springs Paradise — Full Agent Handoff (Upload This Document)
 
-**Purpose:** Give the next Cursor / Cloud / Manus / SuperbulletAI agent complete context without reading the prior thread.  
-**Last verified:** 2026-05-23 · branch `cursor/karlux-foundation-292d` · HEAD `ecda904`  
+**Purpose:** Deep reference for agents (full history and troubleshooting).  
+**For a new chat, prefer:** [HANDOFF-NEW-AGENT-START.md](./HANDOFF-NEW-AGENT-START.md) (shorter, current priorities + suggestions).  
+**Last verified:** 2026-05-24 · branch `cursor/karlux-foundation-292d` · HEAD `2c63d99`  
 **Repo:** https://github.com/OBHitting3/Gemini-discovers-Diamonds  
-**Draft PR:** #24 (KarLux foundation + Windows toolchain + day-phase + prompt-to-game)
+**Draft PR:** #24 — CI passing (prompt-to-game, 3D, cross-repo hardening)
 
 ---
 

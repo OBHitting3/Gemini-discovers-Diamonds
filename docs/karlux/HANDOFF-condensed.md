@@ -78,7 +78,7 @@ docs/karlux/            # Architecture + install docs
 | `AssetRegistry` | `src/shared/AssetRegistry.lua` (needs Manus manifest IDs) |
 
 **Do not re-merge** from `staging/src/` (duplicate copies remain for history).  
-**Full handoff:** [HANDOFF-FULL-AGENT-UPLOAD.md](./HANDOFF-FULL-AGENT-UPLOAD.md)
+**New agent (upload):** [HANDOFF-NEW-AGENT-START.md](./HANDOFF-NEW-AGENT-START.md) · **Deep reference:** [HANDOFF-FULL-AGENT-UPLOAD.md](./HANDOFF-FULL-AGENT-UPLOAD.md)
 
 ---
 
@@ -140,7 +140,7 @@ docs/karlux/            # Architecture + install docs
 
 ## Next actions for new thread
 
-**Karl:** Upload [HANDOFF-FULL-AGENT-UPLOAD.md](./HANDOFF-FULL-AGENT-UPLOAD.md) to the new agent. Use `Start-PalmSprings.cmd` + Studio Connect — no PowerShell.
+**Karl:** Upload [HANDOFF-NEW-AGENT-START.md](./HANDOFF-NEW-AGENT-START.md) to the new agent. Use `Start-PalmSprings.cmd` + Studio Connect — no PowerShell.
 
 **Eddie:** `karl-start-day.ps1` or full commands in HANDOFF-FULL §3.3.
 

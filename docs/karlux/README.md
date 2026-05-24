@@ -21,7 +21,8 @@
 | [11-karl-prompt-to-3d.md](./11-karl-prompt-to-3d.md) | **Karl: prompt → 3D** — procedural props + Manus path |
 | [12-cross-repo-success-hardening.md](./12-cross-repo-success-hardening.md) | **Cross-repo patterns** — resilience, preflight, `/health` |
 | [karl-prompt-menu.md](./karl-prompt-menu.md) | Copy-paste prompts for Cursor chat |
-| [HANDOFF-FULL-AGENT-UPLOAD.md](./HANDOFF-FULL-AGENT-UPLOAD.md) | **Upload to new agent** — full session handoff |
+| [HANDOFF-NEW-AGENT-START.md](./HANDOFF-NEW-AGENT-START.md) | **Upload to new agent** — start here (priorities + suggestions) |
+| [HANDOFF-FULL-AGENT-UPLOAD.md](./HANDOFF-FULL-AGENT-UPLOAD.md) | Full session handoff (deep reference) |
 | [HANDOFF-condensed.md](./HANDOFF-condensed.md) | Short session handoff |
 | [../AGENTS.md](../AGENTS.md) | Agent router (repo root) |
 | [../Start-PalmSprings.cmd](../Start-PalmSprings.cmd) | Double-click Rojo server (Windows) |
