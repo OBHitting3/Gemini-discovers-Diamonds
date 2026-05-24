@@ -39,7 +39,7 @@ export type PlayerStats = {
 ---------------------------------------------------------------------------
 -- DEFAULT PLAYER DATA TEMPLATE
 ---------------------------------------------------------------------------
-Types.DefaultPlayerData: PlayerData = {
+Types.DefaultPlayerData = {
     userId = 0,
     displayName = "",
     sunCoins = 100,  -- matches GameConfig.Economy.StartingCoins
@@ -61,7 +61,7 @@ Types.DefaultPlayerData: PlayerData = {
     },
     lastLogin = 0,
     firstJoin = 0,
-}
+} :: PlayerData
 
 ---------------------------------------------------------------------------
 -- PLOT DATA  (stored in Supabase cold path as JSONB)
