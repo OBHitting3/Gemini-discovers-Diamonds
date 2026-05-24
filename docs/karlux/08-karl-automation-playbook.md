@@ -59,7 +59,32 @@ flowchart LR
 
 ---
 
-## Karl’s daily routine (automated front door)
+## Karl’s prompt-to-game flow (no PowerShell)
+
+**Primary doc:** [10-karl-prompt-to-game.md](./10-karl-prompt-to-game.md) · **Prompts:** [karl-prompt-menu.md](./karl-prompt-menu.md)
+
+```mermaid
+flowchart LR
+    K[Karl types prompt in Cursor]
+    C[Cursor / Cloud Agent writes Luau]
+    G[Git push optional]
+    R[Start-PalmSprings.cmd + Rojo sync]
+    ST[Studio Play Solo]
+
+    K --> C --> G --> R --> ST
+```
+
+| Karl never runs | AI / Eddie runs |
+|-----------------|-----------------|
+| PowerShell, git | Edit `src/`, commit, PR |
+| `rojo serve` typing | `Start-PalmSprings.cmd` double-click |
+| Supabase CLI | Manus |
+
+Cursor rule: `.cursor/rules/karl-prompt-builder.mdc`
+
+---
+
+## Karl’s daily routine (automated front door — technical optional)
 
 ### Windows (one script)
 

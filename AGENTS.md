@@ -22,14 +22,19 @@ Machine-readable registry: `staging/automation/agents.yaml`
 
 ---
 
-## Karl — one command (Windows)
+## Karl — no terminal (prompt to game)
 
-```powershell
-cd $env:USERPROFILE\Documents\Roblox\PalmSprings
-powershell -ExecutionPolicy Bypass -File staging\scripts\karl-start-day.ps1
-```
+**Karl does not use PowerShell.** He describes ideas in Cursor chat; agents write code.
 
-Then: **Tasks → Rojo: Serve** → Studio → Connect → Play Solo → `/help`
+| Step | Karl action |
+|------|-------------|
+| 1 | Double-click **`Start-PalmSprings.cmd`** (repo root) |
+| 2 | Studio → Rojo **Connect** → **Play Solo** |
+| 3 | Cursor chat — paste prompts from `docs/karlux/karl-prompt-menu.md` |
+
+Guide: **`docs/karlux/10-karl-prompt-to-game.md`**
+
+**Eddie / technical:** `staging/scripts/karl-start-day.ps1` for full toolchain audit.
 
 ---
 

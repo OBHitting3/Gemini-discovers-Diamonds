@@ -92,7 +92,9 @@ docs/karlux/            # Architecture + install docs
 
 **Unified automation:** [08-karl-automation-playbook.md](./08-karl-automation-playbook.md) · [AGENTS.md](../../AGENTS.md) · `staging/automation/agents.yaml`
 
-**Karl (Windows):** `powershell -ExecutionPolicy Bypass -File staging\scripts\karl-start-day.ps1`
+**Karl (no terminal):** double-click **`Start-PalmSprings.cmd`** → Studio Connect → Cursor prompts in `docs/karlux/karl-prompt-menu.md`
+
+**Eddie (audit):** `powershell -ExecutionPolicy Bypass -File staging\scripts\karl-start-day.ps1`
 
 ---
 

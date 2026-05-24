@@ -17,7 +17,10 @@
 | [07-step-by-step-install.md](./07-step-by-step-install.md) | **Start here** — macOS install walkthrough |
 | [07-step-by-step-install-windows.md](./07-step-by-step-install-windows.md) | **Start here** — Windows + Cursor (PowerShell) |
 | [08-karl-automation-playbook.md](./08-karl-automation-playbook.md) | **Karl automation** — Cursor + Manus + SuperbulletAI + Supabase phases |
+| [10-karl-prompt-to-game.md](./10-karl-prompt-to-game.md) | **Karl: no PowerShell** — prompt → AI → Studio |
+| [karl-prompt-menu.md](./karl-prompt-menu.md) | Copy-paste prompts for Cursor chat |
 | [../AGENTS.md](../AGENTS.md) | Agent router (repo root) |
+| [../Start-PalmSprings.cmd](../Start-PalmSprings.cmd) | Double-click Rojo server (Windows) |
 
 ## Staged code
 

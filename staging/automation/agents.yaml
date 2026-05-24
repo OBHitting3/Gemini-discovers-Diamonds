@@ -15,6 +15,11 @@ agents:
       - merge_approval_staging_to_src
       - studio_publish
       - experience_settings_http_and_api_access
+    ux:
+      launcher: Start-PalmSprings.cmd
+      prompts: docs/karlux/karl-prompt-menu.md
+      guide: docs/karlux/10-karl-prompt-to-game.md
+      no_terminal: true
 
   cursor:
     lane: logic
