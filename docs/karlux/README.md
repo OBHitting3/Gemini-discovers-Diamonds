@@ -19,12 +19,14 @@
 | [08-karl-automation-playbook.md](./08-karl-automation-playbook.md) | **Karl automation** — Cursor + Manus + SuperbulletAI + Supabase phases |
 | [10-karl-prompt-to-game.md](./10-karl-prompt-to-game.md) | **Karl: no PowerShell** — prompt → AI → Studio |
 | [karl-prompt-menu.md](./karl-prompt-menu.md) | Copy-paste prompts for Cursor chat |
+| [HANDOFF-FULL-AGENT-UPLOAD.md](./HANDOFF-FULL-AGENT-UPLOAD.md) | **Upload to new agent** — full session handoff |
+| [HANDOFF-condensed.md](./HANDOFF-condensed.md) | Short session handoff |
 | [../AGENTS.md](../AGENTS.md) | Agent router (repo root) |
 | [../Start-PalmSprings.cmd](../Start-PalmSprings.cmd) | Double-click Rojo server (Windows) |
 
 ## Staged code
 
-All Luau under [`/staging/src`](/staging/src) — **not** wired into `default.project.json` until merge.
+Day-phase slice is **merged** in `src/`. Remaining `staging/src/` files are duplicates/history — see [HANDOFF-FULL-AGENT-UPLOAD.md](./HANDOFF-FULL-AGENT-UPLOAD.md).
 
 ## KRLX local layout (recommended)
 
