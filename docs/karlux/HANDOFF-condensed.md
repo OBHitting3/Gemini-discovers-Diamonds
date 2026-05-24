@@ -68,16 +68,17 @@ docs/karlux/            # Architecture + install docs
 
 ---
 
-## Staged vertical slice (not merged to `src/` yet)
+## Day-phase vertical slice (**merged to `src/`** — May 2026)
 
-| Module | Purpose |
-|--------|---------|
-| `DayPhaseConfig` | Morning / Afternoon / Evening loop |
-| `CoreLoopService` | Server phase + garden multiplier |
-| `DayPhaseController` | Client HUD chip |
-| `AssetRegistry` | slug → rbxassetid / ReplicatedStorage |
+| Module | Path |
+|--------|------|
+| `DayPhaseConfig` | `src/shared/DayPhaseConfig.lua` |
+| `CoreLoopService` | `src/server/Services/CoreLoopService.lua` |
+| `DayPhaseController` | `src/client/Controllers/DayPhaseController.lua` |
+| `AssetRegistry` | `src/shared/AssetRegistry.lua` (needs Manus manifest IDs) |
 
-**Merge guide:** `docs/karlux/03-vertical-slice-merge-guide.md`
+**Do not re-merge** from `staging/src/` (duplicate copies remain for history).  
+**Full handoff:** [HANDOFF-FULL-AGENT-UPLOAD.md](./HANDOFF-FULL-AGENT-UPLOAD.md)
 
 ---
 
@@ -110,7 +111,8 @@ docs/karlux/            # Architecture + install docs
 | `06-friction-reduction-additions.md` | Selene, LFS, CI, pre-commit |
 | `07-step-by-step-install-windows.md` | **Windows start here** |
 | `08-karl-automation-playbook.md` | Karl + all agents unified automation |
-| `HANDOFF-condensed.md` | This file |
+| `HANDOFF-condensed.md` | This file (short) |
+| `HANDOFF-FULL-AGENT-UPLOAD.md` | **Upload to new agent** (complete) |
 | `AGENTS.md` (repo root) | Agent router for Cursor / cloud |
 
 ---
@@ -138,25 +140,11 @@ docs/karlux/            # Architecture + install docs
 
 ## Next actions for new thread
 
-**If Step 0 is done** (folder open in Cursor, sidebar shows `src`, `staging`, `default.project.json`), run in **Cursor → PowerShell**:
+**Karl:** Upload [HANDOFF-FULL-AGENT-UPLOAD.md](./HANDOFF-FULL-AGENT-UPLOAD.md) to the new agent. Use `Start-PalmSprings.cmd` + Studio Connect — no PowerShell.
 
-```powershell
-git --version
-git checkout cursor/karlux-foundation-292d
-irm https://raw.githubusercontent.com/rojo-rbx/rokit/main/scripts/install.ps1 | iex
-# New terminal, then:
-$env:Path += ";$env:USERPROFILE\.rokit\bin"
-Copy-Item staging\toolchain\rokit.toml . -Force
-Copy-Item staging\toolchain\wally.toml . -Force
-rokit install
-wally install
-powershell -ExecutionPolicy Bypass -File staging\scripts\krlx-workspace-bootstrap.ps1
-powershell -ExecutionPolicy Bypass -File staging\scripts\toolchain\verify.ps1
-```
+**Eddie:** `karl-start-day.ps1` or full commands in HANDOFF-FULL §3.3.
 
-Then **Tasks → Rojo: Serve** → **Studio → Rojo Connect** → Play → `/coins 5000`.
-
-1. Confirm **Step 0–3** on Windows (`verify.ps1` all OK)
-2. Approve merge PR #24 or promote `staging/` pieces
-3. Manus: populate `vendor-imports/` + `asset-index.yaml`
-4. Wire `CoreLoopService` into `init.server.lua` per merge guide
+1. Confirm toolchain (`verify.ps1` or `karl-start-day.ps1`)
+2. Review / merge **PR #24** when Karl/Eddie approve
+3. **Manus:** `asset-index.yaml` + Supabase live + Roblox Secrets
+4. **Do not** re-wire day-phase (already in `src/`); avoid duplicate `staging/src/` wiring

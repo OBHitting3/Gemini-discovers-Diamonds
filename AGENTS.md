@@ -43,6 +43,7 @@ Guide: **`docs/karlux/10-karl-prompt-to-game.md`**
 | Doc | Purpose |
 |-----|---------|
 | [docs/karlux/README.md](docs/karlux/README.md) | Architecture index (01–08) |
+| [docs/karlux/HANDOFF-FULL-AGENT-UPLOAD.md](docs/karlux/HANDOFF-FULL-AGENT-UPLOAD.md) | **Full handoff — upload to new agent** |
 | [docs/karlux/HANDOFF-condensed.md](docs/karlux/HANDOFF-condensed.md) | Short session handoff |
 | [docs/karlux/02-agent-lane-discipline.md](docs/karlux/02-agent-lane-discipline.md) | Cursor · Manus · SuperbulletAI |
 | [docs/karlux/08-karl-automation-playbook.md](docs/karlux/08-karl-automation-playbook.md) | **Full automation timeline for Karl** |

@@ -117,6 +117,8 @@ phases:
     status: pending
     blocked_by: manus_asset_index_yaml
   - id: day_phase_merge
-    status: pending
-    blocked_by: karl_approval_pr24
-    code: staging/src CoreLoopService DayPhaseConfig
+    status: completed
+    completed_at: "2026-05-23"
+    commit: 3b1b895
+    code: src/shared/DayPhaseConfig.lua src/server/Services/CoreLoopService.lua
+    note: staging/src copies are duplicates only; do not re-merge
