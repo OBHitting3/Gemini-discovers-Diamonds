@@ -8,6 +8,7 @@
     real uploaded audio after publish.
 ]]
 
+local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -27,6 +28,9 @@ SoundController._fairyWalkEnabled = true
 SoundController._walkChimeAccumulator = 0
 SoundController._nextWalkChimeIn = 6
 SoundController._inTravelZone = false
+SoundController._isDriving = false
+SoundController._driveChimeAccumulator = 0
+SoundController._nextDriveChimeIn = 4
 
 ---------------------------------------------------------------------------
 -- SOUND DEFINITIONS
@@ -126,6 +130,12 @@ local SOUND_DEFS = {
         looped = true,
         group = "ambient",
     },
+    car_road_hum = {
+        id = AssetRegistry:getSoundId("car_road_hum"),
+        volume = GameConfig.Audio and GameConfig.Audio.CarRoadHumVolume or 0.14,
+        looped = true,
+        group = "ambient",
+    },
 }
 
 ---------------------------------------------------------------------------
@@ -165,6 +175,7 @@ function SoundController:init()
         self._nextWalkChimeIn = math.random(audioCfg.WalkChimeIntervalMin, audioCfg.WalkChimeIntervalMax)
     end
     self:_startFairyWalkChimes()
+    self:_startFairyDriveChimes()
     self:_startTravelArrivalDetection()
 
     -- Listen for game events that trigger sounds
@@ -235,9 +246,18 @@ end
 function SoundController:playFairyChime(mode: string?)
     if mode == "travel" then
         self:playSFX("fairy_travel", 1.05)
+    elseif mode == "drive" then
+        self:playSFX("fairy_chime", 1.1 + math.random() * 0.2)
     else
         self:playSFX("fairy_chime", 0.95 + math.random() * 0.15)
     end
+end
+
+function SoundController:_isDriveSeat(seat: Instance?): boolean
+    if not seat or not seat:IsA("VehicleSeat") then
+        return false
+    end
+    return CollectionService:HasTag(seat, "PSP_DriveCar") or seat.Name == "DriveSeat"
 end
 
 function SoundController:setFairyWalkEnabled(enabled: boolean)
@@ -320,7 +340,7 @@ function SoundController:_startFairyWalkChimes()
     end
 
     RunService.Heartbeat:Connect(function(dt)
-        if not self._fairyWalkEnabled then
+        if not self._fairyWalkEnabled or self._isDriving then
             return
         end
         local player = Players.LocalPlayer
@@ -347,6 +367,78 @@ function SoundController:_startFairyWalkChimes()
             self._walkChimeAccumulator = 0
             self._nextWalkChimeIn = math.random(audioCfg.WalkChimeIntervalMin, audioCfg.WalkChimeIntervalMax)
             self:playFairyChime("walk")
+        end
+    end)
+end
+
+function SoundController:_startFairyDriveChimes()
+    local audioCfg = GameConfig.Audio
+    if not audioCfg then
+        return
+    end
+
+    local function setDriving(on: boolean)
+        if on == self._isDriving then
+            return
+        end
+        self._isDriving = on
+        if on then
+            self._driveChimeAccumulator = 0
+            self._nextDriveChimeIn = math.random(audioCfg.DriveChimeIntervalMin, audioCfg.DriveChimeIntervalMax)
+            self:playSound("car_road_hum")
+            self:playFairyChime("drive")
+        else
+            self:stopSound("car_road_hum", 1)
+            self._driveChimeAccumulator = 0
+        end
+    end
+
+    local function bindCharacter(character: Model)
+        local humanoid = character:WaitForChild("Humanoid", 10)
+        if not humanoid then
+            return
+        end
+        humanoid:GetPropertyChangedSignal("SeatPart"):Connect(function()
+            setDriving(self:_isDriveSeat(humanoid.SeatPart))
+        end)
+        setDriving(self:_isDriveSeat(humanoid.SeatPart))
+    end
+
+    local player = Players.LocalPlayer
+    if player then
+        player.CharacterAdded:Connect(bindCharacter)
+        if player.Character then
+            bindCharacter(player.Character)
+        end
+    end
+
+    RunService.Heartbeat:Connect(function(dt)
+        if not self._isDriving then
+            return
+        end
+        local player = Players.LocalPlayer
+        if not player or not player.Character then
+            return
+        end
+        local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+        if not humanoid or not self:_isDriveSeat(humanoid.SeatPart) then
+            setDriving(false)
+            return
+        end
+        local seat = humanoid.SeatPart :: VehicleSeat
+        local moving = math.abs(seat.ThrottleFloat) > 0.08
+            or math.abs(seat.SteerFloat) > 0.08
+            or seat.AssemblyLinearVelocity.Magnitude > 4
+        if not moving then
+            self._driveChimeAccumulator = 0
+            return
+        end
+
+        self._driveChimeAccumulator += dt
+        if self._driveChimeAccumulator >= self._nextDriveChimeIn then
+            self._driveChimeAccumulator = 0
+            self._nextDriveChimeIn = math.random(audioCfg.DriveChimeIntervalMin, audioCfg.DriveChimeIntervalMax)
+            self:playFairyChime("drive")
         end
     end)
 end
@@ -455,6 +547,8 @@ function SoundController:_connectEventSounds()
             end
             if payload.mode == "travel" then
                 self:playFairyChime("travel")
+            elseif payload.mode == "drive" then
+                self:playFairyChime("drive")
             elseif payload.mode == "walk" or payload.name == "fairy_chime" then
                 self:playFairyChime("walk")
             elseif payload.name then

@@ -66,6 +66,7 @@ local EnvironmentBuilder = require(script.Builders.EnvironmentBuilder)
 local GardenBuilder = require(script.Builders.GardenBuilder)
 local HomeBuilder = require(script.Builders.HomeBuilder)
 local RunwayBuilder = require(script.Builders.RunwayBuilder)
+local CarBuilder = require(script.Builders.CarBuilder)
 local StorefrontBuilder = require(script.Builders.StorefrontBuilder)
 
 local totalEnvParts = 0
@@ -89,6 +90,11 @@ local runwayOk, runwayErr = pcall(function()
     totalEnvParts += RunwayBuilder:buildRunway()
 end)
 recordBoot("RunwayBuilder", runwayOk, runwayErr)
+
+local carOk, carErr = pcall(function()
+    totalEnvParts += CarBuilder:buildCar()
+end)
+recordBoot("CarBuilder", carOk, carErr)
 
 print("[Bootstrap] Environment built — " .. totalEnvParts .. " base parts")
 

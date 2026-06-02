@@ -125,6 +125,8 @@ function TestCommands:_handleChat(player: Player, message: string)
         self:_cmdFairyChime(player, "travel")
     elseif command == "/fairywalk" then
         self:_cmdFairyWalk(player, parts[2])
+    elseif command == "/cardrive" or command == "/car" then
+        self:_cmdCarDrive(player)
     else
         self:_notify(player, "Unknown command: " .. command .. " — type /help")
     end
@@ -168,6 +170,7 @@ function TestCommands:_cmdHelp(player: Player)
         "/fairychime — Hear a fairy sparkle (walk style)",
         "/travelchime — Hear travel sparkle + stand in spawn for plane hum",
         "/fairywalk [on|off] — Auto sparkle while you walk",
+        "/cardrive — Go to turquoise car; sit DriveSeat for fairy chimes while driving",
     }
     for _, line in ipairs(lines) do
         self:_notify(player, line)

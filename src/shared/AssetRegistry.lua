@@ -88,6 +88,11 @@ AssetRegistry._entries = {
         rbxassetid = "rbxassetid://9112854440",
         tags = { "PSP_Audio", "Travel" },
     },
+    car_road_hum = {
+        kind = "Sound",
+        rbxassetid = "rbxassetid://9112854440",
+        tags = { "PSP_Audio", "Drive" },
+    },
 }
 
 ---------------------------------------------------------------------------

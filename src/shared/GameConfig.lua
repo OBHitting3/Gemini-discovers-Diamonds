@@ -222,6 +222,9 @@ GameConfig.World = {
     SpawnPosition = Vector3.new(0, 3, -100),
     TravelArrivalPosition = Vector3.new(0, 3, -100),
     TravelArrivalRadius = 28,
+
+    -- Turquoise car on the road (fairy chimes while driving)
+    CarSpawnPosition = Vector3.new(12, 2.5, -108),
 }
 
 ---------------------------------------------------------------------------
@@ -347,6 +350,10 @@ GameConfig.Audio = {
     WalkChimeVolume = 0.28,
     TravelChimeVolume = 0.45,
     PlaneCabinVolume = 0.12,
+    DriveChimeIntervalMin = 2.5,
+    DriveChimeIntervalMax = 5,
+    DriveChimeVolume = 0.32,
+    CarRoadHumVolume = 0.14,
 }
 
 ---------------------------------------------------------------------------
