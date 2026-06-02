@@ -119,6 +119,12 @@ function TestCommands:_handleChat(player: Player, message: string)
         self:_cmdListProps(player)
     elseif command == "/health" then
         self:_cmdHealth(player)
+    elseif command == "/fairychime" or command == "/fairy" then
+        self:_cmdFairyChime(player, "walk")
+    elseif command == "/travelchime" or command == "/planechime" then
+        self:_cmdFairyChime(player, "travel")
+    elseif command == "/fairywalk" then
+        self:_cmdFairyWalk(player, parts[2])
     else
         self:_notify(player, "Unknown command: " .. command .. " — type /help")
     end
@@ -159,6 +165,9 @@ function TestCommands:_cmdHelp(player: Player)
         "/spawnprop [slug] — Spawn a 3D prop in front of you (see /listprops)",
         "/listprops — List prompt-built procedural 3D models",
         "/health — Bootstrap + service health (troubleshooting)",
+        "/fairychime — Hear a fairy sparkle (walk style)",
+        "/travelchime — Hear travel sparkle + stand in spawn for plane hum",
+        "/fairywalk [on|off] — Auto sparkle while you walk",
     }
     for _, line in ipairs(lines) do
         self:_notify(player, line)
@@ -504,6 +513,41 @@ function TestCommands:_cmdStockShop(player: Player)
     end
 
     self:_notify(player, "Stocked " .. stocked .. " boutique item(s) in your shop.")
+end
+
+function TestCommands:_fireClientSfx(player: Player, payload: { [string]: any })
+    RemoteManager:fireClient("PlayClientSfx", player, payload)
+end
+
+function TestCommands:_cmdFairyChime(player: Player, mode: string)
+    self:_fireClientSfx(player, { mode = mode })
+    if mode == "travel" then
+        self:_notify(player, "Travel fairy chime — walk to spawn area for soft plane hum loop.")
+    else
+        self:_notify(player, "Fairy sparkle — keep walking for more, or /fairywalk off to mute.")
+    end
+end
+
+function TestCommands:_cmdFairyWalk(player: Player, toggle: string?)
+    local enabled = true
+    if toggle then
+        local t = string.lower(toggle)
+        if t == "off" or t == "false" or t == "0" then
+            enabled = false
+        elseif t == "on" or t == "true" or t == "1" then
+            enabled = true
+        else
+            self:_notify(player, "Usage: /fairywalk on | off")
+            return
+        end
+    end
+    self:_fireClientSfx(player, { fairyWalkEnabled = enabled })
+    player:SetAttribute("FairyWalk", enabled)
+    if enabled then
+        self:_notify(player, "Fairy walk sparkles ON — you'll hear light chimes while moving.")
+    else
+        self:_notify(player, "Fairy walk sparkles OFF — use /fairychime anytime.")
+    end
 end
 
 function TestCommands:_cmdHealth(player: Player)

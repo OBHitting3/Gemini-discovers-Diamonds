@@ -16,12 +16,17 @@ local TweenService = game:GetService("TweenService")
 
 local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
 local RemoteManager = require(ReplicatedStorage:WaitForChild("RemoteManager"))
+local AssetRegistry = require(ReplicatedStorage:WaitForChild("AssetRegistry"))
 
 local SoundController = {}
 
 SoundController._sounds = {}
 SoundController._currentZone = "desert"
 SoundController._masterVolume = 0.5
+SoundController._fairyWalkEnabled = true
+SoundController._walkChimeAccumulator = 0
+SoundController._nextWalkChimeIn = 6
+SoundController._inTravelZone = false
 
 ---------------------------------------------------------------------------
 -- SOUND DEFINITIONS
@@ -101,6 +106,26 @@ local SOUND_DEFS = {
         looped = false,
         group = "sfx",
     },
+
+    -- Fairy sparkle (magic bell — not KarLux voice; swap rbxassetid via AssetRegistry / Manus upload)
+    fairy_chime = {
+        id = AssetRegistry:getSoundId("fairy_chime"),
+        volume = GameConfig.Audio and GameConfig.Audio.WalkChimeVolume or 0.28,
+        looped = false,
+        group = "fairy",
+    },
+    fairy_travel = {
+        id = AssetRegistry:getSoundId("fairy_travel"),
+        volume = GameConfig.Audio and GameConfig.Audio.TravelChimeVolume or 0.45,
+        looped = false,
+        group = "fairy",
+    },
+    plane_cabin_hum = {
+        id = AssetRegistry:getSoundId("plane_cabin_hum"),
+        volume = GameConfig.Audio and GameConfig.Audio.PlaneCabinVolume or 0.12,
+        looped = true,
+        group = "ambient",
+    },
 }
 
 ---------------------------------------------------------------------------
@@ -132,6 +157,15 @@ function SoundController:init()
 
     -- Start zone detection loop
     self:_startZoneDetection()
+
+    -- Walk sparkle + travel arrival (plane-landing pad at spawn)
+    local audioCfg = GameConfig.Audio
+    if audioCfg then
+        self._fairyWalkEnabled = audioCfg.FairyWalkEnabledDefault ~= false
+        self._nextWalkChimeIn = math.random(audioCfg.WalkChimeIntervalMin, audioCfg.WalkChimeIntervalMax)
+    end
+    self:_startFairyWalkChimes()
+    self:_startTravelArrivalDetection()
 
     -- Listen for game events that trigger sounds
     self:_connectEventSounds()
@@ -177,21 +211,37 @@ function SoundController:stopSound(name: string, fadeTime: number?)
 end
 
 --- Play a one-shot sound effect.
-function SoundController:playSFX(name: string)
+function SoundController:playSFX(name: string, playbackSpeed: number?)
     local sound = self._sounds[name]
     if sound then
+        local speed = playbackSpeed or 1
         -- Clone for overlapping one-shots
         if sound.IsPlaying and not sound.Looped then
             local clone = sound:Clone()
+            clone.PlaybackSpeed = speed
             clone.Parent = SoundService
             clone:Play()
             clone.Ended:Connect(function()
                 clone:Destroy()
             end)
         else
+            sound.PlaybackSpeed = speed
             sound:Play()
         end
     end
+end
+
+--- Fairy sparkle (walk or travel). Not branded KarLux audio.
+function SoundController:playFairyChime(mode: string?)
+    if mode == "travel" then
+        self:playSFX("fairy_travel", 1.05)
+    else
+        self:playSFX("fairy_chime", 0.95 + math.random() * 0.15)
+    end
+end
+
+function SoundController:setFairyWalkEnabled(enabled: boolean)
+    self._fairyWalkEnabled = enabled
 end
 
 --- Set master volume (0-1).
@@ -259,6 +309,78 @@ function SoundController:_isNearPool(pos: Vector3): boolean
     return false
 end
 
+---------------------------------------------------------------------------
+-- FAIRY CHIMES — walking + travel arrival (spawn / "plane landed")
+---------------------------------------------------------------------------
+
+function SoundController:_startFairyWalkChimes()
+    local audioCfg = GameConfig.Audio
+    if not audioCfg then
+        return
+    end
+
+    RunService.Heartbeat:Connect(function(dt)
+        if not self._fairyWalkEnabled then
+            return
+        end
+        local player = Players.LocalPlayer
+        if not player or not player.Character then
+            return
+        end
+        local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+        local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+        if not humanoid or not hrp then
+            return
+        end
+        if humanoid.Health <= 0 then
+            return
+        end
+
+        local moving = humanoid.MoveDirection.Magnitude > 0.15
+        if not moving or humanoid.FloorMaterial == Enum.Material.Air then
+            self._walkChimeAccumulator = 0
+            return
+        end
+
+        self._walkChimeAccumulator += dt
+        if self._walkChimeAccumulator >= self._nextWalkChimeIn then
+            self._walkChimeAccumulator = 0
+            self._nextWalkChimeIn = math.random(audioCfg.WalkChimeIntervalMin, audioCfg.WalkChimeIntervalMax)
+            self:playFairyChime("walk")
+        end
+    end)
+end
+
+function SoundController:_startTravelArrivalDetection()
+    local world = GameConfig.World
+    local center = world.TravelArrivalPosition or world.SpawnPosition
+    local radius = world.TravelArrivalRadius or 28
+
+    task.spawn(function()
+        while true do
+            task.wait(1)
+            local player = Players.LocalPlayer
+            if not player or not player.Character then
+                continue
+            end
+            local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+            if not hrp then
+                continue
+            end
+
+            local inZone = (hrp.Position - center).Magnitude <= radius
+            if inZone and not self._inTravelZone then
+                self._inTravelZone = true
+                self:playSound("plane_cabin_hum")
+                self:playFairyChime("travel")
+            elseif not inZone and self._inTravelZone then
+                self._inTravelZone = false
+                self:stopSound("plane_cabin_hum", 1.5)
+            end
+        end
+    end)
+end
+
 function SoundController:_transitionZone(fromZone: string, toZone: string)
     -- Fade out zone-specific sounds
     if fromZone == "poolside" then
@@ -318,6 +440,26 @@ function SoundController:_connectEventSounds()
     if gardenEvent then
         gardenEvent.OnClientEvent:Connect(function()
             -- Subtle ambient sound on garden update
+        end)
+    end
+
+    -- Server test commands: /fairychime, /travelchime
+    local sfxEvent = RemoteManager:getEvent("PlayClientSfx")
+    if sfxEvent then
+        sfxEvent.OnClientEvent:Connect(function(payload)
+            if type(payload) ~= "table" then
+                return
+            end
+            if payload.fairyWalkEnabled ~= nil then
+                self:setFairyWalkEnabled(payload.fairyWalkEnabled)
+            end
+            if payload.mode == "travel" then
+                self:playFairyChime("travel")
+            elseif payload.mode == "walk" or payload.name == "fairy_chime" then
+                self:playFairyChime("walk")
+            elseif payload.name then
+                self:playSFX(payload.name, payload.playbackSpeed)
+            end
         end)
     end
 end

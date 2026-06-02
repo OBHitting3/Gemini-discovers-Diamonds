@@ -72,6 +72,22 @@ AssetRegistry._entries = {
         rbxassetid = "rbxassetid://6895079853",
         tags = { "PSP_Audio" },
     },
+    -- Fairy sparkle (magic bell — replace with Manus upload if Karl wants a custom clip)
+    fairy_chime = {
+        kind = "Sound",
+        rbxassetid = "rbxassetid://395424150",
+        tags = { "PSP_Audio", "Fairy" },
+    },
+    fairy_travel = {
+        kind = "Sound",
+        rbxassetid = "rbxassetid://131961136",
+        tags = { "PSP_Audio", "Fairy", "Travel" },
+    },
+    plane_cabin_hum = {
+        kind = "Sound",
+        rbxassetid = "rbxassetid://9112854440",
+        tags = { "PSP_Audio", "Travel" },
+    },
 }
 
 ---------------------------------------------------------------------------

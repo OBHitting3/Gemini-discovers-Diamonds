@@ -218,8 +218,10 @@ GameConfig.World = {
     MountainDistance = 180,
     MountainHeight = 80,
 
-    -- Spawn
+    -- Spawn / travel arrival (fairy chime + soft cabin hum — "just landed" feel)
     SpawnPosition = Vector3.new(0, 3, -100),
+    TravelArrivalPosition = Vector3.new(0, 3, -100),
+    TravelArrivalRadius = 28,
 }
 
 ---------------------------------------------------------------------------
@@ -336,6 +338,18 @@ GameConfig.ModernismWeek = {
 }
 
 ---------------------------------------------------------------------------
+-- AUDIO (fairy sparkle — not KarLux branded voiceovers)
+---------------------------------------------------------------------------
+GameConfig.Audio = {
+    FairyWalkEnabledDefault = true,
+    WalkChimeIntervalMin = 5,
+    WalkChimeIntervalMax = 11,
+    WalkChimeVolume = 0.28,
+    TravelChimeVolume = 0.45,
+    PlaneCabinVolume = 0.12,
+}
+
+---------------------------------------------------------------------------
 -- REMOTE EVENT / FUNCTION NAMES
 ---------------------------------------------------------------------------
 GameConfig.Remotes = {
@@ -365,6 +379,7 @@ GameConfig.Remotes = {
         "EconomyUpdate",
         "ShopUpdate",
         "DayPhaseUpdate",
+        "PlayClientSfx",
     },
     Functions = {
         "GetPlotData",
