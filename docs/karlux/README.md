@@ -21,7 +21,8 @@
 | [11-karl-prompt-to-3d.md](./11-karl-prompt-to-3d.md) | **Karl: prompt → 3D** — procedural props + Manus path |
 | [12-cross-repo-success-hardening.md](./12-cross-repo-success-hardening.md) | **Cross-repo patterns** — resilience, preflight, `/health` |
 | [karl-prompt-menu.md](./karl-prompt-menu.md) | Copy-paste prompts for Cursor chat |
-| [HANDOFF-NEW-AGENT-START.md](./HANDOFF-NEW-AGENT-START.md) | **Upload to new agent** — start here (priorities + suggestions) |
+| [HANDOFF-THREAD-DROP.md](./HANDOFF-THREAD-DROP.md) | **New thread @ ~76%** — upload this first |
+| [HANDOFF-NEW-AGENT-START.md](./HANDOFF-NEW-AGENT-START.md) | **Upload to new agent** — full priorities + suggestions |
 | [HANDOFF-FULL-AGENT-UPLOAD.md](./HANDOFF-FULL-AGENT-UPLOAD.md) | Full session handoff (deep reference) |
 | [HANDOFF-condensed.md](./HANDOFF-condensed.md) | Short session handoff |
 | [../AGENTS.md](../AGENTS.md) | Agent router (repo root) |

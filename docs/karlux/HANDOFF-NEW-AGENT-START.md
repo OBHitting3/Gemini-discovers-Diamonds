@@ -32,7 +32,7 @@ Roblox life-sim **Palm Springs Paradise** — mid-century modern desert town (Ka
 
 | Step | Karl does | Karl never does |
 |------|-----------|-----------------|
-| 1 | Double-click **`Start-PalmSprings.cmd`** (repo root) | PowerShell, `git pull`, `rojo serve` |
+| 1 | **Windows:** `Start-PalmSprings.cmd` · **Mac:** `setup.command` or `rojo serve` (see `07-step-by-step-install.md`) | PowerShell, `git pull`, `rojo serve` typing |
 | 2 | Studio → **Plugins → Rojo → Connect** | Bulk mesh upload without manifest |
 | 3 | **Play Solo** — test chat commands | `supabase` CLI |
 | 4 | **Cursor chat** — plain English ideas | Merge `staging/` → `src/` without noting approval |
