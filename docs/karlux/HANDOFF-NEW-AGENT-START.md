@@ -2,7 +2,9 @@
 
 **Use this as the only attachment** when opening a new Cursor or Cloud Agent chat.  
 **Principal:** Karl (creative direction, no PowerShell) · **Technical:** Eddie (git, merge, audits)  
-**Last updated:** 2026-05-24 · **Branch:** `cursor/karlux-foundation-292d` · **HEAD:** `2c63d99`  
+**Last updated:** 2026-05-24 · **Branch:** `cursor/karlux-foundation-292d`  
+**Thread drop (new chat at ~76%):** [HANDOFF-THREAD-DROP.md](./HANDOFF-THREAD-DROP.md)  
+**Karl’s goal:** build the **automation machine** — Palm Springs is the proof track, not Roblox revenue.  
 **Repo:** https://github.com/OBHitting3/Gemini-discovers-Diamonds  
 **Draft PR:** #24 — CI **passing** (StyLua, Selene, Rojo build)
 
