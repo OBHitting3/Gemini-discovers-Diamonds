@@ -31,6 +31,7 @@ SoundController._inTravelZone = false
 SoundController._isDriving = false
 SoundController._driveChimeAccumulator = 0
 SoundController._nextDriveChimeIn = 4
+SoundController._loungeMusicOn = false
 
 ---------------------------------------------------------------------------
 -- SOUND DEFINITIONS
@@ -135,6 +136,12 @@ local SOUND_DEFS = {
         volume = GameConfig.Audio and GameConfig.Audio.CarRoadHumVolume or 0.14,
         looped = true,
         group = "ambient",
+    },
+    palm_lounge_music = {
+        id = AssetRegistry:getSoundId("palm_lounge_music"),
+        volume = GameConfig.Audio and GameConfig.Audio.MusicLoungeVolume or 0.38,
+        looped = true,
+        group = "music",
     },
 }
 
@@ -262,6 +269,23 @@ end
 
 function SoundController:setFairyWalkEnabled(enabled: boolean)
     self._fairyWalkEnabled = enabled
+end
+
+function SoundController:setLoungeMusic(on: boolean)
+    self._loungeMusicOn = on
+    if on then
+        self:playSound("palm_lounge_music")
+        local music = self._sounds.palm_lounge_music
+        if music then
+            TweenService
+                :Create(music, TweenInfo.new(0.8, Enum.EasingStyle.Linear), {
+                    Volume = GameConfig.Audio and GameConfig.Audio.MusicLoungeVolume or 0.38,
+                })
+                :Play()
+        end
+    else
+        self:stopSound("palm_lounge_music", 1)
+    end
 end
 
 --- Set master volume (0-1).
@@ -549,6 +573,10 @@ function SoundController:_connectEventSounds()
                 self:playFairyChime("travel")
             elseif payload.mode == "drive" then
                 self:playFairyChime("drive")
+            elseif payload.mode == "music_on" then
+                self:setLoungeMusic(true)
+            elseif payload.mode == "music_off" then
+                self:setLoungeMusic(false)
             elseif payload.mode == "walk" or payload.name == "fairy_chime" then
                 self:playFairyChime("walk")
             elseif payload.name then

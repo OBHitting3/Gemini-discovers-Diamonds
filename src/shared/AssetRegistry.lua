@@ -93,6 +93,11 @@ AssetRegistry._entries = {
         rbxassetid = "rbxassetid://9112854440",
         tags = { "PSP_Audio", "Drive" },
     },
+    palm_lounge_music = {
+        kind = "Sound",
+        rbxassetid = "rbxassetid://1838457617",
+        tags = { "PSP_Audio", "Music" },
+    },
 }
 
 ---------------------------------------------------------------------------

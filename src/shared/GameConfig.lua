@@ -354,6 +354,7 @@ GameConfig.Audio = {
     DriveChimeIntervalMax = 5,
     DriveChimeVolume = 0.32,
     CarRoadHumVolume = 0.14,
+    MusicLoungeVolume = 0.38,
 }
 
 ---------------------------------------------------------------------------

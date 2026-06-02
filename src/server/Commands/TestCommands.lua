@@ -127,6 +127,8 @@ function TestCommands:_handleChat(player: Player, message: string)
         self:_cmdFairyWalk(player, parts[2])
     elseif command == "/cardrive" or command == "/car" then
         self:_cmdCarDrive(player)
+    elseif command == "/music" then
+        self:_cmdMusic(player, parts[2])
     else
         self:_notify(player, "Unknown command: " .. command .. " — type /help")
     end
@@ -171,6 +173,7 @@ function TestCommands:_cmdHelp(player: Player)
         "/travelchime — Hear travel sparkle + stand in spawn for plane hum",
         "/fairywalk [on|off] — Auto sparkle while you walk",
         "/cardrive — Go to turquoise car; sit DriveSeat for fairy chimes while driving",
+        "/music [on|off] — Lounge music in your ears (Play Solo)",
     }
     for _, line in ipairs(lines) do
         self:_notify(player, line)
@@ -529,6 +532,45 @@ function TestCommands:_cmdFairyChime(player: Player, mode: string)
     else
         self:_notify(player, "Fairy sparkle — keep walking for more, or /fairywalk off to mute.")
     end
+end
+
+function TestCommands:_cmdMusic(player: Player, toggle: string?)
+    local on = true
+    if toggle then
+        local t = string.lower(toggle)
+        if t == "off" or t == "false" or t == "0" then
+            on = false
+        elseif t == "on" or t == "true" or t == "1" then
+            on = true
+        end
+    end
+    self:_fireClientSfx(player, { mode = if on then "music_on" else "music_off" })
+    if on then
+        self:_notify(player, "Lounge music ON in your ears (Play Solo). /music off to stop.")
+    else
+        self:_notify(player, "Music OFF.")
+    end
+end
+
+function TestCommands:_cmdCarDrive(player: Player)
+    local car = workspace:FindFirstChild("PSP_DesertCar")
+    if not car then
+        self:_notify(player, "Car not built yet — restart Play Solo after Rojo sync.")
+        return
+    end
+    local seat = car:FindFirstChild("DriveSeat", true)
+    local character = player.Character
+    local hrp = character and character:FindFirstChild("HumanoidRootPart")
+    if seat and hrp and seat:IsA("VehicleSeat") then
+        hrp.CFrame = seat.CFrame * CFrame.new(0, 3, 0)
+    elseif hrp then
+        local pos = GameConfig.World.CarSpawnPosition
+        if pos then
+            hrp.CFrame = CFrame.new(pos + Vector3.new(0, 4, 0))
+        end
+    end
+    self:_fireClientSfx(player, { mode = "drive" })
+    self:_notify(player, "Turquoise car: click DriveSeat, use WASD. Fairy sparkles while you roll.")
 end
 
 function TestCommands:_cmdFairyWalk(player: Player, toggle: string?)
