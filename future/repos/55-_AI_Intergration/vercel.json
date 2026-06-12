@@ -1,0 +1,66 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "installCommand": "npm install",
+  "regions": ["iad1"],
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" }
+      ]
+    }
+  ],
+  "rewrites": [],
+  "routes": [
+    {
+      "src": "/api/health",
+      "dest": "/api/health",
+      "methods": ["GET"]
+    },
+    {
+      "src": "/api/sync",
+      "dest": "/api/sync",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "src": "/api/audit",
+      "dest": "/api/audit",
+      "methods": ["GET"]
+    },
+    {
+      "src": "/api/auth",
+      "dest": "/api/auth",
+      "methods": ["POST", "DELETE"]
+    },
+    {
+      "src": "/api/webhooks/airtable",
+      "dest": "/api/webhooks/airtable",
+      "methods": ["POST"]
+    }
+  ],
+  "functions": {
+    "src/app/api/sync/route.ts": {
+      "maxDuration": 30
+    },
+    "src/app/api/health/route.ts": {
+      "maxDuration": 30
+    },
+    "src/app/api/webhooks/airtable/route.ts": {
+      "maxDuration": 30
+    }
+  }
+}

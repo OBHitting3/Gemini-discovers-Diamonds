@@ -1,0 +1,97 @@
+{
+  "name": "future",
+  "importedAt": "2026-06-12T18:08:57.485Z",
+  "owner": "OBHitting3",
+  "source": "GitHub repositories visible to gh repo list for OBHitting3",
+  "layout": "future/repos/<repository-name> contains the tracked-file snapshot for that source repository.",
+  "repositories": [
+    {
+      "name": "55-_AI_Intergration",
+      "fullName": "OBHitting3/55-_AI_Intergration",
+      "url": "https://github.com/OBHitting3/55-_AI_Intergration",
+      "defaultBranch": "claude/upgrade-ai-bridge-sync-JqMHc",
+      "visibility": "PUBLIC",
+      "updatedAt": "2026-06-11T13:30:24Z",
+      "path": "future/repos/55-_AI_Intergration",
+      "importStatus": "imported-from-github",
+      "importedFileCount": 94
+    },
+    {
+      "name": "Content_Shield",
+      "fullName": "OBHitting3/Content_Shield",
+      "url": "https://github.com/OBHitting3/Content_Shield",
+      "defaultBranch": "main",
+      "visibility": "PUBLIC",
+      "updatedAt": "2026-03-05T23:30:31Z",
+      "path": "future/repos/Content_Shield",
+      "importStatus": "imported-from-github",
+      "importedFileCount": 84
+    },
+    {
+      "name": "Faceless_Shorts",
+      "fullName": "OBHitting3/Faceless_Shorts",
+      "url": "https://github.com/OBHitting3/Faceless_Shorts",
+      "defaultBranch": "main",
+      "visibility": "PUBLIC",
+      "updatedAt": "2026-03-07T15:14:04Z",
+      "path": "future/repos/Faceless_Shorts",
+      "importStatus": "imported-from-github",
+      "importedFileCount": 37
+    },
+    {
+      "name": "FreeLance",
+      "fullName": "OBHitting3/FreeLance",
+      "url": "https://github.com/OBHitting3/FreeLance",
+      "defaultBranch": null,
+      "visibility": "PUBLIC",
+      "updatedAt": "2026-02-14T20:46:15Z",
+      "path": "future/repos/FreeLance",
+      "importStatus": "empty-no-default-branch",
+      "importedFileCount": 1
+    },
+    {
+      "name": "Gemini-discovers-Diamonds",
+      "fullName": "OBHitting3/Gemini-discovers-Diamonds",
+      "url": "https://github.com/OBHitting3/Gemini-discovers-Diamonds",
+      "defaultBranch": "main",
+      "visibility": "PUBLIC",
+      "updatedAt": "2026-03-31T19:03:00Z",
+      "path": "future/repos/Gemini-discovers-Diamonds",
+      "importStatus": "imported-from-current-worktree-head",
+      "importedFileCount": 206
+    },
+    {
+      "name": "Iron-Forge-Studios",
+      "fullName": "OBHitting3/Iron-Forge-Studios",
+      "url": "https://github.com/OBHitting3/Iron-Forge-Studios",
+      "defaultBranch": "claude/weekly-activity-summary-nEI31",
+      "visibility": "PUBLIC",
+      "updatedAt": "2026-03-14T19:52:02Z",
+      "path": "future/repos/Iron-Forge-Studios",
+      "importStatus": "imported-from-github",
+      "importedFileCount": 29
+    },
+    {
+      "name": "joshua7",
+      "fullName": "OBHitting3/joshua7",
+      "url": "https://github.com/OBHitting3/joshua7",
+      "defaultBranch": "main",
+      "visibility": "PUBLIC",
+      "updatedAt": "2026-02-18T23:45:21Z",
+      "path": "future/repos/joshua7",
+      "importStatus": "imported-from-github",
+      "importedFileCount": 33
+    },
+    {
+      "name": "yt-autopilot",
+      "fullName": "OBHitting3/yt-autopilot",
+      "url": "https://github.com/OBHitting3/yt-autopilot",
+      "defaultBranch": "main",
+      "visibility": "PUBLIC",
+      "updatedAt": "2026-02-16T07:04:48Z",
+      "path": "future/repos/yt-autopilot",
+      "importStatus": "imported-from-github",
+      "importedFileCount": 5
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "extends": ["next/core-web-vitals"],
+  "plugins": ["no-sdk"],
+  "rules": {
+    "no-sdk/no-banned-imports": "error"
+  }
+}

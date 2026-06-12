@@ -1,0 +1,61 @@
+{
+  "name": "PalmSpringsParadise",
+  "tree": {
+    "$className": "DataModel",
+
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "$path": "src/server"
+    },
+
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
+        "$path": "src/client"
+      }
+    },
+
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "$path": "src/shared"
+    },
+
+    "StarterGui": {
+      "$className": "StarterGui",
+      "$path": "src/gui"
+    },
+
+    "Workspace": {
+      "$className": "Workspace",
+      "$properties": {
+        "StreamingEnabled": true
+      }
+    },
+
+    "Lighting": {
+      "$className": "Lighting",
+      "$properties": {
+        "ClockTime": 12,
+        "Brightness": 2,
+        "GeographicLatitude": 33.83,
+        "GlobalShadows": true,
+        "EnvironmentDiffuseScale": 1,
+        "EnvironmentSpecularScale": 1
+      }
+    },
+
+    "SoundService": {
+      "$className": "SoundService"
+    },
+
+    "Chat": {
+      "$className": "Chat"
+    }
+  },
+
+  "globIgnorePaths": [
+    "**/*.md",
+    "node_modules"
+  ]
+}

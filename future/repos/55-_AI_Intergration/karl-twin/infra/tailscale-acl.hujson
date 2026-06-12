@@ -1,0 +1,41 @@
+// karl-twin Tailscale ACL.
+// Default-deny. Tag-based scoping. Apply at https://login.tailscale.com/admin/acls
+//
+// Tags:
+//   tag:karl-twin   - the Windows host running karl-twin (API, worker, services)
+//   tag:owner       - personal devices owned by Karl (Pixel, laptop)
+//   tag:admin       - admin devices that may SSH/manage the karl-twin host
+//
+// Allow rules are intentionally narrow: the agent host can talk to Qdrant,
+// Postgres, and E2B reachability targets, owner devices can reach the
+// agent's HTTP API, and nothing else is implicitly permitted.
+{
+  "tagOwners": {
+    "tag:karl-twin": ["autogroup:admin"],
+    "tag:owner":     ["autogroup:admin"],
+    "tag:admin":     ["autogroup:admin"]
+  },
+
+  "acls": [
+    // Owner devices (Pixel, laptop) can reach the karl-twin API on 8000 only.
+    { "action": "accept", "src": ["tag:owner"], "dst": ["tag:karl-twin:8000"] },
+
+    // Admin devices may SSH to the karl-twin host for emergency control.
+    { "action": "accept", "src": ["tag:admin"], "dst": ["tag:karl-twin:22"] },
+
+    // The agent host may egress to E2B and Anthropic; everything else is
+    // denied by default. Egress filtering is enforced by the Tailscale
+    // exit-node feature and by Windows Defender Firewall rules deployed
+    // alongside this ACL.
+    { "action": "accept", "src": ["tag:karl-twin"], "dst": ["tag:karl-twin:5432", "tag:karl-twin:6333"] }
+  ],
+
+  "ssh": [
+    { "action": "accept", "src": ["tag:admin"], "dst": ["tag:karl-twin"], "users": ["autogroup:nonroot"] }
+  ],
+
+  "tests": [
+    { "src": "tag:owner", "accept": ["tag:karl-twin:8000"], "deny": ["tag:karl-twin:5432", "tag:karl-twin:22"] },
+    { "src": "tag:admin", "accept": ["tag:karl-twin:22"] }
+  ]
+}

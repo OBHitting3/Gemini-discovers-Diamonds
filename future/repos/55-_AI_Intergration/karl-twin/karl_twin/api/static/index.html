@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>karl-twin :: approval</title>
+<style>
+  :root {
+    --bg: #0b1020;
+    --panel: #141a30;
+    --panel-2: #1a2240;
+    --text: #e7ecff;
+    --muted: #92a0c8;
+    --accent: #5cf2c2;
+    --warn: #ffce5c;
+    --danger: #ff6b6b;
+    --tier0: #ff5252;
+    --tier1: #ff9e3f;
+    --tier2: #ffce5c;
+    --tier3: #5cf2c2;
+    --tier4: #5ca8ff;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    min-height: 100vh;
+    -webkit-tap-highlight-color: transparent;
+  }
+  header {
+    position: sticky; top: 0;
+    background: var(--panel);
+    padding: 14px 16px;
+    border-bottom: 1px solid #222a4a;
+    display: flex; align-items: center; justify-content: space-between;
+    z-index: 10;
+  }
+  header h1 { margin: 0; font-size: 18px; letter-spacing: 0.5px; }
+  header .badge {
+    background: var(--panel-2);
+    color: var(--muted);
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 12px;
+  }
+  main { padding: 16px; max-width: 720px; margin: 0 auto; }
+  section { margin-bottom: 24px; }
+  section h2 { font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px; }
+  .card {
+    background: var(--panel);
+    border: 1px solid #222a4a;
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+  .row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .tier {
+    display: inline-flex; align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 12px;
+    color: #0b1020;
+  }
+  .tier-0 { background: var(--tier0); }
+  .tier-1 { background: var(--tier1); }
+  .tier-2 { background: var(--tier2); }
+  .tier-3 { background: var(--tier3); }
+  .tier-4 { background: var(--tier4); }
+  .pill {
+    background: var(--panel-2);
+    color: var(--muted);
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .preview {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: var(--panel-2);
+    border-radius: 8px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 13px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .reason { margin-top: 8px; color: var(--muted); font-size: 13px; }
+  .actions { margin-top: 12px; display: grid; gap: 8px; grid-template-columns: 1fr 1fr 1fr; }
+  button {
+    border: 0; border-radius: 10px; padding: 12px 10px;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    color: #0b1020;
+  }
+  button.approve { background: var(--accent); }
+  button.revise  { background: var(--warn); }
+  button.reject  { background: var(--danger); color: white; }
+  button:active { transform: translateY(1px); }
+  textarea, input[type=text] {
+    width: 100%; box-sizing: border-box;
+    background: var(--panel-2); color: var(--text);
+    border: 1px solid #2c365e; border-radius: 8px;
+    padding: 10px; font-size: 14px; margin-top: 8px;
+  }
+  .empty { color: var(--muted); font-style: italic; padding: 12px; }
+  .footer { color: var(--muted); font-size: 12px; padding: 24px 0; text-align: center; }
+  .scores { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; color: var(--muted); margin-top: 6px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>karl-twin</h1>
+  <span class="badge" id="health">connecting…</span>
+</header>
+
+<main>
+  <section>
+    <h2>Clarifying questions</h2>
+    <div id="clarify-list"></div>
+  </section>
+  <section>
+    <h2>Pending actions</h2>
+    <div id="actions-list"></div>
+  </section>
+</main>
+
+<div class="footer">karl-twin :: approval-gated · CAC tier-aware</div>
+
+<script>
+const TIER_LABEL = {
+  0: "TIER 0 · human-in-loop",
+  1: "TIER 1 · approval required",
+  2: "TIER 2 · batch / policy",
+  3: "TIER 3 · supervised auton.",
+  4: "TIER 4 · narrow autonomy"
+};
+
+async function api(path, opts) {
+  const r = await fetch(path, opts);
+  if (!r.ok) throw new Error(path + " " + r.status);
+  return r.headers.get("content-type")?.includes("json") ? r.json() : null;
+}
+
+async function refreshHealth() {
+  try {
+    const h = await api("/admin/health");
+    document.getElementById("health").textContent =
+      `live · ${h.actions_pending} action${h.actions_pending===1?"":"s"} · ${h.clarify_pending} q`;
+  } catch (e) {
+    document.getElementById("health").textContent = "offline";
+  }
+}
+
+function renderAction(a) {
+  const tier = a.cac_score?.tier ?? 0;
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = `
+    <div class="row">
+      <span class="tier tier-${tier}">${TIER_LABEL[tier] || ("TIER "+tier)}</span>
+      <span class="pill">${a.action_type}</span>
+      <span class="pill">${a.tool}</span>
+      <span class="pill">${a.risk_level}</span>
+    </div>
+    <div class="reason">${escapeHtml(a.reason || "")}</div>
+    <div class="preview">${escapeHtml(a.payload_preview || "")}</div>
+    <div class="scores">HI=${a.cac_score?.HI?.toFixed?.(1)} · MC=${a.cac_score?.MC?.toFixed?.(1)} · EC=${a.cac_score?.EC?.toFixed?.(1)}</div>
+    <div class="actions">
+      <button class="approve" data-id="${a.action_id}" data-act="approve">Approve</button>
+      <button class="revise"  data-id="${a.action_id}" data-act="revise">Revise</button>
+      <button class="reject"  data-id="${a.action_id}" data-act="reject">Reject</button>
+    </div>
+    <div class="revise-box" style="display:none;">
+      <textarea rows="2" placeholder="Tell the agent what to change…"></textarea>
+      <button class="revise" style="width:100%; margin-top:6px;">Send revision</button>
+    </div>
+  `;
+  card.querySelectorAll("button[data-act]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const id = btn.dataset.id;
+      const act = btn.dataset.act;
+      if (act === "approve") {
+        await api(`/actions/${id}/approve`, {method: "POST"});
+        refresh();
+      } else if (act === "reject") {
+        await api(`/actions/${id}/reject`, {method: "POST"});
+        refresh();
+      } else if (act === "revise") {
+        const box = card.querySelector(".revise-box");
+        box.style.display = box.style.display === "none" ? "block" : "none";
+      }
+    });
+  });
+  card.querySelector(".revise-box .revise").addEventListener("click", async () => {
+    const text = card.querySelector(".revise-box textarea").value.trim();
+    if (!text) return;
+    await api(`/actions/${a.action_id}/revise`, {
+      method: "POST",
+      headers: {"content-type": "application/json"},
+      body: JSON.stringify({revision_text: text}),
+    });
+    refresh();
+  });
+  return card;
+}
+
+function renderClarify(q) {
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = `
+    <div class="row"><span class="pill">clarify · ${q.run_id.slice(0,8)}</span></div>
+    <div class="preview">${escapeHtml(q.question)}</div>
+    <textarea rows="2" placeholder="Your answer…"></textarea>
+    <div class="actions" style="grid-template-columns: 1fr;">
+      <button class="approve">Send</button>
+    </div>
+  `;
+  card.querySelector("button.approve").addEventListener("click", async () => {
+    const a = card.querySelector("textarea").value.trim();
+    if (!a) return;
+    await api(`/clarify/${q.run_id}/answer`, {
+      method: "POST",
+      headers: {"content-type": "application/json"},
+      body: JSON.stringify({answer: a}),
+    });
+    refresh();
+  });
+  return card;
+}
+
+function escapeHtml(s) {
+  return String(s ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+  }[c]));
+}
+
+async function refresh() {
+  refreshHealth();
+  try {
+    const [actions, clarify] = await Promise.all([
+      api("/actions/pending"),
+      api("/clarify/pending"),
+    ]);
+    const al = document.getElementById("actions-list");
+    al.innerHTML = "";
+    if (!actions.length) {
+      al.innerHTML = '<div class="empty">Nothing pending.</div>';
+    } else {
+      actions.forEach(a => al.appendChild(renderAction(a)));
+    }
+    const cl = document.getElementById("clarify-list");
+    cl.innerHTML = "";
+    if (!clarify.length) {
+      cl.innerHTML = '<div class="empty">No questions.</div>';
+    } else {
+      clarify.forEach(q => cl.appendChild(renderClarify(q)));
+    }
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+refresh();
+setInterval(refresh, 2000);
+</script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+{
+  "title": "Content Shield - Pain Line",
+  "description": "Tracks content quality pain points over time",
+  "datasource": "BigQuery",
+  "panels": [
+    {
+      "title": "Pain Line Over Time",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 0},
+      "targets": [
+        {
+          "rawSql": "SELECT timestamp, AVG(score) as pain_score FROM content_shield.pain_points GROUP BY timestamp ORDER BY timestamp",
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "steps": [
+              {"value": 0, "color": "green"},
+              {"value": 30, "color": "yellow"},
+              {"value": 50, "color": "orange"},
+              {"value": 70, "color": "red"}
+            ]
+          }
+        }
+      }
+    },
+    {
+      "title": "Pain by Shield",
+      "type": "barchart",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+      "targets": [
+        {
+          "rawSql": "SELECT shield_name, AVG(score) as avg_pain FROM content_shield.pain_points GROUP BY shield_name ORDER BY avg_pain DESC"
+        }
+      ]
+    },
+    {
+      "title": "Current Pain Score",
+      "type": "gauge",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+      "targets": [
+        {
+          "rawSql": "SELECT AVG(score) as current_pain FROM content_shield.pain_points WHERE timestamp > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 HOUR)"
+        }
+      ]
+    }
+  ]
+}
