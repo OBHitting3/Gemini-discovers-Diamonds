@@ -1,0 +1,3 @@
+[console_scripts]
+j7 = joshua7.cli:main
+j7-api = joshua7.api:main

@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "karl-twin"
+version = "0.1.0"
+description = "Sovereign digital twin for Karl: voice-driven multi-agent orchestrator with approval gate, CAC tiering, and persistent memory."
+requires-python = ">=3.11,<3.12"
+authors = [{name = "Karl"}]
+
+[tool.setuptools.packages.find]
+include = ["karl_twin*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

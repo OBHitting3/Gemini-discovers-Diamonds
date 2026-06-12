@@ -1,0 +1,9 @@
+# Joshua 7 (Content Shield) — Render.com Blueprint
+# Deploy: New > Blueprint > connect repo > Deploy
+
+services:
+  - type: web
+    runtime: docker
+    name: joshua7
+    plan: free
+    healthCheckPath: /health

@@ -1,0 +1,33 @@
+=== PASTE THIS ON GUMROAD — FACELESS SHORTS MVP (DoD: orderable today) ===
+
+PRODUCT NAME (title):
+Faceless Shorts Automator MVP – Topic to YouTube Short in One Flow
+
+SHORT DESCRIPTION (above the fold):
+Turn any topic into a faceless YouTube Short. One input → script, voice, video → upload. No face, no camera. Python + Gemini + ElevenLabs (or gTTS) + YouTube. Run it yourself.
+
+LONG DESCRIPTION (paste in full):
+Stop editing. Start publishing.
+
+Go from "Why the sky is blue" to a Short on YouTube with one command. You get the full project: scripts, setup validator, and instructions. Add your own API keys and run.
+
+What's inside:
+• Project layout (config, scripts, docs, workflows)
+• run_pipeline.py: topic → script → voice → video → optional YouTube upload
+• Fallbacks if Gemini or ElevenLabs hit limits (gTTS, short script) so you still get a video
+• Make.com blueprint (optional no-code path)
+• Setup and OAuth docs
+
+What you need (your own): Gemini API key, ElevenLabs or use built-in gTTS, YouTube OAuth (we show you how). Python 3.
+
+Who it's for: Creators who want faceless Shorts without daily editing. One-time purchase. Use forever.
+
+AI disclosure text included for YouTube.
+
+PRICE: Set your price (e.g. $29–47).
+
+FILE TO UPLOAD:
+Upload this file from your project folder:
+  faceless-shorts-mvp/faceless-shorts-mvp-DELIVERABLE.zip
+
+Then: Publish. DoD = functioning and orderable online. Done.

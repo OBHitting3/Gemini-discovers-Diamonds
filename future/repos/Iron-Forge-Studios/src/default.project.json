@@ -1,0 +1,35 @@
+{
+    "name": "PalmSpringsParadise",
+    "tree": {
+        "$className": "DataModel",
+        "ServerScriptService": {
+            "$className": "ServerScriptService",
+            "$path": "src/ServerScriptService"
+        },
+        "ReplicatedStorage": {
+            "$className": "ReplicatedStorage",
+            "$path": "src/ReplicatedStorage"
+        },
+        "StarterPlayer": {
+            "$className": "StarterPlayer",
+            "StarterPlayerScripts": {
+                "$className": "StarterPlayerScripts",
+                "$path": "src/StarterPlayerScripts"
+            }
+        },
+        "StarterGui": {
+            "$className": "StarterGui",
+            "$path": "src/StarterGui"
+        },
+        "ServerStorage": {
+            "$className": "ServerStorage",
+            "$path": "src/ServerStorage"
+        },
+        "Workspace": {
+            "$className": "Workspace",
+            "$properties": {
+                "FilteringEnabled": true
+            }
+        }
+    }
+}

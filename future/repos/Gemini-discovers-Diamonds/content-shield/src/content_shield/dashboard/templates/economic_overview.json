@@ -1,0 +1,47 @@
+{
+  "title": "Content Shield - Economic Overview",
+  "description": "Cost and efficiency metrics for content validation",
+  "datasource": "BigQuery",
+  "panels": [
+    {
+      "title": "Cost per Validation",
+      "type": "stat",
+      "gridPos": {"h": 4, "w": 8, "x": 0, "y": 0},
+      "targets": [
+        {
+          "rawSql": "SELECT AVG(cost_usd) as avg_cost FROM content_shield.events WHERE cost_usd IS NOT NULL"
+        }
+      ]
+    },
+    {
+      "title": "Rework Savings",
+      "type": "stat",
+      "gridPos": {"h": 4, "w": 8, "x": 8, "y": 0},
+      "targets": [
+        {
+          "rawSql": "SELECT SUM(estimated_rework_saved_usd) as total_saved FROM content_shield.events WHERE NOT passed"
+        }
+      ]
+    },
+    {
+      "title": "Agent Usage Distribution",
+      "type": "piechart",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
+      "targets": [
+        {
+          "rawSql": "SELECT agent_name, COUNT(*) as usage FROM content_shield.agent_calls GROUP BY agent_name"
+        }
+      ]
+    },
+    {
+      "title": "Cost Over Time",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
+      "targets": [
+        {
+          "rawSql": "SELECT TIMESTAMP_TRUNC(timestamp, DAY) as day, SUM(cost_usd) as daily_cost FROM content_shield.events GROUP BY day ORDER BY day"
+        }
+      ]
+    }
+  ]
+}

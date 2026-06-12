@@ -1,0 +1,2 @@
+# Joshua 7 — core only (no API deps for MVP)
+# pip install -e .

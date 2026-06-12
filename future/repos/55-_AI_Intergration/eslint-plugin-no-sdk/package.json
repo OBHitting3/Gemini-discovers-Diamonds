@@ -1,0 +1,8 @@
+{
+  "name": "eslint-plugin-no-sdk",
+  "version": "1.0.0",
+  "description": "ESLint plugin enforcing MCP-only architecture — bans direct SDK imports",
+  "main": "index.js",
+  "keywords": ["eslint", "eslint-plugin"],
+  "license": "MIT"
+}

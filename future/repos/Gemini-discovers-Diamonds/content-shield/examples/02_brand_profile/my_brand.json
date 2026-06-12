@@ -1,0 +1,12 @@
+{
+  "name": "Acme Corp",
+  "voice_attributes": ["professional", "warm", "innovative"],
+  "tone": "conversational",
+  "banned_words": ["cheap", "deal", "free trial"],
+  "required_terminology": {
+    "clients": "customers",
+    "app": "platform"
+  },
+  "target_audience": "small business owners",
+  "industry": "SaaS"
+}

@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "joshua7"
+version = "0.1.0"
+description = "Pre-publication AI content validation — Content Shield / Joshua 7"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "flask>=3.0",
+    "gunicorn>=21.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[project.scripts]
+j7 = "joshua7.cli:main"
+j7-api = "joshua7.api:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,99 @@
+# Hardened compose for karl-twin.
+# Qdrant + Postgres on internal network. Qdrant's REST is bound to 127.0.0.1
+# so only the host (and karl-twin processes on the host) can reach it.
+# Postgres is NOT host-published; only reachable via internal network from
+# other containers. The host process reaches Postgres via the published
+# 127.0.0.1:5432 mapping below (kept loopback-only).
+#
+# GPU: NVIDIA Container Toolkit must be installed on the host (Docker
+# Desktop with WSL2 backend has it via "Use the WSL 2 based engine" + GPU
+# enabled in Settings > Resources). The 'gpu' profile activates services
+# that need CUDA. faster-whisper currently runs in-host-process (not in a
+# container) for direct cuDNN access on the 5090; the 'gpu' profile is
+# reserved for future Hunyuan/ComfyUI containers.
+
+name: karl-twin
+
+networks:
+  karl-twin-internal:
+    driver: bridge
+    internal: false  # qdrant needs 127.0.0.1 publish; full isolation handled by bind ip
+
+services:
+
+  qdrant:
+    image: qdrant/qdrant:v1.12.4
+    container_name: karl-twin-qdrant
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:6333:6333"  # REST, host-loopback only
+      - "127.0.0.1:6334:6334"  # gRPC, host-loopback only
+    environment:
+      QDRANT__SERVICE__API_KEY: ${QDRANT_API_KEY:?QDRANT_API_KEY must be set in .env}
+      QDRANT__SERVICE__ENABLE_TLS: "false"
+      QDRANT__LOG_LEVEL: INFO
+    volumes:
+      - ../../data/qdrant:/qdrant/storage
+    networks:
+      - karl-twin-internal
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETUID
+      - SETGID
+    read_only: false
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- --header=\"api-key: ${QDRANT_API_KEY}\" http://127.0.0.1:6333/healthz | grep -q 'ok'"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: karl-twin-postgres
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5432:5432"  # host-loopback only, for langgraph PostgresSaver
+    environment:
+      POSTGRES_USER: karl
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
+      POSTGRES_DB: karltwin
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ../../data/postgres:/var/lib/postgresql/data
+    networks:
+      - karl-twin-internal
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETUID
+      - SETGID
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U karl -d karltwin"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+  # Reserved for future GPU containers (Hunyuan, ComfyUI).
+  # Activate with: docker compose --profile gpu up
+  # gpu-worker:
+  #   profiles: ["gpu"]
+  #   image: nvidia/cuda:12.4.1-runtime-ubuntu22.04
+  #   command: nvidia-smi
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - driver: nvidia
+  #             count: all
+  #             capabilities: [gpu]
+  #   networks:
+  #     - karl-twin-internal

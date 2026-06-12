@@ -1,0 +1,13 @@
+# Faceless Shorts Automator MVP – never commit secrets
+.env
+config/.env
+config/*.json
+*.json
+!workflows/*.json
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env.local
+youtube-oauth.json
+output/

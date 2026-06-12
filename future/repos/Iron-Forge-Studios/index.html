@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prompt Forge — Iron Forge Studios</title>
+  <style>
+    :root {
+      --bg: #1a1a2e;
+      --surface: #16213e;
+      --accent: #e94560;
+      --accent-glow: rgba(233, 69, 96, 0.3);
+      --green: #0f9b58;
+      --green-glow: rgba(15, 155, 88, 0.3);
+      --yellow: #f4b400;
+      --yellow-glow: rgba(244, 180, 0, 0.3);
+      --text: #eee;
+      --muted: #888;
+      --input-bg: #0f3460;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.25rem;
+      background: linear-gradient(135deg, var(--accent), #ff6b6b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-bottom: 2rem;
+      font-size: 0.95rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 720px;
+    }
+
+    /* Step 1: Raw input */
+    #step-input {
+      margin-bottom: 2rem;
+    }
+
+    #step-input label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    #raw-prompt {
+      width: 100%;
+      min-height: 100px;
+      background: var(--input-bg);
+      border: 2px solid transparent;
+      border-radius: 10px;
+      color: var(--text);
+      padding: 1rem;
+      font-size: 1rem;
+      resize: vertical;
+      transition: border-color 0.3s;
+    }
+
+    #raw-prompt:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    #raw-prompt::placeholder { color: var(--muted); }
+
+    #analyze-btn {
+      margin-top: 1rem;
+      padding: 0.75rem 2rem;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: box-shadow 0.3s, transform 0.15s;
+    }
+
+    #analyze-btn:hover {
+      box-shadow: 0 0 20px var(--accent-glow);
+      transform: translateY(-1px);
+    }
+
+    /* The 3 requirement cards */
+    #requirements {
+      display: none;
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    #requirements.visible {
+      display: grid;
+    }
+
+    .req-card {
+      background: var(--surface);
+      border: 2px solid #333;
+      border-radius: 12px;
+      padding: 1.25rem;
+      transition: border-color 0.4s, box-shadow 0.4s;
+    }
+
+    .req-card.filled {
+      border-color: var(--green);
+      box-shadow: 0 0 12px var(--green-glow);
+    }
+
+    .req-card.missing {
+      border-color: var(--yellow);
+      box-shadow: 0 0 12px var(--yellow-glow);
+    }
+
+    .req-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+
+    .req-header h3 {
+      font-size: 1.05rem;
+    }
+
+    .status-badge {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-badge.filled {
+      background: var(--green);
+      color: #fff;
+    }
+
+    .status-badge.missing {
+      background: var(--yellow);
+      color: #1a1a2e;
+    }
+
+    .req-description {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .req-card textarea {
+      width: 100%;
+      min-height: 70px;
+      background: var(--input-bg);
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: var(--text);
+      padding: 0.75rem;
+      font-size: 0.95rem;
+      resize: vertical;
+    }
+
+    .req-card textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .req-card textarea::placeholder { color: var(--muted); }
+
+    /* Generate button */
+    #generate-section {
+      display: none;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    #generate-section.visible { display: block; }
+
+    #generate-btn {
+      padding: 0.85rem 2.5rem;
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: box-shadow 0.3s, transform 0.15s;
+    }
+
+    #generate-btn:hover {
+      box-shadow: 0 0 25px var(--green-glow);
+      transform: translateY(-1px);
+    }
+
+    #generate-btn:disabled {
+      background: #333;
+      color: var(--muted);
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    #gate-message {
+      margin-top: 0.75rem;
+      color: var(--yellow);
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    /* Output */
+    #output-section {
+      display: none;
+      margin-bottom: 2rem;
+    }
+
+    #output-section.visible { display: block; }
+
+    #output-section h2 {
+      margin-bottom: 0.75rem;
+      color: var(--green);
+    }
+
+    #final-prompt {
+      background: var(--surface);
+      border: 2px solid var(--green);
+      border-radius: 12px;
+      padding: 1.5rem;
+      white-space: pre-wrap;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      position: relative;
+    }
+
+    #copy-btn {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      padding: 0.4rem 0.8rem;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    #copy-btn:hover { box-shadow: 0 0 10px var(--accent-glow); }
+
+    /* Progress bar */
+    .progress-bar {
+      display: none;
+      height: 6px;
+      background: #333;
+      border-radius: 3px;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+
+    .progress-bar.visible { display: block; }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--green));
+      border-radius: 3px;
+      transition: width 0.5s ease;
+      width: 0%;
+    }
+
+    .progress-label {
+      display: none;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-label.visible { display: block; }
+  </style>
+</head>
+<body>
+  <h1>Prompt Forge</h1>
+  <p class="subtitle">Tell me what you want. I'll tell you what's missing.</p>
+
+  <div class="container">
+    <!-- Step 1: Raw prompt -->
+    <div id="step-input">
+      <label for="raw-prompt">What do you need help with?</label>
+      <textarea id="raw-prompt" placeholder="e.g. &quot;Be Dave and help fix my chain&quot; — just tell me roughly what you want, even if it's messy."></textarea>
+      <button id="analyze-btn">Analyze My Prompt</button>
+    </div>
+
+    <!-- Progress -->
+    <p class="progress-label" id="progress-label">0 of 3 requirements filled</p>
+    <div class="progress-bar" id="progress-bar">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+
+    <!-- Step 2: Three requirement cards -->
+    <div id="requirements">
+      <!-- ROLE -->
+      <div class="req-card" id="card-role">
+        <div class="req-header">
+          <h3>1. Role</h3>
+          <span class="status-badge missing" id="badge-role">Missing</span>
+        </div>
+        <p class="req-description">Who should the AI act as? (e.g., "Act as a Senior Engineer", "Be an expert bicycle mechanic")</p>
+        <textarea id="field-role" placeholder="Define the role..."></textarea>
+      </div>
+
+      <!-- DATA / THE ASK -->
+      <div class="req-card" id="card-data">
+        <div class="req-header">
+          <h3>2. The Ask — Data &amp; Context</h3>
+          <span class="status-badge missing" id="badge-data">Missing</span>
+        </div>
+        <p class="req-description">What's the objective? Include background, features, user stories, UX/flow, design needs, roles &amp; descriptions, or open questions.</p>
+        <textarea id="field-data" placeholder="Describe what you need done, with as much context as possible..."></textarea>
+      </div>
+
+      <!-- EXAMPLE -->
+      <div class="req-card" id="card-example">
+        <div class="req-header">
+          <h3>3. Example</h3>
+          <span class="status-badge missing" id="badge-example">Missing</span>
+        </div>
+        <p class="req-description">Give a concrete example of the scenario or desired output. (e.g., "Replace a broken chain on a Huffy 2500, front &amp; back wheel brakes")</p>
+        <textarea id="field-example" placeholder="A real-world example so the AI knows exactly what level of detail you expect..."></textarea>
+      </div>
+    </div>
+
+    <!-- Gate / Generate -->
+    <div id="generate-section">
+      <button id="generate-btn" disabled>Fill All 3 Areas to Generate</button>
+      <p id="gate-message"></p>
+    </div>
+
+    <!-- Output -->
+    <div id="output-section">
+      <h2>Your Forged Prompt</h2>
+      <div id="final-prompt">
+        <button id="copy-btn">Copy</button>
+        <div id="prompt-text"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const rawPrompt = document.getElementById('raw-prompt');
+    const analyzeBtn = document.getElementById('analyze-btn');
+    const requirements = document.getElementById('requirements');
+    const generateSection = document.getElementById('generate-section');
+    const generateBtn = document.getElementById('generate-btn');
+    const gateMessage = document.getElementById('gate-message');
+    const outputSection = document.getElementById('output-section');
+    const promptText = document.getElementById('prompt-text');
+    const copyBtn = document.getElementById('copy-btn');
+    const progressBar = document.getElementById('progress-bar');
+    const progressFill = document.getElementById('progress-fill');
+    const progressLabel = document.getElementById('progress-label');
+
+    const fields = {
+      role:    document.getElementById('field-role'),
+      data:    document.getElementById('field-data'),
+      example: document.getElementById('field-example'),
+    };
+
+    const badges = {
+      role:    document.getElementById('badge-role'),
+      data:    document.getElementById('badge-data'),
+      example: document.getElementById('badge-example'),
+    };
+
+    const cards = {
+      role:    document.getElementById('card-role'),
+      data:    document.getElementById('card-data'),
+      example: document.getElementById('card-example'),
+    };
+
+    // Analyze the raw prompt and pre-fill what we can detect
+    analyzeBtn.addEventListener('click', () => {
+      const raw = rawPrompt.value.trim();
+      if (!raw) return;
+
+      // Try to detect a role from the raw text
+      const rolePatterns = [
+        /(?:be|act as|you are|pretend to be|act like)\s+(?:a\s+|an\s+)?(.+?)(?:\.|,|and|who|that|$)/i,
+      ];
+
+      let detectedRole = '';
+      for (const pat of rolePatterns) {
+        const match = raw.match(pat);
+        if (match) {
+          detectedRole = match[1].trim();
+          break;
+        }
+      }
+
+      // Try to detect the ask (everything after role-like phrasing, or the whole thing)
+      let detectedAsk = '';
+      const askPatterns = [
+        /(?:help|assist|make|create|build|fix|write|design|develop)\s+(.+)/i,
+      ];
+      for (const pat of askPatterns) {
+        const match = raw.match(pat);
+        if (match) {
+          detectedAsk = match[1].trim();
+          break;
+        }
+      }
+
+      // Pre-fill what we could detect
+      if (detectedRole) fields.role.value = detectedRole;
+      if (detectedAsk) fields.data.value = detectedAsk;
+
+      // Show the cards
+      requirements.classList.add('visible');
+      generateSection.classList.add('visible');
+      progressBar.classList.add('visible');
+      progressLabel.classList.add('visible');
+
+      updateStatus();
+    });
+
+    // Live-check all fields on every keystroke
+    Object.values(fields).forEach(field => {
+      field.addEventListener('input', updateStatus);
+    });
+
+    function updateStatus() {
+      let filledCount = 0;
+      const missing = [];
+
+      for (const [key, field] of Object.entries(fields)) {
+        const isFilled = field.value.trim().length > 0;
+        if (isFilled) {
+          filledCount++;
+          badges[key].textContent = 'Filled';
+          badges[key].className = 'status-badge filled';
+          cards[key].className = 'req-card filled';
+        } else {
+          const label = key === 'role' ? 'Role' : key === 'data' ? 'The Ask' : 'Example';
+          missing.push(label);
+          badges[key].textContent = 'Missing';
+          badges[key].className = 'status-badge missing';
+          cards[key].className = 'req-card missing';
+        }
+      }
+
+      // Update progress
+      progressFill.style.width = ((filledCount / 3) * 100) + '%';
+      progressLabel.textContent = filledCount + ' of 3 requirements filled';
+
+      // Gate the button
+      if (filledCount === 3) {
+        generateBtn.disabled = false;
+        generateBtn.textContent = 'Generate Prompt';
+        gateMessage.textContent = '';
+      } else {
+        generateBtn.disabled = true;
+        generateBtn.textContent = 'Fill All 3 Areas to Generate';
+        gateMessage.textContent = 'Still need: ' + missing.join(', ');
+      }
+    }
+
+    // Generate the final prompt
+    generateBtn.addEventListener('click', () => {
+      const role = fields.role.value.trim();
+      const data = fields.data.value.trim();
+      const example = fields.example.value.trim();
+
+      const prompt = `Act as ${role}.
+
+## Objective
+${data}
+
+## Context & Constraints
+Using the following example as a reference for the level of detail and scope expected:
+
+${example}
+
+## Instructions
+- Provide a thorough, step-by-step response
+- Ask clarifying questions if any part of the objective is ambiguous
+- Reference the example to calibrate your level of detail
+- Structure your response with clear headings and actionable steps`;
+
+      promptText.textContent = prompt;
+      outputSection.classList.add('visible');
+      outputSection.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // Copy to clipboard
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(promptText.textContent).then(() => {
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1500);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,356 @@
+{
+  "name": "LeadLatch — Speed-to-Lead Autopilot",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-created",
+        "responseMode": "onReceived",
+        "responseData": "allEntries"
+      },
+      "id": "webhook-trigger",
+      "name": "Lead Created Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.email }}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "id": "check-email",
+      "name": "Has Email?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "noreply@yourdomain.com",
+        "toEmail": "={{ $json.email }}",
+        "subject": "Thanks for reaching out, {{ $json.name }}!",
+        "text": "Hi {{ $json.name }},\n\nThanks for getting in touch! We received your message and will get back to you shortly.\n\nBest,\nThe Team",
+        "options": {}
+      },
+      "id": "send-instant-email",
+      "name": "Send Instant Reply",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [650, 200],
+      "credentials": {
+        "smtp": {
+          "id": "SMTP_CREDENTIAL_ID",
+          "name": "SMTP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/functions/v1/n8n-event-ingest",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": []
+        },
+        "jsonBody": "={\n  \"lead_id\": \"{{ $json.lead_id }}\",\n  \"org_id\": \"{{ $json.org_id }}\",\n  \"type\": \"email.sent\",\n  \"payload\": {\n    \"subject\": \"Thanks for reaching out, {{ $json.name }}!\",\n    \"template\": \"instant_reply\"\n  },\n  \"idempotency_key\": \"{{ $json.lead_id }}:email.sent:instant_reply\"\n}",
+        "options": {}
+      },
+      "id": "log-email-sent",
+      "name": "Log: email.sent",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [850, 200]
+    },
+    {
+      "parameters": {
+        "channel": "#leads",
+        "text": "=🔔 New Lead: {{ $json.name }}\nEmail: {{ $json.email }}\nPhone: {{ $json.phone || 'N/A' }}\nSource: {{ $json.utm_source || 'direct' }}",
+        "otherOptions": {}
+      },
+      "id": "slack-notification",
+      "name": "Slack: New Lead",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1,
+      "position": [1050, 100],
+      "credentials": {
+        "slackApi": {
+          "id": "SLACK_CREDENTIAL_ID",
+          "name": "Slack"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "hours"
+      },
+      "id": "wait-1h",
+      "name": "Wait 1 Hour",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1050, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/leads?id=eq.{{ $json.lead_id }}&select=status",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "check-status-1",
+      "name": "Check Lead Status (1h)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1250, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json[0].status }}",
+              "value2": "new",
+              "operation": "equals"
+            }
+          ]
+        }
+      },
+      "id": "still-new-1",
+      "name": "Still New? (1h)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1450, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "noreply@yourdomain.com",
+        "toEmail": "={{ $json.email }}",
+        "subject": "Quick follow-up — {{ $json.name }}",
+        "text": "Hi {{ $json.name }},\n\nJust wanted to follow up on your inquiry. Do you have a few minutes to chat?\n\nBest,\nThe Team",
+        "options": {}
+      },
+      "id": "send-followup-1",
+      "name": "Send Follow-up #1",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [1650, 200],
+      "credentials": {
+        "smtp": {
+          "id": "SMTP_CREDENTIAL_ID",
+          "name": "SMTP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/functions/v1/n8n-event-ingest",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "jsonBody": "={\n  \"lead_id\": \"{{ $json.lead_id }}\",\n  \"org_id\": \"{{ $json.org_id }}\",\n  \"type\": \"followup.sent\",\n  \"payload\": {\n    \"step\": \"1h\",\n    \"template\": \"followup_1h\"\n  },\n  \"idempotency_key\": \"{{ $json.lead_id }}:followup.sent:1h\"\n}",
+        "options": {}
+      },
+      "id": "log-followup-1",
+      "name": "Log: followup.sent (1h)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1850, 200]
+    },
+    {
+      "parameters": {
+        "amount": 24,
+        "unit": "hours"
+      },
+      "id": "wait-24h",
+      "name": "Wait 24 Hours",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [2050, 200]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/leads?id=eq.{{ $json.lead_id }}&select=status",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "check-status-2",
+      "name": "Check Lead Status (24h)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [2250, 200]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json[0].status }}",
+              "value2": "won",
+              "operation": "notEqual"
+            },
+            {
+              "value1": "={{ $json[0].status }}",
+              "value2": "lost",
+              "operation": "notEqual"
+            }
+          ]
+        }
+      },
+      "id": "not-closed-2",
+      "name": "Not Won/Lost? (24h)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [2450, 200]
+    },
+    {
+      "parameters": {
+        "fromEmail": "noreply@yourdomain.com",
+        "toEmail": "={{ $json.email }}",
+        "subject": "Still interested? — {{ $json.name }}",
+        "text": "Hi {{ $json.name }},\n\nWe haven't heard back yet. If you're still interested, just reply to this email or book a time to chat.\n\nBest,\nThe Team",
+        "options": {}
+      },
+      "id": "send-followup-2",
+      "name": "Send Follow-up #2",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [2650, 100],
+      "credentials": {
+        "smtp": {
+          "id": "SMTP_CREDENTIAL_ID",
+          "name": "SMTP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/functions/v1/n8n-event-ingest",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "jsonBody": "={\n  \"lead_id\": \"{{ $json.lead_id }}\",\n  \"org_id\": \"{{ $json.org_id }}\",\n  \"type\": \"followup.sent\",\n  \"payload\": {\n    \"step\": \"24h\",\n    \"template\": \"followup_24h\"\n  },\n  \"idempotency_key\": \"{{ $json.lead_id }}:followup.sent:24h\"\n}",
+        "options": {}
+      },
+      "id": "log-followup-2",
+      "name": "Log: followup.sent (24h)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [2850, 100]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/functions/v1/n8n-event-ingest",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "jsonBody": "={\n  \"lead_id\": \"{{ $json.lead_id }}\",\n  \"org_id\": \"{{ $json.org_id }}\",\n  \"type\": \"automation.error\",\n  \"payload\": {\n    \"reason\": \"no_email_address\"\n  },\n  \"idempotency_key\": \"{{ $json.lead_id }}:automation.error:no_email\"\n}",
+        "options": {}
+      },
+      "id": "log-no-email",
+      "name": "Log: No Email Error",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [650, 400]
+    }
+  ],
+  "connections": {
+    "Lead Created Webhook": {
+      "main": [
+        [{ "node": "Has Email?", "type": "main", "index": 0 }]
+      ]
+    },
+    "Has Email?": {
+      "main": [
+        [{ "node": "Send Instant Reply", "type": "main", "index": 0 }],
+        [{ "node": "Log: No Email Error", "type": "main", "index": 0 }]
+      ]
+    },
+    "Send Instant Reply": {
+      "main": [
+        [{ "node": "Log: email.sent", "type": "main", "index": 0 }]
+      ]
+    },
+    "Log: email.sent": {
+      "main": [
+        [
+          { "node": "Slack: New Lead", "type": "main", "index": 0 },
+          { "node": "Wait 1 Hour", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Wait 1 Hour": {
+      "main": [
+        [{ "node": "Check Lead Status (1h)", "type": "main", "index": 0 }]
+      ]
+    },
+    "Check Lead Status (1h)": {
+      "main": [
+        [{ "node": "Still New? (1h)", "type": "main", "index": 0 }]
+      ]
+    },
+    "Still New? (1h)": {
+      "main": [
+        [{ "node": "Send Follow-up #1", "type": "main", "index": 0 }],
+        []
+      ]
+    },
+    "Send Follow-up #1": {
+      "main": [
+        [{ "node": "Log: followup.sent (1h)", "type": "main", "index": 0 }]
+      ]
+    },
+    "Log: followup.sent (1h)": {
+      "main": [
+        [{ "node": "Wait 24 Hours", "type": "main", "index": 0 }]
+      ]
+    },
+    "Wait 24 Hours": {
+      "main": [
+        [{ "node": "Check Lead Status (24h)", "type": "main", "index": 0 }]
+      ]
+    },
+    "Check Lead Status (24h)": {
+      "main": [
+        [{ "node": "Not Won/Lost? (24h)", "type": "main", "index": 0 }]
+      ]
+    },
+    "Not Won/Lost? (24h)": {
+      "main": [
+        [{ "node": "Send Follow-up #2", "type": "main", "index": 0 }],
+        []
+      ]
+    },
+    "Send Follow-up #2": {
+      "main": [
+        [{ "node": "Log: followup.sent (24h)", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
