@@ -15,9 +15,9 @@ local RunService = game:GetService("RunService")
 local SoundService = game:GetService("SoundService")
 local TweenService = game:GetService("TweenService")
 
+local AssetRegistry = require(ReplicatedStorage:WaitForChild("AssetRegistry"))
 local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
 local RemoteManager = require(ReplicatedStorage:WaitForChild("RemoteManager"))
-local AssetRegistry = require(ReplicatedStorage:WaitForChild("AssetRegistry"))
 
 local SoundController = {}
 
@@ -179,7 +179,8 @@ function SoundController:init()
     local audioCfg = GameConfig.Audio
     if audioCfg then
         self._fairyWalkEnabled = audioCfg.FairyWalkEnabledDefault ~= false
-        self._nextWalkChimeIn = math.random(audioCfg.WalkChimeIntervalMin, audioCfg.WalkChimeIntervalMax)
+        self._nextWalkChimeIn =
+            math.random(audioCfg.WalkChimeIntervalMin, audioCfg.WalkChimeIntervalMax)
     end
     self:_startFairyWalkChimes()
     self:_startFairyDriveChimes()
@@ -389,7 +390,8 @@ function SoundController:_startFairyWalkChimes()
         self._walkChimeAccumulator += dt
         if self._walkChimeAccumulator >= self._nextWalkChimeIn then
             self._walkChimeAccumulator = 0
-            self._nextWalkChimeIn = math.random(audioCfg.WalkChimeIntervalMin, audioCfg.WalkChimeIntervalMax)
+            self._nextWalkChimeIn =
+                math.random(audioCfg.WalkChimeIntervalMin, audioCfg.WalkChimeIntervalMax)
             self:playFairyChime("walk")
         end
     end)
@@ -408,7 +410,8 @@ function SoundController:_startFairyDriveChimes()
         self._isDriving = on
         if on then
             self._driveChimeAccumulator = 0
-            self._nextDriveChimeIn = math.random(audioCfg.DriveChimeIntervalMin, audioCfg.DriveChimeIntervalMax)
+            self._nextDriveChimeIn =
+                math.random(audioCfg.DriveChimeIntervalMin, audioCfg.DriveChimeIntervalMax)
             self:playSound("car_road_hum")
             self:playFairyChime("drive")
         else
@@ -461,7 +464,8 @@ function SoundController:_startFairyDriveChimes()
         self._driveChimeAccumulator += dt
         if self._driveChimeAccumulator >= self._nextDriveChimeIn then
             self._driveChimeAccumulator = 0
-            self._nextDriveChimeIn = math.random(audioCfg.DriveChimeIntervalMin, audioCfg.DriveChimeIntervalMax)
+            self._nextDriveChimeIn =
+                math.random(audioCfg.DriveChimeIntervalMin, audioCfg.DriveChimeIntervalMax)
             self:playFairyChime("drive")
         end
     end)

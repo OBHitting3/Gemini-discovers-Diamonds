@@ -62,11 +62,11 @@ recordBoot("EconomyService", econOk, econErr)
 ---------------------------------------------------------------------------
 -- 4. ENVIRONMENT BUILDERS
 ---------------------------------------------------------------------------
+local CarBuilder = require(script.Builders.CarBuilder)
 local EnvironmentBuilder = require(script.Builders.EnvironmentBuilder)
 local GardenBuilder = require(script.Builders.GardenBuilder)
 local HomeBuilder = require(script.Builders.HomeBuilder)
 local RunwayBuilder = require(script.Builders.RunwayBuilder)
-local CarBuilder = require(script.Builders.CarBuilder)
 local StorefrontBuilder = require(script.Builders.StorefrontBuilder)
 
 local totalEnvParts = 0
