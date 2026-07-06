@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Git pre-commit — install:
+#   cp staging/scripts/git/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+set -euo pipefail
+
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT"
+export PATH="$ROOT/.rokit/bin:$HOME/.aftman/bin:$PATH"
+
+STAGED_LUA=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.lua$' || true)
+if [[ -z "$STAGED_LUA" ]]; then
+  exit 0
+fi
+
+echo "[pre-commit] Palm Springs Paradise — Luau checks"
+
+if command -v stylua &>/dev/null; then
+  echo "$STAGED_LUA" | xargs stylua --check --config-path staging/toolchain/stylua.toml
+else
+  echo "[pre-commit] WARN stylua not installed"
+fi
+
+if command -v selene &>/dev/null; then
+  echo "$STAGED_LUA" | xargs selene --config staging/toolchain/selene.toml
+else
+  echo "[pre-commit] WARN selene not installed"
+fi
+
+echo "[pre-commit] OK"

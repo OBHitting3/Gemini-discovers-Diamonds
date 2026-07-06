@@ -11,18 +11,18 @@
     Night is an EXCEPTION for events only.
 ]]
 
-local Lighting     = game:GetService("Lighting")
-local TweenService = game:GetService("TweenService")
+local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
 
-local GameConfig    = require(ReplicatedStorage:WaitForChild("GameConfig"))
+local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
 local RemoteManager = require(ReplicatedStorage:WaitForChild("RemoteManager"))
 
 local NightToggleController = {}
 NightToggleController._uiController = nil
 NightToggleController._isNight = false
-NightToggleController._enabled = false  -- server controls this
-NightToggleController._tweenDuration = 2  -- seconds for transition
+NightToggleController._enabled = false -- server controls this
+NightToggleController._tweenDuration = 2 -- seconds for transition
 
 ---------------------------------------------------------------------------
 -- INITIALIZATION
@@ -47,7 +47,8 @@ function NightToggleController:init(uiController)
                 if data.event.name == "Sunset Soiree" then
                     self._enabled = true
                     self._uiController:showNotification(
-                        "Night mode available! Use the toggle in your HUD.")
+                        "Night mode available! Use the toggle in your HUD."
+                    )
                 end
             elseif data.action == "end" then
                 -- Revert to daytime when any event ends
@@ -82,13 +83,14 @@ function NightToggleController:_transitionToNight()
     self._isNight = true
 
     local nightCfg = GameConfig.Lighting.NightOverride
-    local tweenInfo = TweenInfo.new(self._tweenDuration, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
+    local tweenInfo =
+        TweenInfo.new(self._tweenDuration, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
 
     -- Tween Lighting properties
     TweenService:Create(Lighting, tweenInfo, {
-        ClockTime      = nightCfg.ClockTime,
-        Brightness     = nightCfg.Brightness,
-        Ambient        = nightCfg.Ambient,
+        ClockTime = nightCfg.ClockTime,
+        Brightness = nightCfg.Brightness,
+        Ambient = nightCfg.Ambient,
         OutdoorAmbient = nightCfg.OutdoorAmbient,
     }):Play()
 
@@ -97,9 +99,9 @@ function NightToggleController:_transitionToNight()
     if atmo then
         TweenService:Create(atmo, tweenInfo, {
             Density = 0.5,
-            Haze    = 2,
-            Glare   = 0,
-            Color   = Color3.fromRGB(30, 30, 60),
+            Haze = 2,
+            Glare = 0,
+            Color = Color3.fromRGB(30, 30, 60),
         }):Play()
     end
 
@@ -110,13 +112,14 @@ function NightToggleController:_transitionToDay()
     self._isNight = false
 
     local dayCfg = GameConfig.Lighting
-    local tweenInfo = TweenInfo.new(self._tweenDuration, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
+    local tweenInfo =
+        TweenInfo.new(self._tweenDuration, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
 
     -- Tween back to bright blue daytime
     TweenService:Create(Lighting, tweenInfo, {
-        ClockTime      = dayCfg.ClockTime,
-        Brightness     = dayCfg.Brightness,
-        Ambient        = dayCfg.Ambient,
+        ClockTime = dayCfg.ClockTime,
+        Brightness = dayCfg.Brightness,
+        Ambient = dayCfg.Ambient,
         OutdoorAmbient = dayCfg.OutdoorAmbient,
     }):Play()
 
@@ -125,9 +128,9 @@ function NightToggleController:_transitionToDay()
     if atmo then
         TweenService:Create(atmo, tweenInfo, {
             Density = dayCfg.Atmosphere.Density,
-            Haze    = dayCfg.Atmosphere.Haze,
-            Glare   = dayCfg.Atmosphere.Glare,
-            Color   = dayCfg.Atmosphere.Color,
+            Haze = dayCfg.Atmosphere.Haze,
+            Glare = dayCfg.Atmosphere.Glare,
+            Color = dayCfg.Atmosphere.Color,
         }):Play()
     end
 

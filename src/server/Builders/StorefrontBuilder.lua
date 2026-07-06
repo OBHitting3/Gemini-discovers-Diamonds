@@ -15,7 +15,7 @@ local CollectionService = game:GetService("CollectionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
-local Utilities  = require(ReplicatedStorage:WaitForChild("Utilities"))
+local Utilities = require(ReplicatedStorage:WaitForChild("Utilities"))
 
 local C = GameConfig.Colors
 
@@ -29,17 +29,23 @@ StorefrontBuilder._partCount = 0
 local STYLES = { "Boutique", "Gallery", "Cafe", "Luxury", "Boutique", "Gallery" }
 
 local STYLE_COLORS = {
-    Boutique = { facade = C.WallWhite, awning = C.Turquoise,   trim = C.Concrete },
-    Gallery  = { facade = C.WallWhite, awning = C.WallWhite,   trim = C.RoofDarkGrey },
-    Cafe     = { facade = C.WallWhite, awning = C.Terracotta,  trim = C.DustyPink },
-    Luxury   = { facade = C.WallWhite, awning = C.RoofDarkGrey, trim = Color3.fromRGB(200, 170, 60) },
+    Boutique = { facade = C.WallWhite, awning = C.Turquoise, trim = C.Concrete },
+    Gallery = { facade = C.WallWhite, awning = C.WallWhite, trim = C.RoofDarkGrey },
+    Cafe = { facade = C.WallWhite, awning = C.Terracotta, trim = C.DustyPink },
+    Luxury = { facade = C.WallWhite, awning = C.RoofDarkGrey, trim = Color3.fromRGB(200, 170, 60) },
 }
 
 ---------------------------------------------------------------------------
 -- BUILD SINGLE STOREFRONT
 ---------------------------------------------------------------------------
 
-local function buildStorefront(parent, slotId: number, position: Vector3, rotationY: number, style: string): number
+local function buildStorefront(
+    parent,
+    slotId: number,
+    position: Vector3,
+    rotationY: number,
+    style: string
+): number
     local parts = 0
     local model = Instance.new("Model")
     model.Name = "Storefront_" .. slotId
@@ -138,8 +144,7 @@ local function buildStorefront(parent, slotId: number, position: Vector3, rotati
     Utilities.createPart({
         Name = "Awning",
         Size = Vector3.new(w, 0.3, 4),
-        CFrame = origin * CFrame.new(0, h * 0.75, d / 2 + 2) *
-                 CFrame.Angles(math.rad(-5), 0, 0),
+        CFrame = origin * CFrame.new(0, h * 0.75, d / 2 + 2) * CFrame.Angles(math.rad(-5), 0, 0),
         Color = colors.awning,
         Material = Enum.Material.Fabric,
         Tag = "Storefront",
@@ -250,20 +255,16 @@ function StorefrontBuilder:buildBoulevard(): number
     -- Build each storefront
     for slotId, slotConfig in pairs(world.StorefrontPositions) do
         local style = STYLES[slotId] or "Boutique"
-        local p = buildStorefront(
-            folder,
-            slotId,
-            slotConfig.position,
-            slotConfig.rotation,
-            style
-        )
+        local p = buildStorefront(folder, slotId, slotConfig.position, slotConfig.rotation, style)
         parts += p
     end
 
     -- Planter boxes between storefronts (on sidewalk)
     local planterPositions = {
-        Vector3.new(18, 0, -60), Vector3.new(18, 0, -20),
-        Vector3.new(-18, 0, -60), Vector3.new(-18, 0, -20),
+        Vector3.new(18, 0, -60),
+        Vector3.new(18, 0, -20),
+        Vector3.new(-18, 0, -60),
+        Vector3.new(-18, 0, -20),
     }
     for i, pos in ipairs(planterPositions) do
         -- Planter box
@@ -310,7 +311,7 @@ function StorefrontBuilder:buildBoulevard(): number
     -- 4 table/chair sets
     for i = 1, 4 do
         local row = math.ceil(i / 2)
-        local col = ((i - 1) % 2) * 2 - 1  -- -1 or 1
+        local col = ((i - 1) % 2) * 2 - 1 -- -1 or 1
         local tablePos = diningOrigin * CFrame.new(col * 5, 0, (row - 1) * 7 - 3)
 
         -- Table

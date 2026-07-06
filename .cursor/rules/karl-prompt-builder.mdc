@@ -1,0 +1,40 @@
+---
+description: Karl/Eddie build via natural-language prompts — no terminal instructions for principals
+alwaysApply: true
+---
+
+# Prompt-to-game (non-technical principals)
+
+Default operator **Karl** may not know PowerShell, git, or Rojo CLI.
+
+## You MUST
+
+- Implement requested game changes yourself (edit `src/` or `staging/` per 10-80-10).
+- Commit and push when running as a cloud agent so Rojo can sync files.
+- After changes, tell the user only:
+  1. Double-click **`Start-PalmSprings.cmd`** (repo root) and leave the window open
+  2. **Roblox Studio** → Plugins → **Rojo** → **Connect**
+  3. **Play Solo** and test (suggest a chat command)
+- Offer copy-paste prompts from `docs/karlux/karl-prompt-menu.md` when they are unsure what to ask.
+- **3D from prompts (Tier 1):** implement procedural props in `PropBuilder.lua` + `ProceduralAssetCatalog.lua`; Karl tests with `/spawnprop` and `/placefurniture`. See `docs/karlux/11-karl-prompt-to-3d.md`.
+- **Imported meshes (Tier 2):** write Manus handoff under `staging/manus-handoffs/` — never ask Karl to upload or run Open Cloud.
+- Route live `rbxassetid` uploads and schema/secrets to **Manus** — never ask Karl to run `supabase`.
+
+## You MUST NOT
+
+- Ask Karl to run PowerShell, `git pull`, `rojo serve`, or `Copy-Item` unless he explicitly says he wants terminal steps.
+- Assume Karl will open Output — offer to interpret logs if he pastes them.
+- Merge `staging/` → `src/` for large slices without noting Karl/Eddie approval (10-80-10).
+
+## Scope
+
+- Small features → `src/` directly when safe.
+- Large or experimental → `staging/` + note approval needed.
+- Locked art → `.cursor/rules/roblox-mcm.md`.
+
+## Reference
+
+- `docs/karlux/10-karl-prompt-to-game.md`
+- `docs/karlux/11-karl-prompt-to-3d.md`
+- `docs/karlux/08-karl-automation-playbook.md`
+- `AGENTS.md`

@@ -1,0 +1,50 @@
+# Promoted from staging/ci/pr-checks.yml — Luau quality on PRs
+name: Palm Springs — PR checks
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [cursor/**]
+
+jobs:
+  luau-quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rokit tools
+        run: |
+          for i in 1 2 3; do
+            curl -sSf https://raw.githubusercontent.com/rojo-rbx/rokit/main/scripts/install.sh | bash && break
+            echo "rokit install script retry $i..."
+            sleep 4
+          done
+          echo "$HOME/.rokit/bin" >> $GITHUB_PATH
+          export PATH="$HOME/.rokit/bin:$PATH"
+          # Root rokit.toml may symlink staging/toolchain/ — cp fails if same file
+          rm -f rokit.toml wally.toml
+          cp staging/toolchain/rokit.toml rokit.toml
+          cp staging/toolchain/wally.toml wally.toml
+          rokit install --no-trust-check
+          echo "$PWD/.rokit/bin" >> $GITHUB_PATH
+
+      - name: Wally install
+        run: wally install
+
+      - name: StyLua check
+        run: stylua --check --config-path staging/toolchain/stylua.toml src/
+
+      - name: Selene lint
+        run: selene --allow-warnings --config staging/toolchain/selene.toml src/
+
+      - name: Rojo build
+        run: rojo build default.project.json -o build.rbxlx
+
+      - name: Upload place artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rbxlx-build
+          path: build.rbxlx
+          if-no-files-found: error

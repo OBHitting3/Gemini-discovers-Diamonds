@@ -13,20 +13,21 @@
     Fallback: if Supabase is unavailable, all data stays in DataStore.
 ]]
 
-local Players          = game:GetService("Players")
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
 local ProfileServiceWrapper = require(ReplicatedStorage:WaitForChild("ProfileServiceWrapper"))
-local SupabaseClient        = require(ReplicatedStorage:WaitForChild("SupabaseClient"))
-local GameConfig            = require(ReplicatedStorage:WaitForChild("GameConfig"))
-local Utilities             = require(ReplicatedStorage:WaitForChild("Utilities"))
+local Resilience = require(ReplicatedStorage:WaitForChild("Resilience"))
+local SupabaseClient = require(ReplicatedStorage:WaitForChild("SupabaseClient"))
+local Utilities = require(ReplicatedStorage:WaitForChild("Utilities"))
 
 local PersistenceService = {}
 
 -- Internal state
 PersistenceService._profileStore = nil
 PersistenceService._supabase = nil
-PersistenceService._supabaseQueue = {}   -- batch queue for cold-path writes
+PersistenceService._supabaseQueue = {} -- batch queue for cold-path writes
 PersistenceService._autoSaveRunning = false
 
 ---------------------------------------------------------------------------
@@ -37,7 +38,7 @@ function PersistenceService:init()
     -- Create DataStore profile store
     self._profileStore = ProfileServiceWrapper.ProfileStore.new(
         "PalmSpringsParadise_v1",
-        nil  -- uses Types.DefaultPlayerData as template
+        nil -- uses Types.DefaultPlayerData as template
     )
 
     -- Create Supabase client (auto-detects mock mode in Play Solo)
@@ -148,7 +149,9 @@ end
 ---------------------------------------------------------------------------
 
 function PersistenceService:_startSupabaseSync()
-    if self._autoSaveRunning then return end
+    if self._autoSaveRunning then
+        return
+    end
     self._autoSaveRunning = true
 
     task.spawn(function()
@@ -160,42 +163,48 @@ function PersistenceService:_startSupabaseSync()
 end
 
 function PersistenceService:_processSupabaseQueue()
-    if #self._supabaseQueue == 0 then return end
+    if #self._supabaseQueue == 0 then
+        return
+    end
 
     local batch = self._supabaseQueue
     self._supabaseQueue = {}
 
-    -- Process each item
+    -- Process each item (retry before re-queue — content-shield resilience pattern)
     for _, item in ipairs(batch) do
-        local ok, err
-
-        if item.type == "plot_layout" then
-            ok, err = self._supabase:upsert("plot_layouts", {
-                user_id = item.userId,
-                layout_data = item.data,
-                updated_at = os.date("!%Y-%m-%dT%H:%M:%SZ", item.timestamp),
-            })
-        elseif item.type == "garden_state" then
-            ok, err = self._supabase:upsert("garden_states", {
-                server_id = game.JobId,
-                state_data = item.data,
-                updated_at = os.date("!%Y-%m-%dT%H:%M:%SZ", item.timestamp),
-            })
-        elseif item.type == "analytics" then
-            ok, err = self._supabase:insert("analytics_events", {
-                event_type = item.event,
-                event_data = item.data,
-                created_at = os.date("!%Y-%m-%dT%H:%M:%SZ", item.timestamp),
-            })
-        elseif item.type == "transaction" then
-            ok, err = self._supabase:insert("transactions", {
-                transaction_data = item.data,
-                created_at = os.date("!%Y-%m-%dT%H:%M:%SZ", item.timestamp),
-            })
-        end
+        local ok, _err = Resilience.retryResult({
+            maxAttempts = 3,
+            delaySeconds = 0.5,
+            label = "supabase_" .. tostring(item.type),
+        }, function()
+            if item.type == "plot_layout" then
+                return self._supabase:upsert("plot_layouts", {
+                    user_id = item.userId,
+                    layout_data = item.data,
+                    updated_at = os.date("!%Y-%m-%dT%H:%M:%SZ", item.timestamp),
+                })
+            elseif item.type == "garden_state" then
+                return self._supabase:upsert("garden_states", {
+                    server_id = game.JobId,
+                    state_data = item.data,
+                    updated_at = os.date("!%Y-%m-%dT%H:%M:%SZ", item.timestamp),
+                })
+            elseif item.type == "analytics" then
+                return self._supabase:insert("analytics_events", {
+                    event_type = item.event,
+                    event_data = item.data,
+                    created_at = os.date("!%Y-%m-%dT%H:%M:%SZ", item.timestamp),
+                })
+            elseif item.type == "transaction" then
+                return self._supabase:insert("transactions", {
+                    transaction_data = item.data,
+                    created_at = os.date("!%Y-%m-%dT%H:%M:%SZ", item.timestamp),
+                })
+            end
+            return false, "unknown_type"
+        end)
 
         if not ok then
-            -- Re-queue failed items (they'll be retried next cycle)
             table.insert(self._supabaseQueue, item)
         end
     end
@@ -242,8 +251,8 @@ end
 
 function PersistenceService:_loadSupabaseData(player: Player, data: table)
     -- Attempt to load detailed plot layout from Supabase
-    local ok, result = self._supabase:select("plot_layouts",
-        "user_id=eq." .. player.UserId .. "&select=*")
+    local ok, result =
+        self._supabase:select("plot_layouts", "user_id=eq." .. player.UserId .. "&select=*")
 
     if ok and type(result) == "table" and #result > 0 then
         -- Merge Supabase data into player data

@@ -1,0 +1,15 @@
+# Palm Springs Paradise — Asset Index (Manus-maintained)
+# Schema: slug → { type, rbxassetid, sourcePack, tags, partEstimate }
+#
+# Example entry (replace 0 with real IDs after Roblox upload):
+#
+# eames_lounge:
+#   type: MeshPart
+#   rbxassetid: "rbxassetid://0"
+#   sourcePack: "2026-05-22_mcm-furniture-pack"
+#   tags: ["PSP_Furniture", "PSP_ImportedMesh"]
+#   partEstimate: 8
+
+version: 1
+updatedAt: null
+assets: {}

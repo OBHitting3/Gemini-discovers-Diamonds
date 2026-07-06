@@ -4,11 +4,11 @@
     selection, runway walk animation, voting, results display.
 ]]
 
-local Players        = game:GetService("Players")
-local TweenService   = game:GetService("TweenService")
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
 
-local GameConfig    = require(ReplicatedStorage:WaitForChild("GameConfig"))
+local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
 local RemoteManager = require(ReplicatedStorage:WaitForChild("RemoteManager"))
 
 local FashionController = {}
@@ -49,19 +49,23 @@ function FashionController:_onFashionUpdate(data: table)
             participants = {},
         }
         self._uiController:showNotification(
-            "Fashion Event: " .. data.theme .. "! Head to the runway!")
+            "Fashion Event: " .. data.theme .. "! Head to the runway!"
+        )
     elseif action == "ended" then
         self._currentEvent = nil
         if data.results and #data.results > 0 then
             local winner = data.results[1]
             self._uiController:showNotification(
-                "Fashion Winner: " .. winner.displayName ..
-                " with " .. winner.votes .. " votes!")
+                "Fashion Winner: " .. winner.displayName .. " with " .. winner.votes .. " votes!"
+            )
         end
     elseif action == "playerJoined" then
         self._uiController:showNotification(
-            data.playerName .. " joined the fashion event! (" ..
-            data.participantCount .. " contestants)")
+            data.playerName
+                .. " joined the fashion event! ("
+                .. data.participantCount
+                .. " contestants)"
+        )
     elseif action == "runwayWalk" then
         self:_animateRunwayWalk(data.userId)
     end
@@ -106,26 +110,36 @@ end
 ---------------------------------------------------------------------------
 
 function FashionController:_animateRunwayWalk(userId: number)
-    if self._isWalking then return end
+    if self._isWalking then
+        return
+    end
 
     local player = Players:GetPlayerByUserId(userId)
-    if not player or not player.Character then return end
+    if not player or not player.Character then
+        return
+    end
 
     local character = player.Character
     local humanoid = character:FindFirstChildOfClass("Humanoid")
     local rootPart = character:FindFirstChild("HumanoidRootPart")
-    if not humanoid or not rootPart then return end
+    if not humanoid or not rootPart then
+        return
+    end
 
     -- Get runway parameters from the RunwayBuilder folder
     local runwayFolder = workspace:FindFirstChild("FashionRunway")
-    if not runwayFolder then return end
+    if not runwayFolder then
+        return
+    end
 
     local startZ = runwayFolder:GetAttribute("WalkStartZ")
     local endZ = runwayFolder:GetAttribute("WalkEndZ")
     local centerX = runwayFolder:GetAttribute("RunwayCenterX")
     local runwayY = runwayFolder:GetAttribute("RunwayY")
 
-    if not startZ or not endZ then return end
+    if not startZ or not endZ then
+        return
+    end
 
     self._isWalking = true
 
@@ -138,7 +152,7 @@ function FashionController:_animateRunwayWalk(userId: number)
         -- Walk forward
         local endPos = Vector3.new(centerX or 0, (runwayY or 1) + 3, endZ)
         local distance = (endPos - startPos).Magnitude
-        local walkSpeed = 8  -- studs/sec
+        local walkSpeed = 8 -- studs/sec
 
         -- Use Humanoid:MoveTo for natural walking
         humanoid:MoveTo(endPos)

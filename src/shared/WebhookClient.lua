@@ -13,6 +13,8 @@
 
 local HttpService = game:GetService("HttpService")
 
+local Resilience = require(script.Parent:WaitForChild("Resilience"))
+
 local WebhookClient = {}
 WebhookClient.__index = WebhookClient
 
@@ -27,22 +29,26 @@ function WebhookClient.new(config: table?)
     config = config or {}
 
     self._endpoints = {
-        signup      = config.signupUrl or "",      -- CF7 signup webhook
-        event       = config.eventUrl or "",        -- Modernism Week scheduling
-        analytics   = config.analyticsUrl or "",    -- general analytics
-        transaction = config.transactionUrl or "",  -- shop transactions
+        signup = config.signupUrl or "", -- CF7 signup webhook
+        event = config.eventUrl or "", -- Modernism Week scheduling
+        analytics = config.analyticsUrl or "", -- general analytics
+        transaction = config.transactionUrl or "", -- shop transactions
     }
 
-    self._log = {}  -- internal log of attempted sends
+    self._log = {} -- internal log of attempted sends
 
-    print("[WebhookClient] Initialized — " ..
-          (self:_hasAnyEndpoint() and "endpoints configured" or "placeholder mode"))
+    print(
+        "[WebhookClient] Initialized — "
+            .. (self:_hasAnyEndpoint() and "endpoints configured" or "placeholder mode")
+    )
     return self
 end
 
 function WebhookClient:_hasAnyEndpoint(): boolean
     for _, url in pairs(self._endpoints) do
-        if url ~= "" then return true end
+        if url ~= "" then
+            return true
+        end
     end
     return false
 end
@@ -55,32 +61,46 @@ function WebhookClient:_send(endpointKey: string, payload: table): boolean
     local url = self._endpoints[endpointKey]
     local entry = {
         endpoint = endpointKey,
-        payload  = payload,
-        time     = os.time(),
-        sent     = false,
+        payload = payload,
+        time = os.time(),
+        sent = false,
     }
 
     if url == "" then
         -- Placeholder mode — log but don't send
         entry.status = "placeholder"
         table.insert(self._log, entry)
-        print("[WebhookClient:PLACEHOLDER] " .. endpointKey ..
-              " → " .. HttpService:JSONEncode(payload))
+        print(
+            "[WebhookClient:PLACEHOLDER] "
+                .. endpointKey
+                .. " → "
+                .. HttpService:JSONEncode(payload)
+        )
         return true
     end
 
-    -- Attempt real HTTP POST
+    -- Attempt real HTTP POST (retry transient failures — content-shield pattern)
     local body = HttpService:JSONEncode(payload)
-    local ok, err = pcall(function()
-        HttpService:PostAsync(url, body, Enum.HttpContentType.ApplicationJson)
+    local ok = Resilience.retryBool({
+        maxAttempts = 3,
+        delaySeconds = 0.4,
+        label = "webhook_" .. endpointKey,
+    }, function()
+        local postOk, postErr = pcall(function()
+            HttpService:PostAsync(url, body, Enum.HttpContentType.ApplicationJson)
+        end)
+        if not postOk then
+            warn("[WebhookClient] POST error: " .. tostring(postErr))
+        end
+        return postOk
     end)
 
-    entry.sent   = ok
-    entry.status = ok and "sent" or ("error: " .. tostring(err))
+    entry.sent = ok
+    entry.status = ok and "sent" or "error: retries exhausted"
     table.insert(self._log, entry)
 
     if not ok then
-        warn("[WebhookClient] Failed to send " .. endpointKey .. ": " .. tostring(err))
+        warn("[WebhookClient] Failed to send " .. endpointKey .. " after retries")
     else
         print("[WebhookClient] Sent " .. endpointKey .. " to " .. url)
     end
@@ -96,11 +116,11 @@ end
 --- Payload: { userId, displayName, joinedAt, source }
 function WebhookClient:sendSignup(playerData: table): boolean
     return self:_send("signup", {
-        type        = "player_signup",
-        userId      = playerData.userId,
+        type = "player_signup",
+        userId = playerData.userId,
         displayName = playerData.displayName,
-        joinedAt    = os.date("!%Y-%m-%dT%H:%M:%SZ", os.time()),
-        source      = "palm_springs_paradise",
+        joinedAt = os.date("!%Y-%m-%dT%H:%M:%SZ", os.time()),
+        source = "palm_springs_paradise",
         gameVersion = "1.0.0-prototype",
     })
 end
@@ -109,12 +129,12 @@ end
 --- Payload: { eventName, startDate, endDate, specialItems, ... }
 function WebhookClient:sendEventSchedule(eventData: table): boolean
     return self:_send("event", {
-        type       = "event_schedule",
-        eventName  = eventData.name or "Modernism Week 2026",
-        startDate  = eventData.startDate or "2026-02-12",
-        endDate    = eventData.endDate or "2026-02-22",
-        details    = eventData.details or {},
-        timestamp  = os.date("!%Y-%m-%dT%H:%M:%SZ", os.time()),
+        type = "event_schedule",
+        eventName = eventData.name or "Modernism Week 2026",
+        startDate = eventData.startDate or "2026-02-12",
+        endDate = eventData.endDate or "2026-02-22",
+        details = eventData.details or {},
+        timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ", os.time()),
     })
 end
 
@@ -122,11 +142,11 @@ end
 --- Payload: { eventType, data, userId?, sessionId? }
 function WebhookClient:sendAnalytics(eventType: string, data: table): boolean
     return self:_send("analytics", {
-        type      = "analytics",
-        event     = eventType,
-        data      = data,
+        type = "analytics",
+        event = eventType,
+        data = data,
         timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ", os.time()),
-        serverId  = game.JobId,
+        serverId = game.JobId,
     })
 end
 
@@ -134,12 +154,12 @@ end
 --- Payload: { buyerId, sellerId, itemId, amount, tax, ... }
 function WebhookClient:sendShopTransaction(transactionData: table): boolean
     return self:_send("transaction", {
-        type      = "shop_transaction",
-        buyerId   = transactionData.buyerId,
-        sellerId  = transactionData.sellerId,
-        itemId    = transactionData.itemId,
-        amount    = transactionData.amount,
-        tax       = transactionData.tax,
+        type = "shop_transaction",
+        buyerId = transactionData.buyerId,
+        sellerId = transactionData.sellerId,
+        itemId = transactionData.itemId,
+        amount = transactionData.amount,
+        tax = transactionData.tax,
         timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ", os.time()),
     })
 end

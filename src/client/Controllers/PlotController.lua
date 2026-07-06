@@ -4,12 +4,12 @@
     furniture placement preview/confirm, home tours.
 ]]
 
-local Players           = game:GetService("Players")
 local CollectionService = game:GetService("CollectionService")
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local UserInputService  = game:GetService("UserInputService")
+local UserInputService = game:GetService("UserInputService")
 
-local GameConfig    = require(ReplicatedStorage:WaitForChild("GameConfig"))
+local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
 local RemoteManager = require(ReplicatedStorage:WaitForChild("RemoteManager"))
 
 local PlotController = {}
@@ -30,7 +30,9 @@ function PlotController:init(uiController)
         task.wait(3)
 
         local plotsFolder = workspace:WaitForChild("Plots", 30)
-        if not plotsFolder then return end
+        if not plotsFolder then
+            return
+        end
 
         for _, marker in ipairs(plotsFolder:GetChildren()) do
             if marker:GetAttribute("PlotId") then
@@ -105,7 +107,9 @@ function PlotController:startPlacingFurniture(itemId: string)
     -- Create ghost preview part
     local ItemCatalog = require(ReplicatedStorage:WaitForChild("ItemCatalog"))
     local item = ItemCatalog.getFurniture(itemId)
-    if not item then return end
+    if not item then
+        return
+    end
 
     local ghost = Instance.new("Part")
     ghost.Name = "GhostPreview"
@@ -129,7 +133,9 @@ function PlotController:startPlacingFurniture(itemId: string)
 end
 
 function PlotController:_updateGhostPosition()
-    if not self._ghostPart then return end
+    if not self._ghostPart then
+        return
+    end
 
     local player = Players.LocalPlayer
     local mouse = player:GetMouse()
@@ -137,19 +143,17 @@ function PlotController:_updateGhostPosition()
     if mouse.Target then
         local pos = mouse.Hit.Position + Vector3.new(0, self._ghostPart.Size.Y / 2, 0)
         -- Snap to grid (2-stud grid)
-        pos = Vector3.new(
-            math.round(pos.X / 2) * 2,
-            pos.Y,
-            math.round(pos.Z / 2) * 2
-        )
-        self._ghostPart.CFrame = CFrame.new(pos) *
-            CFrame.Angles(0, math.rad(self._placementRotation), 0)
+        pos = Vector3.new(math.round(pos.X / 2) * 2, pos.Y, math.round(pos.Z / 2) * 2)
+        self._ghostPart.CFrame = CFrame.new(pos)
+            * CFrame.Angles(0, math.rad(self._placementRotation), 0)
     end
 end
 
 --- Confirm current furniture placement.
 function PlotController:confirmPlacement()
-    if not self._isPlacingFurniture or not self._ghostPart then return end
+    if not self._isPlacingFurniture or not self._ghostPart then
+        return
+    end
 
     local position = self._ghostPart.Position
     local rotation = self._placementRotation

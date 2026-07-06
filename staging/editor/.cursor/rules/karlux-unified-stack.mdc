@@ -1,0 +1,17 @@
+---
+description: KarLux unified toolchain — Cursor, VS Code, Studio, Blender, Supabase, Rojo
+alwaysApply: true
+---
+
+# Unified stack (Iron Forge / KarLux)
+
+When editing Palm Springs Paradise:
+
+1. **Luau** lives in `src/` — server-authoritative economy, MCM visual rules in `roblox-mcm.md`.
+2. **Sync** via Rojo v7 (`rojo serve` + Studio plugin). Do not edit synced instances only in Studio without reflecting in files.
+3. **Staging** — new modules go to `staging/` until Karl/Eddie approve merge (10-80-10).
+4. **Assets** — Blender → `vendor-imports/` → Tarmac/Manus → `AssetRegistry`. No random rbxassetid in code without manifest.
+5. **Supabase** — cold path only; hot path is DataStore. Play Solo = mock. Never put service_role in Roblox.
+6. **IDE** — share `staging/editor/.vscode` settings; Cursor and VS Code use same extensions (Luau LSP, Rojo, StyLua, Selene).
+
+Docs: `docs/karlux/05-unified-dev-stack.md`, `06-friction-reduction-additions.md`.

@@ -11,10 +11,10 @@
 ]]
 
 local DataStoreService = game:GetService("DataStoreService")
-local RunService       = game:GetService("RunService")
-local Players          = game:GetService("Players")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
 
-local Types     = require(script.Parent.Types)
+local Types = require(script.Parent.Types)
 local Utilities = require(script.Parent.Utilities)
 
 ---------------------------------------------------------------------------
@@ -29,16 +29,18 @@ ProfileStore.__index = ProfileStore
 function ProfileStore.new(storeName: string, template: table?)
     local self = setmetatable({}, ProfileStore)
     self._storeName = storeName
-    self._template  = template or Utilities.tableDeepCopy(Types.DefaultPlayerData)
-    self._profiles  = {}          -- userId → { data, dirty, lastSave }
-    self._dataStore = nil         -- lazy-init
+    self._template = template or Utilities.tableDeepCopy(Types.DefaultPlayerData)
+    self._profiles = {} -- userId → { data, dirty, lastSave }
+    self._dataStore = nil -- lazy-init
     self._autoSaveRunning = false
     return self
 end
 
 --- Lazy-initialise the underlying DataStore (to avoid errors in Play Solo).
 function ProfileStore:_getDataStore()
-    if self._dataStore then return self._dataStore end
+    if self._dataStore then
+        return self._dataStore
+    end
 
     local ok, ds = pcall(function()
         return DataStoreService:GetDataStore(self._storeName)
@@ -47,8 +49,7 @@ function ProfileStore:_getDataStore()
     if ok then
         self._dataStore = ds
     else
-        warn("[ProfileStore] Could not get DataStore '" ..
-             self._storeName .. "': " .. tostring(ds))
+        warn("[ProfileStore] Could not get DataStore '" .. self._storeName .. "': " .. tostring(ds))
     end
 
     return self._dataStore
@@ -63,7 +64,7 @@ end
 --- DataStore entry.  Retries up to 3 times with exponential back-off.
 function ProfileStore:LoadProfile(player: Player): table?
     local userId = player.UserId
-    local key    = "player_" .. tostring(userId)
+    local key = "player_" .. tostring(userId)
 
     -- Already loaded?
     if self._profiles[userId] then
@@ -83,10 +84,16 @@ function ProfileStore:LoadProfile(player: Player): table?
                 data = result
                 break
             else
-                warn("[ProfileStore] Load attempt " .. attempt .. " failed for " ..
-                     key .. ": " .. tostring(result))
+                warn(
+                    "[ProfileStore] Load attempt "
+                        .. attempt
+                        .. " failed for "
+                        .. key
+                        .. ": "
+                        .. tostring(result)
+                )
                 if attempt < 3 then
-                    task.wait(2 ^ attempt)  -- exponential back-off: 2, 4
+                    task.wait(2 ^ attempt) -- exponential back-off: 2, 4
                 end
             end
         end
@@ -106,23 +113,22 @@ function ProfileStore:LoadProfile(player: Player): table?
     end
 
     -- Stamp session info
-    data.userId      = userId
+    data.userId = userId
     data.displayName = player.DisplayName
-    data.lastLogin   = os.time()
-    data._sessionLock = game.JobId  -- session lock token
+    data.lastLogin = os.time()
+    data._sessionLock = game.JobId -- session lock token
 
     -- Cache
     self._profiles[userId] = {
-        data     = data,
-        dirty    = true,
+        data = data,
+        dirty = true,
         lastSave = os.time(),
     }
 
     -- Persist the session lock immediately
     self:_save(userId)
 
-    print("[ProfileStore] Loaded profile for " .. player.Name ..
-          " (userId=" .. userId .. ")")
+    print("[ProfileStore] Loaded profile for " .. player.Name .. " (userId=" .. userId .. ")")
     return data
 end
 
@@ -131,7 +137,9 @@ end
 function ProfileStore:ReleaseProfile(player: Player)
     local userId = player.UserId
     local profile = self._profiles[userId]
-    if not profile then return end
+    if not profile then
+        return
+    end
 
     -- Clear session lock before final save
     profile.data._sessionLock = nil
@@ -155,7 +163,9 @@ end
 --- Mark a player's profile as dirty so the next auto-save writes it.
 function ProfileStore:MarkDirty(player: Player)
     local p = self._profiles[player.UserId]
-    if p then p.dirty = true end
+    if p then
+        p.dirty = true
+    end
 end
 
 ---------------------------------------------------------------------------
@@ -165,10 +175,14 @@ end
 --- Save a single profile to DataStore (internal).
 function ProfileStore:_save(userId: number)
     local profile = self._profiles[userId]
-    if not profile or not profile.dirty then return end
+    if not profile or not profile.dirty then
+        return
+    end
 
-    local ds  = self:_getDataStore()
-    if not ds then return end
+    local ds = self:_getDataStore()
+    if not ds then
+        return
+    end
 
     local key = "player_" .. tostring(userId)
     local ok, err = pcall(function()
@@ -176,7 +190,7 @@ function ProfileStore:_save(userId: number)
     end)
 
     if ok then
-        profile.dirty    = false
+        profile.dirty = false
         profile.lastSave = os.time()
     else
         warn("[ProfileStore] Save failed for " .. key .. ": " .. tostring(err))
@@ -206,7 +220,9 @@ end
 --- Start the periodic auto-save loop (call once from server bootstrap).
 --- @param interval number — seconds between save cycles (default 300)
 function ProfileStore:StartAutoSave(interval: number?)
-    if self._autoSaveRunning then return end
+    if self._autoSaveRunning then
+        return
+    end
     self._autoSaveRunning = true
 
     local period = interval or 300
@@ -214,8 +230,11 @@ function ProfileStore:StartAutoSave(interval: number?)
         while self._autoSaveRunning do
             task.wait(period)
             self:SaveAll()
-            print("[ProfileStore] Auto-save complete (" ..
-                  Utilities.tableCount(self._profiles) .. " profiles)")
+            print(
+                "[ProfileStore] Auto-save complete ("
+                    .. Utilities.tableCount(self._profiles)
+                    .. " profiles)"
+            )
         end
     end)
 end

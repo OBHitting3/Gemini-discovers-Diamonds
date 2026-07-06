@@ -1,0 +1,29 @@
+{
+  "[luau]": {
+    "editor.defaultFormatter": "JohnnyMorganz.stylua",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true
+  },
+  "stylua.configPath": "staging/toolchain/stylua.toml",
+  "selene.configPath": "staging/toolchain/selene.toml",
+  "luau-lsp.require.mode": "relativeToFile",
+  "luau-lsp.types.definitionFiles": [
+    "Packages",
+    "src"
+  ],
+  "luau-lsp.platform.type": "roblox",
+  "files.associations": {
+    "*.lua": "luau"
+  },
+  "files.exclude": {
+    "**/.darklua": true,
+    "**/node_modules": true,
+    "content-shield/.venv": true
+  },
+  "search.exclude": {
+    "Packages": true,
+    "node_modules": true,
+    "content-shield/.venv": true
+  }
+}

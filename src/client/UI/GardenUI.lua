@@ -5,8 +5,8 @@
 ]]
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local GameConfig    = require(ReplicatedStorage:WaitForChild("GameConfig"))
-local ItemCatalog   = require(ReplicatedStorage:WaitForChild("ItemCatalog"))
+local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
+local ItemCatalog = require(ReplicatedStorage:WaitForChild("ItemCatalog"))
 
 local GardenUI = {}
 local C = GameConfig.Colors
@@ -92,7 +92,7 @@ function GardenUI:build(screenGui: ScreenGui, uiController, gardenController)
         plotBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
         plotBtn.TextScaled = true
         plotBtn.Font = Enum.Font.GothamBold
-        plotBtn.BackgroundColor3 = Color3.fromRGB(120, 90, 60)  -- empty soil color
+        plotBtn.BackgroundColor3 = Color3.fromRGB(120, 90, 60) -- empty soil color
         plotBtn.LayoutOrder = i
         plotBtn.Parent = gridFrame
 

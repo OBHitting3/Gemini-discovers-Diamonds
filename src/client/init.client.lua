@@ -7,9 +7,9 @@
 
 print("[Client] Palm Springs Paradise — Client Starting...")
 
-local Players          = game:GetService("Players")
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local StarterGui       = game:GetService("StarterGui")
+local StarterGui = game:GetService("StarterGui")
 local UserInputService = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
@@ -22,7 +22,7 @@ ReplicatedStorage:WaitForChild("Utilities", 30)
 -- Wait for remotes folder to be created by server
 ReplicatedStorage:WaitForChild("PalmSpringsRemotes", 30)
 
-local GameConfig    = require(ReplicatedStorage.GameConfig)
+local GameConfig = require(ReplicatedStorage.GameConfig)
 local RemoteManager = require(ReplicatedStorage.RemoteManager)
 
 ---------------------------------------------------------------------------
@@ -63,6 +63,9 @@ ShopController:init(UIController)
 local NightToggleController = require(script.Controllers.NightToggleController)
 NightToggleController:init(UIController)
 
+local DayPhaseController = require(script.Controllers.DayPhaseController)
+DayPhaseController:init(UIController)
+
 local SoundController = require(script.Controllers.SoundController)
 SoundController:init()
 
@@ -100,7 +103,9 @@ LeaderboardUI:build(screenGui, UIController)
 ---------------------------------------------------------------------------
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
+    if gameProcessed then
+        return
+    end
 
     -- Keyboard shortcuts
     if input.KeyCode == Enum.KeyCode.R then
@@ -119,8 +124,11 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
             PlotController:confirmPlacement()
         end
     elseif input.KeyCode == Enum.KeyCode.N then
-        -- Night toggle (if enabled)
-        NightToggleController:toggle()
+        if DayPhaseController:isNightAllowed() then
+            NightToggleController:toggle()
+        else
+            UIController:showNotification("Night mode unlocks in the evening.")
+        end
     elseif input.KeyCode == Enum.KeyCode.Escape then
         -- Close any open panel
         UIController:hideAllPanels()
@@ -129,7 +137,9 @@ end)
 
 -- Mouse click for furniture placement
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
+    if gameProcessed then
+        return
+    end
 
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         if PlotController:isPlacingFurniture() then

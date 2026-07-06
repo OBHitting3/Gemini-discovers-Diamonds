@@ -1,0 +1,12 @@
+# Optional: lefthook install → lefthook install
+# Cross-platform git hooks (alternative to staging/scripts/git/pre-commit)
+
+pre-commit:
+  parallel: true
+  commands:
+    stylua:
+      glob: "*.lua"
+      run: stylua --check --config-path staging/toolchain/stylua.toml {staged_files}
+    selene:
+      glob: "*.lua"
+      run: selene {staged_files}

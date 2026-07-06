@@ -8,12 +8,12 @@
     n8n webhooks fire on event start/end.
 ]]
 
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Players           = game:GetService("Players")
 
-local GameConfig    = require(ReplicatedStorage:WaitForChild("GameConfig"))
+local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
 local RemoteManager = require(ReplicatedStorage:WaitForChild("RemoteManager"))
-local Utilities     = require(ReplicatedStorage:WaitForChild("Utilities"))
+local Utilities = require(ReplicatedStorage:WaitForChild("Utilities"))
 
 local EventService = {}
 
@@ -46,8 +46,10 @@ function EventService:init(webhookClient)
         end)
     end
 
-    print("[EventService] Initialized — Modernism Week " ..
-          (self._modernismWeekActive and "ACTIVE" or "inactive"))
+    print(
+        "[EventService] Initialized — Modernism Week "
+            .. (self._modernismWeekActive and "ACTIVE" or "inactive")
+    )
 end
 
 ---------------------------------------------------------------------------
@@ -55,7 +57,9 @@ end
 ---------------------------------------------------------------------------
 
 function EventService:_startEventLoop()
-    if self._eventLoop then return end
+    if self._eventLoop then
+        return
+    end
     self._eventLoop = true
 
     task.spawn(function()
@@ -125,7 +129,7 @@ function EventService:startWeeklyTheme(themeName: string?): boolean
         shopBonus = theme.shopBonus,
         isActive = true,
         startedAt = os.time(),
-        endsAt = os.time() + 3600,  -- 1 hour per theme cycle
+        endsAt = os.time() + 3600, -- 1 hour per theme cycle
     }
 
     -- Broadcast
@@ -139,8 +143,10 @@ function EventService:startWeeklyTheme(themeName: string?): boolean
         },
     })
 
-    RemoteManager:fireAllClients("NotifyPlayer",
-        "Event Active: " .. theme.name .. " — " .. theme.description)
+    RemoteManager:fireAllClients(
+        "NotifyPlayer",
+        "Event Active: " .. theme.name .. " — " .. theme.description
+    )
 
     -- Webhook
     if self._webhookClient then
@@ -155,7 +161,9 @@ function EventService:startWeeklyTheme(themeName: string?): boolean
 end
 
 function EventService:_endCurrentEvent()
-    if not self._currentEvent then return end
+    if not self._currentEvent then
+        return
+    end
 
     RemoteManager:fireAllClients("EventBroadcast", {
         action = "end",
@@ -180,8 +188,12 @@ function EventService:_checkModernismWeek()
     local date = os.date("*t")
     local mw = GameConfig.ModernismWeek
 
-    local isInRange = (date.month == mw.StartMonth and date.day >= mw.StartDay and date.day <= mw.EndDay) or
-                      (date.month == mw.EndMonth and date.day >= mw.StartDay and date.day <= mw.EndDay)
+    local isInRange = (
+        date.month == mw.StartMonth
+        and date.day >= mw.StartDay
+        and date.day <= mw.EndDay
+    )
+        or (date.month == mw.EndMonth and date.day >= mw.StartDay and date.day <= mw.EndDay)
 
     if isInRange and not self._modernismWeekActive then
         self:_startModernismWeek()
@@ -209,8 +221,10 @@ function EventService:_startModernismWeek()
         })
     end
 
-    RemoteManager:fireAllClients("NotifyPlayer",
-        "MODERNISM WEEK 2026 IS LIVE! Limited MCM furniture drops + 2x Prestige!")
+    RemoteManager:fireAllClients(
+        "NotifyPlayer",
+        "MODERNISM WEEK 2026 IS LIVE! Limited MCM furniture drops + 2x Prestige!"
+    )
 
     print("[EventService] *** MODERNISM WEEK 2026 ACTIVATED ***")
 end
@@ -219,8 +233,10 @@ function EventService:_endModernismWeek()
     self._modernismWeekActive = false
     self._currentEvent = nil
 
-    RemoteManager:fireAllClients("NotifyPlayer",
-        "Modernism Week 2026 has ended. See you next year!")
+    RemoteManager:fireAllClients(
+        "NotifyPlayer",
+        "Modernism Week 2026 has ended. See you next year!"
+    )
 
     print("[EventService] Modernism Week ended")
 end

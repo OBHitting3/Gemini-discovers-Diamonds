@@ -4,10 +4,10 @@
     growth visualization, wilting indicators, and garden state display.
 ]]
 
-local Players           = game:GetService("Players")
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local GameConfig    = require(ReplicatedStorage:WaitForChild("GameConfig"))
+local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
 local RemoteManager = require(ReplicatedStorage:WaitForChild("RemoteManager"))
 
 local GardenController = {}
@@ -31,7 +31,7 @@ function GardenController:init(uiController)
 
     -- Set up proximity prompt handlers
     task.spawn(function()
-        task.wait(5)  -- Wait for garden to build
+        task.wait(5) -- Wait for garden to build
         self:_setupPromptHandlers()
     end)
 
@@ -56,7 +56,9 @@ end
 
 function GardenController:_setupPromptHandlers()
     local gardenFolder = workspace:FindFirstChild("DesertGarden")
-    if not gardenFolder then return end
+    if not gardenFolder then
+        return
+    end
 
     for _, child in ipairs(gardenFolder:GetChildren()) do
         if child:IsA("BasePart") and child:GetAttribute("PlotIndex") then
@@ -100,7 +102,9 @@ function GardenController:_onGardenStateUpdate(state: table)
 
     -- Update prompt text based on state
     local gardenFolder = workspace:FindFirstChild("DesertGarden")
-    if not gardenFolder then return end
+    if not gardenFolder then
+        return
+    end
 
     for plotIndex, plotData in pairs(state) do
         local bed = gardenFolder:FindFirstChild("GardenPlot_" .. plotIndex)

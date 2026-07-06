@@ -19,7 +19,7 @@ local CollectionService = game:GetService("CollectionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
-local Utilities  = require(ReplicatedStorage:WaitForChild("Utilities"))
+local Utilities = require(ReplicatedStorage:WaitForChild("Utilities"))
 
 local C = GameConfig.Colors
 
@@ -41,8 +41,8 @@ function RunwayBuilder:buildRunway(): number
     self._folder = folder
 
     local origin = CFrame.new(runwayPos)
-    local rw = world.RunwaySize.X   -- 6 studs wide
-    local rl = world.RunwaySize.Z   -- 30 studs long
+    local rw = world.RunwaySize.X -- 6 studs wide
+    local rl = world.RunwaySize.Z -- 30 studs long
 
     -- Main runway platform
     Utilities.createPart({
@@ -91,8 +91,9 @@ function RunwayBuilder:buildRunway(): number
             Utilities.createPart({
                 Name = "LoungeBack_" .. (side == -1 and "L" or "R") .. i,
                 Size = Vector3.new(2, 1.5, 0.3),
-                CFrame = origin * CFrame.new(xOff, 1.25, zOff - 2.2) *
-                         CFrame.Angles(math.rad(-30), 0, 0),
+                CFrame = origin
+                    * CFrame.new(xOff, 1.25, zOff - 2.2)
+                    * CFrame.Angles(math.rad(-30), 0, 0),
                 Color = C.WallWhite,
                 Material = Enum.Material.SmoothPlastic,
                 Tag = "RunwaySeating",
@@ -133,9 +134,9 @@ function RunwayBuilder:buildRunway(): number
     -- Stage lighting rigs (4 tall poles with colored spotlights)
     local lightPositions = {
         { x = -rw / 2 - 2, z = -rl / 3, color = C.Turquoise },
-        { x =  rw / 2 + 2, z = -rl / 3, color = C.DustyPink },
-        { x = -rw / 2 - 2, z =  rl / 3, color = C.DustyPink },
-        { x =  rw / 2 + 2, z =  rl / 3, color = C.Turquoise },
+        { x = rw / 2 + 2, z = -rl / 3, color = C.DustyPink },
+        { x = -rw / 2 - 2, z = rl / 3, color = C.DustyPink },
+        { x = rw / 2 + 2, z = rl / 3, color = C.Turquoise },
     }
     for i, lp in ipairs(lightPositions) do
         -- Pole
@@ -188,7 +189,7 @@ function RunwayBuilder:buildRunway(): number
 
     -- SurfaceGui for backdrop text
     local gui = Instance.new("SurfaceGui")
-    gui.Face = Enum.NormalId.Back  -- faces toward the runway
+    gui.Face = Enum.NormalId.Back -- faces toward the runway
     gui.Parent = backdropPart
 
     local titleLabel = Instance.new("TextLabel")

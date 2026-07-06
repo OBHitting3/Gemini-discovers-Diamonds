@@ -1,0 +1,149 @@
+# Palm Springs Paradise — agent registry (machine + human readable)
+# Used by karl-start-day.ps1 and docs/karlux/08-karl-automation-playbook.md
+
+project: Palm Springs Paradise
+entity: KarLux LLC
+governance: 10-80-10
+
+agents:
+  karl_eddie:
+    lane: intent
+    role: Principals
+    automates: []
+    owns:
+      - creative_direction
+      - merge_approval_staging_to_src
+      - studio_publish
+      - experience_settings_http_and_api_access
+    ux:
+      launcher: Start-PalmSprings.cmd
+      prompts: docs/karlux/karl-prompt-menu.md
+      guide: docs/karlux/10-karl-prompt-to-game.md
+      no_terminal: true
+
+  cursor:
+    lane: logic
+    role: IDE agent (Luau / Rojo / PRs)
+    environment: [cursor, vscode, cloud_agent]
+    automates:
+      - luau_services_ui_builders
+      - procedural_3d_prop_builder_tier1
+      - rojo_project_and_default_project_json
+      - staging_vertical_slices
+      - pr_checks_via_staging_ci
+    owns:
+      - src/
+      - staging/src/
+      - docs/karlux/
+      - default.project.json
+    must_not:
+      - bulk_roblox_upload_without_manifest
+      - production_secrets_in_repo
+      - merge_staging_without_karl_approval
+
+  manus:
+    lane: boundary
+    role: Assets + backend ops
+    environment: [krlx, sandbox_apis, open_cloud]
+    automates:
+      - vendor_imports_qa_and_sort
+      - roblox_asset_upload
+      - supabase_db_push
+      - webhook_and_n8n_credentials
+    owns:
+      - vendor-imports/_incoming/
+      - vendor-imports/_manifests/asset-index.yaml
+      - staging/supabase/migrations/
+      - staging/env/.env
+    must_not:
+      - edit_src_lua
+      - merge_git_branches
+      - change_gameconfig_economy_or_sky
+
+  superbulletai:
+    lane: orchestration
+    role: Karl ops coordinator (checklists + dispatch)
+    environment: [scheduled_runner, karl_workstation]
+    automates:
+      - daily_start_day_script_invocation
+      - agent_handoff_status_reports
+      - remind_manus_when_asset_index_stale
+      - remind_cursor_when_staging_ahead_of_src
+      - optional_n8n_trigger_fanout
+    owns:
+      - staging/automation/
+      - runbooks in docs/karlux/08-karl-automation-playbook.md
+    must_not:
+      - edit_src_lua_directly
+      - supabase_schema_without_migration_files
+      - override_karl_merge_decisions
+    dispatches_to: [cursor, manus]
+
+  cloud_agent:
+    lane: logic
+    role: Cursor Cloud on GitHub
+    inherits: cursor
+    automates:
+      - prs_on_cursor_branches
+      - doc_and_toolchain_fixes
+    must_not:
+      - open_studio_or_rojo_serve_on_karl_pc
+
+cross_repo:
+  org: OBHitting3
+  playbook: docs/karlux/12-cross-repo-success-hardening.md
+  siblings:
+    - name: Content_Shield
+      local_path: content-shield/
+      patterns: [retry, circuit_breaker, ci_matrix]
+    - name: 55-_AI_Intergration
+      remote_path: game/PalmLuxeTycoon
+      patterns: [agent_lanes, karl_twin_approval_gates]
+    - name: karl-twin
+      parent_repo: 55-_AI_Intergration
+      patterns: [no_untrusted_cli_for_karl, verify_before_execute]
+  karl_launcher:
+    preflight: staging/scripts/karl-preflight.cmd
+    serve: Start-PalmSprings.cmd
+  resilience:
+    module: src/shared/Resilience.lua
+    adopted_from: content-shield
+
+integrations:
+  supabase:
+    code: src/shared/SupabaseClient.lua
+    migrations: staging/supabase/migrations/
+    mock_until: roblox_secrets_configured
+    operator: manus
+
+  roblox:
+    hot_path: DataStore via PersistenceService
+    cold_path: supabase
+    sync: rojo_serve + studio_plugin
+    operator_karl: studio_play_solo
+
+  n8n:
+    status: optional_future
+    operator: manus
+    luau: WebhookClient placeholder
+
+phases:
+  - id: dev_loop
+    status: active
+    description: Cursor + rojo serve + Studio Connect
+  - id: supabase_live
+    status: pending
+    blocked_by: manus_db_push_and_roblox_secrets
+  - id: procedural_3d_tier1
+    status: active
+    code: src/server/Builders/PropBuilder.lua src/shared/ProceduralAssetCatalog.lua
+    karl_test: "/listprops /spawnprop"
+  - id: asset_manifest
+    status: pending
+    blocked_by: manus_asset_index_yaml
+  - id: day_phase_merge
+    status: completed
+    completed_at: "2026-05-23"
+    commit: 3b1b895
+    code: src/shared/DayPhaseConfig.lua src/server/Services/CoreLoopService.lua
+    note: staging/src copies are duplicates only; do not re-merge

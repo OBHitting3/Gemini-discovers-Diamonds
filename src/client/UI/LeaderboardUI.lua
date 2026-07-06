@@ -4,10 +4,10 @@
     and Vibes Score. Tab-switching between boards. Auto-refreshes.
 ]]
 
-local Players           = game:GetService("Players")
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local GameConfig    = require(ReplicatedStorage:WaitForChild("GameConfig"))
+local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
 local RemoteManager = require(ReplicatedStorage:WaitForChild("RemoteManager"))
 
 local LeaderboardUI = {}
@@ -79,7 +79,7 @@ function LeaderboardUI:build(screenGui: ScreenGui, uiController)
     local tabColors = {
         SunCoins = C.UISunCoin,
         Prestige = C.DustyPink,
-        Vibes    = C.Turquoise,
+        Vibes = C.Turquoise,
     }
     local tabBtns = {}
     local activeBoard = "SunCoins"
@@ -104,7 +104,9 @@ function LeaderboardUI:build(screenGui: ScreenGui, uiController)
     local function populateBoard(boardName: string)
         -- Clear existing entries
         for _, child in ipairs(scrollFrame:GetChildren()) do
-            if child:IsA("Frame") then child:Destroy() end
+            if child:IsA("Frame") then
+                child:Destroy()
+            end
         end
 
         -- Fetch from server
@@ -121,7 +123,8 @@ function LeaderboardUI:build(screenGui: ScreenGui, uiController)
             local row = Instance.new("Frame")
             row.Size = UDim2.new(1, -4, 0, 32)
             row.BackgroundColor3 = (entry.userId == localPlayer.UserId)
-                and Color3.fromRGB(230, 245, 230) or Color3.fromRGB(250, 250, 248)
+                    and Color3.fromRGB(230, 245, 230)
+                or Color3.fromRGB(250, 250, 248)
             row.BorderSizePixel = 0
             row.LayoutOrder = i
             row.Parent = scrollFrame

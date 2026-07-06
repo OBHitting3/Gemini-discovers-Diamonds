@@ -1,0 +1,14 @@
+{
+  "rules": [
+    "remove_comments",
+    "remove_spaces",
+    {
+      "rule": "compute_expression",
+      "level": "safe"
+    }
+  ],
+  "bundle": {
+    "modules": "src",
+    "output": ".darklua/release"
+  }
+}

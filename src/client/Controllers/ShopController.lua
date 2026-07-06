@@ -4,11 +4,11 @@
     browsing, purchasing, market overview.
 ]]
 
-local Players           = game:GetService("Players")
 local CollectionService = game:GetService("CollectionService")
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local GameConfig    = require(ReplicatedStorage:WaitForChild("GameConfig"))
+local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
 local RemoteManager = require(ReplicatedStorage:WaitForChild("RemoteManager"))
 
 local ShopController = {}
@@ -32,7 +32,7 @@ function ShopController:init(uiController)
 
     -- Set up proximity prompts on storefronts
     task.spawn(function()
-        task.wait(5)  -- Wait for El Paseo to build
+        task.wait(5) -- Wait for El Paseo to build
         self:_setupStorefrontPrompts()
     end)
 
@@ -45,7 +45,9 @@ end
 
 function ShopController:_setupStorefrontPrompts()
     local elPaseo = workspace:FindFirstChild("ElPaseo")
-    if not elPaseo then return end
+    if not elPaseo then
+        return
+    end
 
     for _, sf in ipairs(elPaseo:GetChildren()) do
         if sf:IsA("Model") and sf:GetAttribute("SlotId") then
@@ -76,10 +78,12 @@ end
 function ShopController:_onShopUpdate(data: table)
     if data.action == "claimed" then
         self._uiController:showNotification(
-            data.ownerName .. " claimed El Paseo storefront #" .. data.shopId .. "!")
+            data.ownerName .. " claimed El Paseo storefront #" .. data.shopId .. "!"
+        )
     elseif data.action == "purchase" then
         self._uiController:showNotification(
-            data.buyerName .. " bought " .. data.itemId .. " from shop #" .. data.shopId)
+            data.buyerName .. " bought " .. data.itemId .. " from shop #" .. data.shopId
+        )
     end
 end
 

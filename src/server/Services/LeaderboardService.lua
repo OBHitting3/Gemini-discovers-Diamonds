@@ -6,20 +6,20 @@
     Serves data to clients via GetLeaderboard RemoteFunction.
 ]]
 
-local DataStoreService  = game:GetService("DataStoreService")
-local Players           = game:GetService("Players")
+local DataStoreService = game:GetService("DataStoreService")
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local GameConfig    = require(ReplicatedStorage:WaitForChild("GameConfig"))
+local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
 local RemoteManager = require(ReplicatedStorage:WaitForChild("RemoteManager"))
 
 local LeaderboardService = {}
 
 LeaderboardService._economyService = nil
 LeaderboardService._plotService = nil
-LeaderboardService._boards = {}         -- boardName → OrderedDataStore
-LeaderboardService._cache = {}          -- boardName → { entries, lastUpdate }
-LeaderboardService._cacheLifetime = 30  -- seconds
+LeaderboardService._boards = {} -- boardName → OrderedDataStore
+LeaderboardService._cache = {} -- boardName → { entries, lastUpdate }
+LeaderboardService._cacheLifetime = 30 -- seconds
 
 ---------------------------------------------------------------------------
 -- INITIALIZATION
@@ -33,7 +33,7 @@ function LeaderboardService:init(economyService, plotService)
     pcall(function()
         self._boards.SunCoins = DataStoreService:GetOrderedDataStore("Leaderboard_SunCoins")
         self._boards.Prestige = DataStoreService:GetOrderedDataStore("Leaderboard_Prestige")
-        self._boards.Vibes    = DataStoreService:GetOrderedDataStore("Leaderboard_Vibes")
+        self._boards.Vibes = DataStoreService:GetOrderedDataStore("Leaderboard_Vibes")
     end)
 
     -- Wire up the GetLeaderboard RemoteFunction
@@ -86,7 +86,9 @@ function LeaderboardService:getLeaderboard(boardName: string): { any }
                     local ok2, n = pcall(function()
                         return Players:GetNameFromUserIdAsync(userId)
                     end)
-                    if ok2 then name = n end
+                    if ok2 then
+                        name = n
+                    end
                 end
                 table.insert(dsEntries, {
                     rank = rank,
@@ -105,8 +107,12 @@ function LeaderboardService:getLeaderboard(boardName: string): { any }
     entries = self:_mergeLocalPlayers(entries, boardName)
 
     -- Sort descending and re-rank
-    table.sort(entries, function(a, b) return a.value > b.value end)
-    for i, e in ipairs(entries) do e.rank = i end
+    table.sort(entries, function(a, b)
+        return a.value > b.value
+    end)
+    for i, e in ipairs(entries) do
+        e.rank = i
+    end
 
     -- Trim to top 20
     while #entries > 20 do
@@ -159,7 +165,9 @@ end
 function LeaderboardService:_mergeLocalPlayers(entries: { any }, boardName: string): { any }
     local existing = {}
     for _, e in ipairs(entries) do
-        if e.userId then existing[e.userId] = true end
+        if e.userId then
+            existing[e.userId] = true
+        end
     end
 
     for _, player in ipairs(Players:GetPlayers()) do
@@ -167,8 +175,10 @@ function LeaderboardService:_mergeLocalPlayers(entries: { any }, boardName: stri
             local data = self._economyService:getPlayerData(player)
             if data then
                 local value = 0
-                if boardName == "SunCoins" then value = data.sunCoins or 0
-                elseif boardName == "Prestige" then value = data.prestige or 0
+                if boardName == "SunCoins" then
+                    value = data.sunCoins or 0
+                elseif boardName == "Prestige" then
+                    value = data.prestige or 0
                 elseif boardName == "Vibes" then
                     local plotId = data.plotId
                     if plotId and self._plotService then
@@ -176,8 +186,10 @@ function LeaderboardService:_mergeLocalPlayers(entries: { any }, boardName: stri
                     end
                 end
                 table.insert(entries, {
-                    rank = 0, name = player.Name,
-                    value = value, userId = player.UserId,
+                    rank = 0,
+                    name = player.Name,
+                    value = value,
+                    userId = player.UserId,
                 })
             end
         end
@@ -202,7 +214,9 @@ end
 function LeaderboardService:_pushToDataStores()
     for _, player in ipairs(Players:GetPlayers()) do
         local data = self._economyService:getPlayerData(player)
-        if not data then continue end
+        if not data then
+            continue
+        end
 
         local key = "user_" .. tostring(player.UserId)
 

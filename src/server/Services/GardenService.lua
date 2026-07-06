@@ -10,10 +10,11 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local GameConfig    = require(ReplicatedStorage:WaitForChild("GameConfig"))
+local DayPhaseConfig = require(ReplicatedStorage:WaitForChild("DayPhaseConfig"))
+local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
+local ItemCatalog = require(ReplicatedStorage:WaitForChild("ItemCatalog"))
 local RemoteManager = require(ReplicatedStorage:WaitForChild("RemoteManager"))
-local ItemCatalog   = require(ReplicatedStorage:WaitForChild("ItemCatalog"))
-local Utilities     = require(ReplicatedStorage:WaitForChild("Utilities"))
+local Utilities = require(ReplicatedStorage:WaitForChild("Utilities"))
 
 local GardenService = {}
 
@@ -33,20 +34,26 @@ local function checkCooldown(player, action)
 end
 
 -- Internal state
-GardenService._plots = {}           -- plotIndex → GardenPlot data
+GardenService._plots = {} -- plotIndex → GardenPlot data
 GardenService._economyService = nil
 GardenService._gardenBuilder = nil
 GardenService._supabaseClient = nil
 GardenService._tickRunning = false
+GardenService._growthMultiplier = 1.0
 
 ---------------------------------------------------------------------------
 -- INITIALIZATION
 ---------------------------------------------------------------------------
 
+function GardenService:setGrowthMultiplier(multiplier: number)
+    self._growthMultiplier = multiplier
+end
+
 function GardenService:init(economyService, gardenBuilder, supabaseClient)
     self._economyService = economyService
     self._gardenBuilder = gardenBuilder
     self._supabaseClient = supabaseClient
+    self._growthMultiplier = 1.0
 
     -- Initialize all 16 garden plots
     for i = 1, GameConfig.World.GardenPlots do
@@ -94,8 +101,7 @@ function GardenService:init(economyService, gardenBuilder, supabaseClient)
     -- Start growth tick
     self:_startGrowthTick()
 
-    print("[GardenService] Initialized with " ..
-          GameConfig.World.GardenPlots .. " plots")
+    print("[GardenService] Initialized with " .. GameConfig.World.GardenPlots .. " plots")
 end
 
 ---------------------------------------------------------------------------
@@ -103,7 +109,9 @@ end
 ---------------------------------------------------------------------------
 
 function GardenService:plantSeed(player: Player, plotIndex: number, plantId: string): boolean
-    if not checkCooldown(player, "plant") then return end
+    if not checkCooldown(player, "plant") then
+        return
+    end
 
     -- Validate
     if type(plotIndex) ~= "number" or plotIndex < 1 or plotIndex > GameConfig.World.GardenPlots then
@@ -112,8 +120,7 @@ function GardenService:plantSeed(player: Player, plotIndex: number, plantId: str
 
     local plot = self._plots[plotIndex]
     if plot.growthStage ~= "empty" then
-        RemoteManager:fireClient("NotifyPlayer", player,
-            "This plot already has something planted!")
+        RemoteManager:fireClient("NotifyPlayer", player, "This plot already has something planted!")
         return false
     end
 
@@ -128,8 +135,11 @@ function GardenService:plantSeed(player: Player, plotIndex: number, plantId: str
     if not self._economyService:hasItem(player, plantId) then
         -- Try to buy the seed directly
         if not self._economyService:removeCoins(player, plant.seedPrice, "Plant: " .. plantId) then
-            RemoteManager:fireClient("NotifyPlayer", player,
-                "Not enough SunCoins for " .. plant.name .. " seed! Need " .. plant.seedPrice)
+            RemoteManager:fireClient(
+                "NotifyPlayer",
+                player,
+                "Not enough SunCoins for " .. plant.name .. " seed! Need " .. plant.seedPrice
+            )
             return false
         end
     else
@@ -148,8 +158,11 @@ function GardenService:plantSeed(player: Player, plotIndex: number, plantId: str
     self:_updateVisual(plotIndex)
     self:_broadcastState()
 
-    RemoteManager:fireClient("NotifyPlayer", player,
-        "Planted " .. plant.name .. " in plot #" .. plotIndex .. "!")
+    RemoteManager:fireClient(
+        "NotifyPlayer",
+        player,
+        "Planted " .. plant.name .. " in plot #" .. plotIndex .. "!"
+    )
     print("[GardenService] " .. player.Name .. " planted " .. plantId .. " in plot #" .. plotIndex)
 
     return true
@@ -160,24 +173,32 @@ end
 ---------------------------------------------------------------------------
 
 function GardenService:waterPlant(player: Player, plotIndex: number): boolean
-    if not checkCooldown(player, "water") then return end
+    if not checkCooldown(player, "water") then
+        return
+    end
 
     if type(plotIndex) ~= "number" or plotIndex < 1 or plotIndex > GameConfig.World.GardenPlots then
         return false
     end
 
     local plot = self._plots[plotIndex]
-    if plot.growthStage == "empty" or plot.growthStage == "dead" or plot.growthStage == "mature" then
-        RemoteManager:fireClient("NotifyPlayer", player,
-            "Nothing to water here!")
+    if
+        plot.growthStage == "empty"
+        or plot.growthStage == "dead"
+        or plot.growthStage == "mature"
+    then
+        RemoteManager:fireClient("NotifyPlayer", player, "Nothing to water here!")
         return false
     end
 
     -- Watering cooldown per player (simplified: check last watered time)
     local now = os.time()
     if plot.lastWatered and (now - plot.lastWatered) < GameConfig.Timing.WateringCooldown then
-        RemoteManager:fireClient("NotifyPlayer", player,
-            "This plant was just watered! Wait a moment.")
+        RemoteManager:fireClient(
+            "NotifyPlayer",
+            player,
+            "This plant was just watered! Wait a moment."
+        )
         return false
     end
 
@@ -199,8 +220,7 @@ function GardenService:waterPlant(player: Player, plotIndex: number): boolean
     -- Give small coin reward for collaborative watering
     self._economyService:addCoins(player, 2, "Watered garden plot #" .. plotIndex)
 
-    RemoteManager:fireClient("NotifyPlayer", player,
-        "Watered plot #" .. plotIndex .. "! +2 SC")
+    RemoteManager:fireClient("NotifyPlayer", player, "Watered plot #" .. plotIndex .. "! +2 SC")
 
     return true
 end
@@ -216,18 +236,18 @@ function GardenService:harvestPlant(player: Player, plotIndex: number): boolean
 
     local plot = self._plots[plotIndex]
     if plot.growthStage ~= "mature" then
-        RemoteManager:fireClient("NotifyPlayer", player,
-            "This plant isn't ready to harvest yet!")
+        RemoteManager:fireClient("NotifyPlayer", player, "This plant isn't ready to harvest yet!")
         return false
     end
 
     -- Get plant data for rewards
     local plant = ItemCatalog.getPlant(plot.plantId)
-    if not plant then return false end
+    if not plant then
+        return false
+    end
 
     -- Award rewards
-    self._economyService:addCoins(player, plant.harvestValue,
-        "Harvested " .. plant.name)
+    self._economyService:addCoins(player, plant.harvestValue, "Harvested " .. plant.name)
     self._economyService:addPrestige(player, plant.prestigeReward)
 
     -- Update player stats
@@ -247,12 +267,30 @@ function GardenService:harvestPlant(player: Player, plotIndex: number): boolean
     self:_updateVisual(plotIndex)
     self:_broadcastState()
 
-    RemoteManager:fireClient("NotifyPlayer", player,
-        "Harvested " .. plant.name .. "! +" .. plant.harvestValue ..
-        " SC, +" .. plant.prestigeReward .. " Prestige")
+    RemoteManager:fireClient(
+        "NotifyPlayer",
+        player,
+        "Harvested "
+            .. plant.name
+            .. "! +"
+            .. plant.harvestValue
+            .. " SC, +"
+            .. plant.prestigeReward
+            .. " Prestige"
+    )
 
-    print("[GardenService] " .. player.Name .. " harvested " ..
-          plant.name .. " from plot #" .. plotIndex)
+    if DayPhaseConfig.getCurrentPhase() == "Morning" then
+        RemoteManager:fireClient("NotifyPlayer", player, "Morning harvest bonus!")
+    end
+
+    print(
+        "[GardenService] "
+            .. player.Name
+            .. " harvested "
+            .. plant.name
+            .. " from plot #"
+            .. plotIndex
+    )
     return true
 end
 
@@ -261,7 +299,9 @@ end
 ---------------------------------------------------------------------------
 
 function GardenService:_startGrowthTick()
-    if self._tickRunning then return end
+    if self._tickRunning then
+        return
+    end
     self._tickRunning = true
 
     task.spawn(function()
@@ -277,23 +317,34 @@ function GardenService:_updateGrowthCycle()
     local changed = false
 
     for i, plot in pairs(self._plots) do
-        if plot.growthStage ~= "empty" and plot.growthStage ~= "dead" and plot.growthStage ~= "mature" then
+        if
+            plot.growthStage ~= "empty"
+            and plot.growthStage ~= "dead"
+            and plot.growthStage ~= "mature"
+        then
             local age = now - (plot.plantedAt or now)
             local timeSinceWater = now - (plot.lastWatered or now)
 
             -- Check for wilting
-            if plot.growthStage ~= "wilting" and timeSinceWater >= GameConfig.Timing.WiltWarningAfter then
+            if
+                plot.growthStage ~= "wilting"
+                and timeSinceWater >= GameConfig.Timing.WiltWarningAfter
+            then
                 plot.growthStage = "wilting"
                 changed = true
             elseif plot.growthStage == "wilting" then
                 -- Check for death
-                if timeSinceWater >= GameConfig.Timing.WiltWarningAfter + GameConfig.Timing.WiltToDead then
+                if
+                    timeSinceWater
+                    >= GameConfig.Timing.WiltWarningAfter + GameConfig.Timing.WiltToDead
+                then
                     plot.growthStage = "dead"
                     changed = true
                 end
             else
-                -- Advance growth based on age
-                local newStage = self:_getStageForAge(age)
+                -- Advance growth based on age (day-phase multiplier from CoreLoopService)
+                local effectiveAge = age * (self._growthMultiplier or 1.0)
+                local newStage = self:_getStageForAge(effectiveAge)
                 if newStage ~= plot.growthStage then
                     plot.growthStage = newStage
                     changed = true
@@ -307,8 +358,9 @@ function GardenService:_updateGrowthCycle()
 
         -- Auto-clear dead plants after 60s
         if plot.growthStage == "dead" then
-            local deathTime = (plot.lastWatered or plot.plantedAt or now) +
-                              GameConfig.Timing.WiltWarningAfter + GameConfig.Timing.WiltToDead
+            local deathTime = (plot.lastWatered or plot.plantedAt or now)
+                + GameConfig.Timing.WiltWarningAfter
+                + GameConfig.Timing.WiltToDead
             if now - deathTime > 60 then
                 plot.plantId = nil
                 plot.plantedBy = nil
@@ -345,7 +397,9 @@ end
 ---------------------------------------------------------------------------
 
 function GardenService:_updateVisual(plotIndex: number)
-    if not self._gardenBuilder then return end
+    if not self._gardenBuilder then
+        return
+    end
 
     local plot = self._plots[plotIndex]
     local plantColor = nil

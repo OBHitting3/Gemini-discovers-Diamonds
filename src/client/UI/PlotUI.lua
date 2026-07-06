@@ -5,8 +5,8 @@
 ]]
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local GameConfig    = require(ReplicatedStorage:WaitForChild("GameConfig"))
-local ItemCatalog   = require(ReplicatedStorage:WaitForChild("ItemCatalog"))
+local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
+local ItemCatalog = require(ReplicatedStorage:WaitForChild("ItemCatalog"))
 
 local PlotUI = {}
 local C = GameConfig.Colors

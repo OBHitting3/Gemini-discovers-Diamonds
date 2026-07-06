@@ -6,15 +6,15 @@
 ]]
 
 local MarketplaceService = game:GetService("MarketplaceService")
-local Players            = game:GetService("Players")
-local ReplicatedStorage  = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local GameConfig    = require(ReplicatedStorage:WaitForChild("GameConfig"))
+local GameConfig = require(ReplicatedStorage:WaitForChild("GameConfig"))
 local RemoteManager = require(ReplicatedStorage:WaitForChild("RemoteManager"))
 
 local GamePassService = {}
 
-GamePassService._playerPasses = {}   -- userId → { passName → boolean }
+GamePassService._playerPasses = {} -- userId → { passName → boolean }
 GamePassService._economyService = nil
 GamePassService._gardenService = nil
 
@@ -33,10 +33,15 @@ function GamePassService:init(economyService, gardenService)
         end
     end)
 
-    print("[GamePassService] Initialized — " ..
-          "VIP=" .. GameConfig.Economy.GamePasses.VIP ..
-          " DoubleSC=" .. GameConfig.Economy.GamePasses.DoubleCoins ..
-          " AutoWater=" .. GameConfig.Economy.GamePasses.AutoWater)
+    print(
+        "[GamePassService] Initialized — "
+            .. "VIP="
+            .. GameConfig.Economy.GamePasses.VIP
+            .. " DoubleSC="
+            .. GameConfig.Economy.GamePasses.DoubleCoins
+            .. " AutoWater="
+            .. GameConfig.Economy.GamePasses.AutoWater
+    )
 end
 
 ---------------------------------------------------------------------------
@@ -64,14 +69,21 @@ function GamePassService:loadPlayerPasses(player: Player)
 
     -- Apply immediate perks
     if passes.VIP then
-        RemoteManager:fireClient("NotifyPlayer", player,
-            "VIP Pass active! You get a gold name tag and priority event access.")
+        RemoteManager:fireClient(
+            "NotifyPlayer",
+            player,
+            "VIP Pass active! You get a gold name tag and priority event access."
+        )
     end
 
-    print("[GamePassService] " .. player.Name .. " passes: " ..
-          (passes.VIP and "VIP " or "") ..
-          (passes.DoubleCoins and "2xSC " or "") ..
-          (passes.AutoWater and "AutoWater " or ""))
+    print(
+        "[GamePassService] "
+            .. player.Name
+            .. " passes: "
+            .. (passes.VIP and "VIP " or "")
+            .. (passes.DoubleCoins and "2xSC " or "")
+            .. (passes.AutoWater and "AutoWater " or "")
+    )
 end
 
 --- Cleanup on leave.
@@ -93,8 +105,11 @@ function GamePassService:_onPassPurchased(player: Player, passId: number)
             end
             self._playerPasses[player.UserId][passName] = true
 
-            RemoteManager:fireClient("NotifyPlayer", player,
-                "Thank you! " .. passName .. " pass activated!")
+            RemoteManager:fireClient(
+                "NotifyPlayer",
+                player,
+                "Thank you! " .. passName .. " pass activated!"
+            )
             print("[GamePassService] " .. player.Name .. " purchased " .. passName)
             return
         end
@@ -143,10 +158,12 @@ function GamePassService:startAutoWaterLoop()
                     -- Water all plots that the player planted
                     local state = self._gardenService:getFullState()
                     for i, plot in pairs(state) do
-                        if plot.plantedBy == player.UserId and
-                           plot.growthStage ~= "empty" and
-                           plot.growthStage ~= "dead" and
-                           plot.growthStage ~= "mature" then
+                        if
+                            plot.plantedBy == player.UserId
+                            and plot.growthStage ~= "empty"
+                            and plot.growthStage ~= "dead"
+                            and plot.growthStage ~= "mature"
+                        then
                             self._gardenService:waterPlant(player, i)
                         end
                     end
